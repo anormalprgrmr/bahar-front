@@ -8,6 +8,13 @@
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
+.link {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  color: inherit;
+}
+
 .card:hover {
   transform: translateY(-4px);
   box-shadow: var(--shadow-card);

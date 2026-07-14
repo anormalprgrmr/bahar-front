@@ -1,6 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom'
 import { MainLayout } from '@/components/layout/MainLayout/MainLayout'
 import { HomePage } from '@/pages/HomePage/HomePage'
+import { ProductDetailPage } from '@/pages/ProductDetailPage/ProductDetailPage'
 import { PlaceholderPage } from '@/pages/PlaceholderPage/PlaceholderPage'
 
 export const router = createBrowserRouter([
@@ -22,7 +23,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'products/:id',
-        element: <PlaceholderPage title="جزئیات محصول" />,
+        element: <ProductDetailPage />,
       },
     ],
   },
