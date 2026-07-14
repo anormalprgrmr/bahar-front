@@ -1,0 +1,99 @@
+.hero {
+  padding: 2rem 0 1rem;
+}
+
+.inner {
+  display: flex;
+  justify-content: center;
+}
+
+.banner {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  aspect-ratio: 16 / 7;
+  background: linear-gradient(135deg, #fce7f0 0%, #f8bbd0 50%, #f48fb1 100%);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.tagline {
+  font-family: 'Segoe Script', 'Comic Sans MS', cursive;
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  color: var(--color-white);
+  font-weight: 400;
+  margin-bottom: 0.5rem;
+  z-index: 2;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.illustration {
+  z-index: 2;
+}
+
+.bunny {
+  width: clamp(120px, 25vw, 200px);
+  height: auto;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.1));
+}
+
+.decorations {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.star,
+.star2,
+.heart,
+.heart2,
+.cross {
+  position: absolute;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1rem;
+}
+
+.star {
+  top: 15%;
+  left: 20%;
+  font-size: 1.2rem;
+}
+
+.star2 {
+  bottom: 25%;
+  right: 15%;
+}
+
+.heart {
+  top: 30%;
+  right: 25%;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.heart2 {
+  bottom: 20%;
+  left: 15%;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.cross {
+  top: 20%;
+  right: 40%;
+  font-size: 1.4rem;
+  opacity: 0.5;
+}
+
+@media (max-width: 640px) {
+  .hero {
+    padding: 1rem 0;
+  }
+
+  .banner {
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius-md);
+  }
+}

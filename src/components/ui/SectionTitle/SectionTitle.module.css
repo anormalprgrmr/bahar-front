@@ -1,0 +1,21 @@
+.wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text);
+  padding: 0.5rem 2rem;
+  background: var(--color-primary-light);
+  border-radius: var(--radius-full);
+}
+
+@media (max-width: 640px) {
+  .title {
+    font-size: 1.1rem;
+    padding: 0.4rem 1.5rem;
+  }
+}
