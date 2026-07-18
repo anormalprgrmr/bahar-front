@@ -1,8 +1,15 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useCart } from '@/contexts/CartContext'
-import { formatPrice, getBadgeLabel } from '@/utils/formatPrice'
-import { getCategoryLabel, getCategoryPath } from '@/utils/productLabels'
+import { formatPrice } from '@/utils/formatPrice'
+import {
+  getCategoryLabel,
+  getCategoryPath,
+  getOriginalPrice,
+  getProductBadge,
+  getSalePrice,
+  isInStock,
+} from '@/utils/productHelpers'
 import styles from './ProductInfo.module.css'
 
 /**
@@ -14,12 +21,14 @@ export function ProductInfo({ product }) {
   const [quantity, setQuantity] = useState(1)
   const [adding, setAdding] = useState(false)
   const [added, setAdded] = useState(false)
-  const badgeLabel = getBadgeLabel(product.badge)
+
+  const badgeLabel = getProductBadge(product)
+  const salePrice = getSalePrice(product)
+  const originalPrice = getOriginalPrice(product)
+  const inStock = isInStock(product)
   const discountPercent =
-    product.originalPrice && product.originalPrice > product.price
-      ? Math.round(
-          ((product.originalPrice - product.price) / product.originalPrice) * 100,
-        )
+    originalPrice != null && originalPrice > salePrice
+      ? Math.round(((originalPrice - salePrice) / originalPrice) * 100)
       : null
 
   function decreaseQuantity() {
@@ -27,11 +36,11 @@ export function ProductInfo({ product }) {
   }
 
   function increaseQuantity() {
-    setQuantity((value) => value + 1)
+    setQuantity((value) => Math.min(product.stock || 99, value + 1))
   }
 
   async function handleAddToCart() {
-    if (product.inStock === false || adding) return
+    if (!inStock || adding) return
 
     setAdding(true)
     try {
@@ -57,18 +66,15 @@ export function ProductInfo({ product }) {
 
       <div className={styles.meta}>
         {badgeLabel && <span className={styles.badge}>{badgeLabel}</span>}
-        {product.brand && (
-          <span className={styles.brand}>برند: {product.brand}</span>
-        )}
       </div>
 
       <h1 className={styles.title}>{product.name}</h1>
 
       <div className={styles.priceRow}>
-        <span className={styles.price}>{formatPrice(product.price)}</span>
-        {product.originalPrice && (
+        <span className={styles.price}>{formatPrice(salePrice)}</span>
+        {originalPrice != null && (
           <span className={styles.original}>
-            {new Intl.NumberFormat('fa-IR').format(product.originalPrice)} تومان
+            {new Intl.NumberFormat('fa-IR').format(originalPrice)} تومان
           </span>
         )}
         {discountPercent && (
@@ -79,26 +85,16 @@ export function ProductInfo({ product }) {
       <p className={styles.description}>{product.description}</p>
 
       <dl className={styles.specs}>
-        {product.volume && (
-          <div className={styles.spec}>
-            <dt>حجم</dt>
-            <dd>{product.volume}</dd>
-          </div>
-        )}
         <div className={styles.spec}>
           <dt>دسته‌بندی</dt>
           <dd>{getCategoryLabel(product.category)}</dd>
         </div>
         <div className={styles.spec}>
           <dt>موجودی</dt>
-          <dd className={product.inStock === false ? styles.outOfStock : styles.inStock}>
-            {product.inStock === false ? 'ناموجود' : 'موجود در انبار'}
-          </dd>
-        </div>
-        <div className={styles.spec}>
-          <dt>فروش</dt>
-          <dd>
-            {new Intl.NumberFormat('fa-IR').format(product.salesCount)} فروش
+          <dd className={inStock ? styles.inStock : styles.outOfStock}>
+            {inStock
+              ? `${new Intl.NumberFormat('fa-IR').format(product.stock)} عدد`
+              : 'ناموجود'}
           </dd>
         </div>
       </dl>
@@ -113,8 +109,15 @@ export function ProductInfo({ product }) {
           >
             −
           </button>
-          <span aria-live="polite">{new Intl.NumberFormat('fa-IR').format(quantity)}</span>
-          <button type="button" onClick={increaseQuantity} aria-label="افزایش تعداد">
+          <span aria-live="polite">
+            {new Intl.NumberFormat('fa-IR').format(quantity)}
+          </span>
+          <button
+            type="button"
+            onClick={increaseQuantity}
+            aria-label="افزایش تعداد"
+            disabled={quantity >= product.stock}
+          >
             +
           </button>
         </div>
@@ -122,10 +125,10 @@ export function ProductInfo({ product }) {
         <button
           type="button"
           className={styles.addToCart}
-          disabled={product.inStock === false || adding}
+          disabled={!inStock || adding}
           onClick={handleAddToCart}
         >
-          {product.inStock === false
+          {!inStock
             ? 'ناموجود'
             : adding
               ? 'در حال افزودن...'

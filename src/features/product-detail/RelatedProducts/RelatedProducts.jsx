@@ -7,7 +7,7 @@ import styles from './RelatedProducts.module.css'
 /**
  * @param {{
  *   productId: string
- *   category: import('@/types/product').ProductCategory
+ *   category: string
  * }} props
  */
 export function RelatedProducts({ productId, category }) {

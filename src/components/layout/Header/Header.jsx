@@ -64,7 +64,7 @@ function LogoIcon() {
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [dropdownOpen, setDropdownOpen] = useState(false)
-  const { isAuthenticated, user } = useAuth()
+  const { isAuthenticated, isAdmin, user } = useAuth()
   const { itemCount } = useCart()
 
   const { data: hotProducts = [] } = useAsyncData('hot', getHotProducts)
@@ -87,11 +87,17 @@ export function Header() {
             )}
           </Link>
 
+          {isAdmin && (
+            <Link to="/admin" className={styles.adminChip}>
+              پنل مدیریت
+            </Link>
+          )}
+
           <Link
             to={isAuthenticated ? '/profile' : '/login'}
             className={styles.iconBtn}
             aria-label={isAuthenticated ? 'حساب کاربری' : 'ورود'}
-            title={isAuthenticated ? user?.profile.fullName : 'ورود'}
+            title={isAuthenticated ? user?.email : 'ورود'}
           >
             <UserIcon />
           </Link>

@@ -1,64 +1,114 @@
-import { apiClient, isApiEnabled } from '@/services/api/client'
-import { mockProducts } from '@/mocks/products'
+import { apiClient, resolveMediaUrl, toQueryString } from '@/services/api/client'
 
-const delay = (ms = 300) => new Promise((resolve) => setTimeout(resolve, ms))
+/**
+ * @param {import('@/types/product').Product} product
+ * @returns {import('@/types/product').Product}
+ */
+export function normalizeProduct(product) {
+  return {
+    ...product,
+    image: resolveMediaUrl(product.image),
+    images: (product.images ?? []).map(resolveMediaUrl),
+    stock: product.stock ?? 0,
+    onSale: Boolean(product.onSale),
+  }
+}
 
-/** @returns {Promise<import('@/types/product').Product[]>} */
-async function fetchFromMock() {
-  await delay()
-  return mockProducts
+/**
+ * @param {object} [params]
+ * @returns {Promise<import('@/types/product').PaginatedProducts>}
+ */
+export async function listProducts(params = {}) {
+  const query = toQueryString({
+    page: params.page ?? 1,
+    page_size: params.pageSize ?? 12,
+    q: params.q,
+    category: params.category,
+    on_sale: params.onSale,
+    in_stock: params.inStock,
+    min_price: params.minPrice,
+    max_price: params.maxPrice,
+    sort_by: params.sortBy,
+    sort_order: params.sortOrder,
+  })
+
+  const result = await apiClient(`/products${query}`)
+  return {
+    data: (result?.data ?? []).map(normalizeProduct),
+    pagination: result?.pagination ?? {
+      page: 1,
+      page_size: 12,
+      total: 0,
+      total_pages: 0,
+    },
+  }
 }
 
 /** @returns {Promise<import('@/types/product').Product[]>} */
 export async function getAllProducts() {
-  if (isApiEnabled()) {
-    return apiClient('/products')
-  }
-
-  return fetchFromMock()
+  const result = await listProducts({ page: 1, pageSize: 100 })
+  return result.data
 }
 
 /** @returns {Promise<import('@/types/product').Product[]>} */
 export async function getHotProducts() {
-  if (isApiEnabled()) {
-    return apiClient('/products/hot')
+  try {
+    const result = await listProducts({
+      page: 1,
+      pageSize: 4,
+      onSale: true,
+      sortBy: 'created_at',
+      sortOrder: 'desc',
+    })
+    return result.data
+  } catch {
+    return []
   }
-
-  const products = await fetchFromMock()
-  return products.filter((product) => product.isHot).slice(0, 4)
 }
 
 /** @returns {Promise<import('@/types/product').Product[]>} */
 export async function getBestsellerProducts() {
-  if (isApiEnabled()) {
-    return apiClient('/products/bestsellers')
+  try {
+    const result = await listProducts({
+      page: 1,
+      pageSize: 4,
+      inStock: true,
+      sortBy: 'created_at',
+      sortOrder: 'desc',
+    })
+    return result.data
+  } catch {
+    return []
   }
-
-  const products = await fetchFromMock()
-  return [...products]
-    .filter((product) => product.isBestseller)
-    .sort((a, b) => b.salesCount - a.salesCount)
-    .slice(0, 4)
 }
 
 /** @returns {Promise<import('@/types/product').Product[]>} */
 export async function getWeeklyDeals() {
-  if (isApiEnabled()) {
-    return apiClient('/products/weekly-deals')
+  try {
+    const result = await listProducts({
+      page: 1,
+      pageSize: 4,
+      onSale: true,
+    })
+    return result.data
+  } catch {
+    return []
   }
-
-  const products = await fetchFromMock()
-  return products.filter((product) => product.badge === 'discount').slice(0, 4)
 }
 
 /** @returns {Promise<import('@/types/product').Product[]>} */
 export async function getFeaturedProducts() {
-  if (isApiEnabled()) {
-    return apiClient('/products/featured')
+  try {
+    const result = await listProducts({
+      page: 1,
+      pageSize: 4,
+      sortBy: 'created_at',
+      sortOrder: 'desc',
+    })
+    return result.data
+  } catch {
+    return []
   }
-
-  const products = await fetchFromMock()
-  return products.slice(0, 4)
 }
 
 /**
@@ -66,31 +116,36 @@ export async function getFeaturedProducts() {
  * @returns {Promise<import('@/types/product').Product | null>}
  */
 export async function getProductById(id) {
-  if (isApiEnabled()) {
-    try {
-      return await apiClient(`/products/${id}`)
-    } catch {
-      return null
-    }
+  try {
+    const product = await apiClient(`/products/${id}`)
+    return normalizeProduct(product)
+  } catch {
+    return null
   }
-
-  await delay()
-  return mockProducts.find((product) => product.id === id) ?? null
 }
 
 /**
  * @param {string} productId
- * @param {import('@/types/product').ProductCategory} category
+ * @param {string} category
  * @param {number} [limit=4]
- * @returns {Promise<import('@/types/product').Product[]>}
  */
 export async function getRelatedProducts(productId, category, limit = 4) {
-  if (isApiEnabled()) {
-    return apiClient(`/products/${productId}/related`)
-  }
+  const result = await listProducts({
+    page: 1,
+    pageSize: limit + 4,
+    category,
+  })
+  return result.data.filter((product) => product.id !== productId).slice(0, limit)
+}
 
-  const products = await fetchFromMock()
-  return products
-    .filter((product) => product.id !== productId && product.category === category)
-    .slice(0, limit)
+/**
+ * @param {string} category
+ */
+export async function getProductsByCategory(category) {
+  const result = await listProducts({
+    page: 1,
+    pageSize: 24,
+    category,
+  })
+  return result.data
 }

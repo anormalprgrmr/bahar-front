@@ -3,11 +3,12 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { useCart } from '@/contexts/CartContext'
 import {
+  confirmMockPayment,
   createOrderFromCart,
   getOrderById,
-  payOrderMock,
 } from '@/services/orders/orderService'
 import { formatPrice } from '@/utils/formatPrice'
+import { getOrderStatusLabel } from '@/utils/productHelpers'
 import formStyles from '@/styles/forms.module.css'
 import styles from './CheckoutPage.module.css'
 
@@ -17,25 +18,12 @@ export function CheckoutPage() {
   const { cart, total, refresh } = useCart()
   const navigate = useNavigate()
 
-  const [fullName, setFullName] = useState(user?.profile.fullName ?? '')
-  const [phone, setPhone] = useState(user?.profile.phone ?? '')
-  const [city, setCity] = useState(user?.profile.city ?? '')
-  const [address, setAddress] = useState(user?.profile.address ?? '')
-  const [postalCode, setPostalCode] = useState(user?.profile.postalCode ?? '')
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [paying, setPaying] = useState(false)
+  const [mockPaid, setMockPaid] = useState(false)
   const [order, setOrder] = useState(/** @type {import('@/types/order').Order | null} */ (null))
   const [loadingOrder, setLoadingOrder] = useState(Boolean(orderId))
-
-  useEffect(() => {
-    if (!user) return
-    setFullName(user.profile.fullName)
-    setPhone(user.profile.phone)
-    setCity(user.profile.city ?? '')
-    setAddress(user.profile.address ?? '')
-    setPostalCode(user.profile.postalCode ?? '')
-  }, [user])
 
   useEffect(() => {
     if (!orderId || !user) return
@@ -45,13 +33,10 @@ export function CheckoutPage() {
       setLoadingOrder(true)
       setError('')
       try {
-        const result = await getOrderById(user.id, orderId)
+        const result = await getOrderById(orderId)
         if (!cancelled) {
-          if (!result) {
-            setError('سفارش یافت نشد.')
-          } else {
-            setOrder(result)
-          }
+          if (!result) setError('سفارش یافت نشد.')
+          else setOrder(result)
         }
       } finally {
         if (!cancelled) setLoadingOrder(false)
@@ -64,21 +49,14 @@ export function CheckoutPage() {
     }
   }, [orderId, user])
 
-  async function handleCreateOrder(event) {
-    event.preventDefault()
+  async function handleCreateOrder() {
     if (!user) return
-
     setError('')
     setSubmitting(true)
 
     try {
-      const created = await createOrderFromCart(user.id, {
-        fullName,
-        phone,
-        city,
-        address,
-        postalCode,
-      })
+      const created = await createOrderFromCart(cart.items, user.id)
+      await refresh()
       setOrder(created)
       navigate(`/checkout/${created.id}`, { replace: true })
     } catch (err) {
@@ -89,15 +67,13 @@ export function CheckoutPage() {
   }
 
   async function handleMockPay() {
-    if (!user || !order) return
-
+    if (!order) return
     setError('')
     setPaying(true)
 
     try {
-      const paid = await payOrderMock(user.id, order.id)
-      await refresh()
-      setOrder(paid)
+      await confirmMockPayment(order)
+      setMockPaid(true)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'پرداخت ناموفق بود.')
     } finally {
@@ -113,16 +89,16 @@ export function CheckoutPage() {
     )
   }
 
-  if (order?.status === 'paid') {
+  if (order && mockPaid) {
     return (
       <div className={`container ${styles.page}`}>
         <div className={styles.successCard}>
-          <h1 className={styles.successTitle}>پرداخت با موفقیت انجام شد</h1>
+          <h1 className={styles.successTitle}>پرداخت آزمایشی موفق بود</h1>
           <p className={styles.muted}>
-            سفارش #{order.id.slice(-8)} ثبت و پرداخت شد.
+            سفارش #{order.id.slice(0, 8)} ثبت شد.
           </p>
-          <p className={styles.ref}>کد پیگیری: {order.paymentRef}</p>
-          <p className={styles.total}>{formatPrice(order.total)}</p>
+          <p className={styles.ref}>وضعیت فعلی: {getOrderStatusLabel(order.status)}</p>
+          <p className={styles.total}>{formatPrice(order.total_amount)}</p>
           <div className={styles.successActions}>
             <Link to="/profile" className={styles.secondaryBtn}>
               مشاهده سفارش‌ها
@@ -132,7 +108,8 @@ export function CheckoutPage() {
             </Link>
           </div>
           <p className={styles.mockNote}>
-            این یک پرداخت آزمایشی است و بعداً به درگاه واقعی متصل می‌شود.
+            درگاه واقعی هنوز متصل نیست؛ وضعیت سفارش در سرور تا تغییر توسط مدیر
+            همان وضعیت اولیه باقی می‌ماند.
           </p>
         </div>
       </div>
@@ -146,47 +123,42 @@ export function CheckoutPage() {
         <div className={styles.layout}>
           <section className={styles.card}>
             <h2 className={styles.sectionTitle}>جزئیات سفارش</h2>
+            <p className={styles.muted}>
+              وضعیت: {getOrderStatusLabel(order.status)}
+            </p>
             <ul className={styles.orderItems}>
-              {order.items.map((item) => (
-                <li key={item.productId}>
+              {(order.items ?? []).map((item) => (
+                <li key={`${item.product_id}-${item.quantity}`}>
                   <span>
-                    {item.name} × {new Intl.NumberFormat('fa-IR').format(item.quantity)}
+                    محصول {item.product_id.slice(0, 8)} ×{' '}
+                    {new Intl.NumberFormat('fa-IR').format(item.quantity)}
                   </span>
-                  <strong>{formatPrice(item.price * item.quantity)}</strong>
+                  <strong>{formatPrice(item.unit_price * item.quantity)}</strong>
                 </li>
               ))}
             </ul>
             <div className={styles.totalRow}>
               <span>مبلغ قابل پرداخت</span>
-              <strong>{formatPrice(order.total)}</strong>
-            </div>
-
-            <div className={styles.shippingBox}>
-              <h3>آدرس ارسال</h3>
-              <p>
-                {order.shipping.fullName} · {order.shipping.phone}
-              </p>
-              <p>
-                {order.shipping.city}، {order.shipping.address}
-                {order.shipping.postalCode
-                  ? ` · ${order.shipping.postalCode}`
-                  : ''}
-              </p>
+              <strong>{formatPrice(order.total_amount)}</strong>
             </div>
 
             {error && <p className={formStyles.error}>{error}</p>}
 
-            <button
-              type="button"
-              className={styles.payBtn}
-              onClick={handleMockPay}
-              disabled={paying}
-            >
-              {paying ? 'در حال اتصال به درگاه...' : 'پرداخت آزمایشی'}
-            </button>
-            <p className={styles.mockNote}>
-              درگاه واقعی هنوز فعال نیست؛ با این دکمه پرداخت به‌صورت آزمایشی تأیید می‌شود.
-            </p>
+            {order.status === 'pending' && (
+              <>
+                <button
+                  type="button"
+                  className={styles.payBtn}
+                  onClick={handleMockPay}
+                  disabled={paying}
+                >
+                  {paying ? 'در حال اتصال به درگاه...' : 'پرداخت آزمایشی'}
+                </button>
+                <p className={styles.mockNote}>
+                  این دکمه فقط تأیید آزمایشی است و درگاه واقعی بعداً اضافه می‌شود.
+                </p>
+              </>
+            )}
           </section>
         </div>
       </div>
@@ -212,78 +184,19 @@ export function CheckoutPage() {
       <h1 className={styles.title}>ثبت سفارش</h1>
       <div className={styles.layout}>
         <section className={styles.card}>
-          <h2 className={styles.sectionTitle}>اطلاعات ارسال</h2>
-          <form className={formStyles.form} onSubmit={handleCreateOrder}>
-            {error && <p className={formStyles.error}>{error}</p>}
-
-            <div className={formStyles.field}>
-              <label className={formStyles.label} htmlFor="ship-name">
-                نام گیرنده
-              </label>
-              <input
-                id="ship-name"
-                className={formStyles.input}
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                required
-              />
-            </div>
-
-            <div className={formStyles.field}>
-              <label className={formStyles.label} htmlFor="ship-phone">
-                شماره موبایل
-              </label>
-              <input
-                id="ship-phone"
-                className={formStyles.input}
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                required
-              />
-            </div>
-
-            <div className={formStyles.field}>
-              <label className={formStyles.label} htmlFor="ship-city">
-                شهر
-              </label>
-              <input
-                id="ship-city"
-                className={formStyles.input}
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                required
-              />
-            </div>
-
-            <div className={formStyles.field}>
-              <label className={formStyles.label} htmlFor="ship-address">
-                آدرس
-              </label>
-              <textarea
-                id="ship-address"
-                className={formStyles.textarea}
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                required
-              />
-            </div>
-
-            <div className={formStyles.field}>
-              <label className={formStyles.label} htmlFor="ship-postal">
-                کد پستی
-              </label>
-              <input
-                id="ship-postal"
-                className={formStyles.input}
-                value={postalCode}
-                onChange={(e) => setPostalCode(e.target.value)}
-              />
-            </div>
-
-            <button type="submit" className={formStyles.submit} disabled={submitting}>
-              {submitting ? 'در حال ثبت...' : 'ثبت سفارش و رفتن به پرداخت'}
-            </button>
-          </form>
+          <h2 className={styles.sectionTitle}>تأیید سبد خرید</h2>
+          <p className={styles.muted}>
+            با ثبت سفارش، اقلام سبد به سرور ارسال می‌شود.
+          </p>
+          {error && <p className={formStyles.error}>{error}</p>}
+          <button
+            type="button"
+            className={styles.payBtn}
+            onClick={handleCreateOrder}
+            disabled={submitting}
+          >
+            {submitting ? 'در حال ثبت...' : 'ثبت سفارش و رفتن به پرداخت'}
+          </button>
         </section>
 
         <aside className={styles.card}>
@@ -292,7 +205,8 @@ export function CheckoutPage() {
             {cart.items.map((item) => (
               <li key={item.productId}>
                 <span>
-                  {item.name} × {new Intl.NumberFormat('fa-IR').format(item.quantity)}
+                  {item.name} ×{' '}
+                  {new Intl.NumberFormat('fa-IR').format(item.quantity)}
                 </span>
                 <strong>{formatPrice(item.price * item.quantity)}</strong>
               </li>

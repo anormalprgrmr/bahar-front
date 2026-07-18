@@ -1,128 +1,73 @@
-import { readStorage, writeStorage } from '@/utils/storage'
-import { createId, delay } from '@/utils/id'
-import { clearCart, getCartSync, getCartTotals } from '@/services/cart/cartService'
-
-const ORDERS_KEY = 'bahar_orders'
+import { apiClient, toQueryString } from '@/services/api/client'
+import { clearCart } from '@/services/cart/cartService'
 
 /**
- * @returns {import('@/types/order').Order[]}
- */
-function getOrders() {
-  return readStorage(ORDERS_KEY, [])
-}
-
-/**
- * @param {import('@/types/order').Order[]} orders
- */
-function saveOrders(orders) {
-  writeStorage(ORDERS_KEY, orders)
-}
-
-/**
- * @param {string} userId
- * @returns {Promise<import('@/types/order').Order[]>}
- */
-export async function getUserOrders(userId) {
-  await delay(200)
-  return getOrders()
-    .filter((order) => order.userId === userId)
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-}
-
-/**
- * @param {string} userId
- * @param {string} orderId
- * @returns {Promise<import('@/types/order').Order | null>}
- */
-export async function getOrderById(userId, orderId) {
-  await delay(150)
-  return (
-    getOrders().find(
-      (order) => order.id === orderId && order.userId === userId,
-    ) ?? null
-  )
-}
-
-/**
- * Create an order from the current basket (pending payment).
- * @param {string} userId
- * @param {import('@/types/order').ShippingInfo} shipping
+ * @param {{ product_id: string, quantity: number }[]} items
  * @returns {Promise<import('@/types/order').Order>}
  */
-export async function createOrderFromCart(userId, shipping) {
-  await delay(400)
+export async function createOrder(items) {
+  return apiClient('/orders', {
+    method: 'POST',
+    auth: true,
+    body: JSON.stringify({ items }),
+  })
+}
 
-  const cart = getCartSync(userId)
-  if (cart.items.length === 0) {
+/**
+ * Create order from local cart items, then clear cart.
+ * @param {import('@/types/cart').CartItem[]} cartItems
+ * @param {string | null} userId
+ * @returns {Promise<import('@/types/order').Order>}
+ */
+export async function createOrderFromCart(cartItems, userId) {
+  if (!cartItems.length) {
     throw new Error('سبد خرید شما خالی است.')
   }
 
-  if (!shipping.fullName?.trim() || !shipping.phone?.trim() || !shipping.address?.trim() || !shipping.city?.trim()) {
-    throw new Error('لطفاً اطلاعات ارسال را کامل کنید.')
-  }
-
-  const { total } = getCartTotals(cart)
-
-  /** @type {import('@/types/order').Order} */
-  const order = {
-    id: createId('order'),
-    userId,
-    items: cart.items.map((item) => ({
-      productId: item.productId,
-      name: item.name,
-      price: item.price,
-      image: item.image,
+  const order = await createOrder(
+    cartItems.map((item) => ({
+      product_id: item.productId,
       quantity: item.quantity,
     })),
-    total,
-    status: 'pending',
-    shipping: {
-      fullName: shipping.fullName.trim(),
-      phone: shipping.phone.trim(),
-      address: shipping.address.trim(),
-      city: shipping.city.trim(),
-      postalCode: shipping.postalCode?.trim() ?? '',
-    },
-    createdAt: new Date().toISOString(),
-  }
+  )
 
-  saveOrders([order, ...getOrders()])
+  await clearCart(userId)
   return order
 }
 
 /**
- * Mock payment gateway — always succeeds after a short delay.
- * @param {string} userId
- * @param {string} orderId
- * @returns {Promise<import('@/types/order').Order>}
+ * @param {object} [params]
+ * @returns {Promise<import('@/types/order').PaginatedOrders>}
  */
-export async function payOrderMock(userId, orderId) {
-  await delay(1200)
+export async function getMyOrders(params = {}) {
+  const query = toQueryString({
+    page: params.page ?? 1,
+    page_size: params.pageSize ?? 20,
+  })
+  return apiClient(`/orders/my${query}`, { auth: true })
+}
 
-  const orders = getOrders()
-  const index = orders.findIndex(
-    (order) => order.id === orderId && order.userId === userId,
-  )
-
-  if (index === -1) {
-    throw new Error('سفارش یافت نشد.')
+/**
+ * @param {string} orderId
+ * @returns {Promise<import('@/types/order').Order | null>}
+ */
+export async function getOrderById(orderId) {
+  try {
+    return await apiClient(`/orders/${orderId}`, { auth: true })
+  } catch {
+    return null
   }
+}
 
-  const order = orders[index]
-
-  if (order.status === 'paid') {
-    return order
-  }
-
-  const paid = {
+/**
+ * Mock payment confirmation (no payment gateway yet).
+ * Order stays as created by backend (usually pending).
+ * @param {import('@/types/order').Order} order
+ */
+export async function confirmMockPayment(order) {
+  await new Promise((resolve) => setTimeout(resolve, 800))
+  return {
     ...order,
-    status: /** @type {const} */ ('paid'),
-    paidAt: new Date().toISOString(),
-    paymentRef: `MOCK-${Date.now().toString(36).toUpperCase()}`,
+    _mockPaid: true,
   }
-
-  orders[index] = paid
-  saveOrders(orders)
-  await clearCart(userId)
-  return paid
 }

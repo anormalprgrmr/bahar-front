@@ -1,5 +1,11 @@
 import { readStorage, writeStorage } from '@/utils/storage'
 import { delay } from '@/utils/id'
+import {
+  getSalePrice,
+  getOriginalPrice,
+  isInStock,
+} from '@/utils/productHelpers'
+import { resolveMediaUrl } from '@/services/api/client'
 
 const GUEST_CART_KEY = 'bahar_cart_guest'
 
@@ -10,9 +16,6 @@ function cartKey(userId) {
   return userId ? `bahar_cart_${userId}` : GUEST_CART_KEY
 }
 
-/**
- * @returns {import('@/types/cart').Cart}
- */
 function emptyCart() {
   return { items: [], updatedAt: new Date().toISOString() }
 }
@@ -38,10 +41,9 @@ function saveCart(userId, cart) {
 
 /**
  * @param {string | null} userId
- * @returns {Promise<import('@/types/cart').Cart>}
  */
 export async function getCart(userId) {
-  await delay(100)
+  await delay(80)
   return getCartSync(userId)
 }
 
@@ -49,17 +51,18 @@ export async function getCart(userId) {
  * @param {string | null} userId
  * @param {import('@/types/product').Product} product
  * @param {number} [quantity=1]
- * @returns {Promise<import('@/types/cart').Cart>}
  */
 export async function addToCart(userId, product, quantity = 1) {
-  await delay(150)
+  await delay(100)
 
-  if (product.inStock === false) {
+  if (!isInStock(product)) {
     throw new Error('این محصول موجود نیست.')
   }
 
   const cart = getCartSync(userId)
   const existing = cart.items.find((item) => item.productId === product.id)
+  const salePrice = getSalePrice(product)
+  const original = getOriginalPrice(product)
 
   if (existing) {
     existing.quantity += quantity
@@ -67,9 +70,9 @@ export async function addToCart(userId, product, quantity = 1) {
     cart.items.push({
       productId: product.id,
       name: product.name,
-      price: product.price,
-      originalPrice: product.originalPrice,
-      image: product.image,
+      price: salePrice,
+      originalPrice: original ?? undefined,
+      image: resolveMediaUrl(product.image),
       quantity,
     })
   }
@@ -82,10 +85,9 @@ export async function addToCart(userId, product, quantity = 1) {
  * @param {string | null} userId
  * @param {string} productId
  * @param {number} quantity
- * @returns {Promise<import('@/types/cart').Cart>}
  */
 export async function updateCartItemQuantity(userId, productId, quantity) {
-  await delay(100)
+  await delay(80)
   const cart = getCartSync(userId)
 
   if (quantity <= 0) {
@@ -102,7 +104,6 @@ export async function updateCartItemQuantity(userId, productId, quantity) {
 /**
  * @param {string | null} userId
  * @param {string} productId
- * @returns {Promise<import('@/types/cart').Cart>}
  */
 export async function removeFromCart(userId, productId) {
   return updateCartItemQuantity(userId, productId, 0)
@@ -110,22 +111,19 @@ export async function removeFromCart(userId, productId) {
 
 /**
  * @param {string | null} userId
- * @returns {Promise<import('@/types/cart').Cart>}
  */
 export async function clearCart(userId) {
-  await delay(100)
+  await delay(80)
   const cart = emptyCart()
   saveCart(userId, cart)
   return cart
 }
 
 /**
- * Merge guest cart into user cart after login/register.
  * @param {string} userId
- * @returns {Promise<import('@/types/cart').Cart>}
  */
 export async function mergeGuestCart(userId) {
-  await delay(100)
+  await delay(80)
 
   const guestCart = getCartSync(null)
   const userCart = getCartSync(userId)

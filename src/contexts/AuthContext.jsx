@@ -11,7 +11,6 @@ import {
   loginUser,
   logoutUser,
   registerUser,
-  updateUserProfile,
 } from '@/services/auth/authService'
 import { mergeGuestCart } from '@/services/cart/cartService'
 
@@ -21,7 +20,7 @@ const AuthContext = createContext(null)
  * @param {{ children: import('react').ReactNode }} props
  */
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(/** @type {import('@/types/user').PublicUser | null} */ (null))
+  const [user, setUser] = useState(/** @type {import('@/types/user').User | null} */ (null))
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -61,27 +60,17 @@ export function AuthProvider({ children }) {
     setUser(null)
   }, [])
 
-  const updateProfile = useCallback(
-    async (profile) => {
-      if (!user) throw new Error('ابتدا وارد حساب کاربری شوید.')
-      const nextUser = await updateUserProfile(user.id, profile)
-      setUser(nextUser)
-      return nextUser
-    },
-    [user],
-  )
-
   const value = useMemo(
     () => ({
       user,
       loading,
       isAuthenticated: Boolean(user),
+      isAdmin: Boolean(user?.is_admin),
       login,
       register,
       logout,
-      updateProfile,
     }),
-    [user, loading, login, register, logout, updateProfile],
+    [user, loading, login, register, logout],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

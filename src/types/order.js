@@ -1,36 +1,30 @@
 /**
- * @typedef {'pending' | 'paid' | 'failed'} OrderStatus
+ * @typedef {'pending' | 'paid' | 'processing' | 'shipped' | 'delivered' | 'cancelled'} OrderStatus
  */
 
 /**
  * @typedef {Object} OrderItem
- * @property {string} productId
- * @property {string} name
- * @property {number} price
- * @property {string} image
+ * @property {string} order_id
+ * @property {string} product_id
  * @property {number} quantity
- */
-
-/**
- * @typedef {Object} ShippingInfo
- * @property {string} fullName
- * @property {string} phone
- * @property {string} address
- * @property {string} city
- * @property {string} [postalCode]
+ * @property {number} unit_price
  */
 
 /**
  * @typedef {Object} Order
  * @property {string} id
- * @property {string} userId
- * @property {OrderItem[]} items
- * @property {number} total
+ * @property {string} user_id
  * @property {OrderStatus} status
- * @property {ShippingInfo} shipping
- * @property {string} createdAt
- * @property {string} [paidAt]
- * @property {string} [paymentRef]
+ * @property {number} total_amount
+ * @property {string} created_at
+ * @property {import('@/types/user').AdminUser} [user]
+ * @property {OrderItem[]} [items]
+ */
+
+/**
+ * @typedef {Object} PaginatedOrders
+ * @property {Order[]} data
+ * @property {import('@/types/product').PaginationMeta} pagination
  */
 
 export {}

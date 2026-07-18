@@ -1,12 +1,19 @@
 import { Link } from 'react-router-dom'
-import { formatPrice, getBadgeLabel } from '@/utils/formatPrice'
+import { formatPrice } from '@/utils/formatPrice'
+import {
+  getOriginalPrice,
+  getProductBadge,
+  getSalePrice,
+} from '@/utils/productHelpers'
 import styles from './ProductCard.module.css'
 
 /**
  * @param {{ product: import('@/types/product').Product }} props
  */
 export function ProductCard({ product }) {
-  const badgeLabel = getBadgeLabel(product.badge)
+  const badgeLabel = getProductBadge(product)
+  const salePrice = getSalePrice(product)
+  const originalPrice = getOriginalPrice(product)
 
   return (
     <article className={styles.card}>
@@ -42,12 +49,12 @@ export function ProductCard({ product }) {
         <div className={styles.info}>
           <h3 className={styles.name}>{product.name}</h3>
           <div className={styles.prices}>
-            {product.originalPrice && (
+            {originalPrice != null && (
               <span className={styles.originalPrice}>
-                {new Intl.NumberFormat('fa-IR').format(product.originalPrice)}
+                {new Intl.NumberFormat('fa-IR').format(originalPrice)}
               </span>
             )}
-            <span className={styles.price}>{formatPrice(product.price)}</span>
+            <span className={styles.price}>{formatPrice(salePrice)}</span>
           </div>
         </div>
       </Link>

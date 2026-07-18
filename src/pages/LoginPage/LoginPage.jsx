@@ -5,7 +5,7 @@ import formStyles from '@/styles/forms.module.css'
 import styles from '../auth/AuthPage.module.css'
 
 export function LoginPage() {
-  const { login, isAuthenticated } = useAuth()
+  const { login, isAuthenticated, isAdmin } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const from = location.state?.from ?? '/'
@@ -16,7 +16,12 @@ export function LoginPage() {
   const [submitting, setSubmitting] = useState(false)
 
   if (isAuthenticated) {
-    return <Navigate to={from} replace />
+    const redirectTo = from.startsWith('/admin')
+      ? from
+      : isAdmin && from === '/'
+        ? '/admin'
+        : from
+    return <Navigate to={redirectTo} replace />
   }
 
   async function handleSubmit(event) {
@@ -25,8 +30,14 @@ export function LoginPage() {
     setSubmitting(true)
 
     try {
-      await login({ email, password })
-      navigate(from, { replace: true })
+      const user = await login({ email, password })
+      if (from.startsWith('/admin') || (user.is_admin && from === '/')) {
+        navigate(user.is_admin ? (from.startsWith('/admin') ? from : '/admin') : from, {
+          replace: true,
+        })
+      } else {
+        navigate(from, { replace: true })
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'ورود ناموفق بود.')
     } finally {
@@ -38,7 +49,9 @@ export function LoginPage() {
     <div className={`container ${styles.page}`}>
       <div className={styles.card}>
         <h1 className={styles.title}>ورود</h1>
-        <p className={styles.subtitle}>به حساب کاربری بهار خوش آمدید</p>
+        <p className={styles.subtitle}>
+          ورود کاربران و مدیران از همین صفحه انجام می‌شود
+        </p>
 
         <form className={formStyles.form} onSubmit={handleSubmit}>
           {error && <p className={formStyles.error}>{error}</p>}

@@ -13,7 +13,7 @@ import styles from './MobileMenu.module.css'
  */
 export function MobileMenu({ hotProducts, bestsellers, isOpen, onClose }) {
   const [expandedSection, setExpandedSection] = useState(null)
-  const { isAuthenticated, user, logout } = useAuth()
+  const { isAuthenticated, isAdmin, user, logout } = useAuth()
 
   if (!isOpen) return null
 
@@ -110,9 +110,16 @@ export function MobileMenu({ hotProducts, bestsellers, isOpen, onClose }) {
           </li>
           {isAuthenticated ? (
             <>
+              {isAdmin && (
+                <li>
+                  <NavLink to="/admin" className={styles.link} onClick={onClose}>
+                    پنل مدیریت
+                  </NavLink>
+                </li>
+              )}
               <li>
                 <NavLink to="/profile" className={styles.link} onClick={onClose}>
-                  حساب من ({user?.profile.fullName})
+                  حساب من ({user?.email})
                 </NavLink>
               </li>
               <li>

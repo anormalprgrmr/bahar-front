@@ -125,6 +125,27 @@
   border-radius: var(--radius-full);
 }
 
+.adminChip {
+  display: none;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-white);
+  background: var(--color-primary);
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+.adminChip:hover {
+  background: var(--color-primary-dark);
+}
+
+@media (min-width: 769px) {
+  .adminChip {
+    display: inline-flex;
+  }
+}
+
 .menuBtn {
   display: none;
   align-items: center;

@@ -1,12 +1,12 @@
-import { useEffect } from 'react'
-import { Link, useParams } from 'react-router-dom'
-import { useAsyncData } from '@/hooks/useAsyncData'
-import { getProductById } from '@/services/products/productService'
-import { getBadgeLabel } from '@/utils/formatPrice'
+import { getProductBadge } from '@/utils/productHelpers'
 import { ProductGallery } from '@/features/product-detail/ProductGallery/ProductGallery'
 import { ProductInfo } from '@/features/product-detail/ProductInfo/ProductInfo'
 import { ProductDetailsTabs } from '@/features/product-detail/ProductDetailsTabs/ProductDetailsTabs'
 import { RelatedProducts } from '@/features/product-detail/RelatedProducts/RelatedProducts'
+import { useEffect } from 'react'
+import { Link, useParams } from 'react-router-dom'
+import { useAsyncData } from '@/hooks/useAsyncData'
+import { getProductById } from '@/services/products/productService'
 import styles from './ProductDetailPage.module.css'
 
 export function ProductDetailPage() {
@@ -48,9 +48,7 @@ export function ProductDetailPage() {
     )
   }
 
-  const gallery = product.gallery?.length
-    ? product.gallery
-    : [product.image]
+  const gallery = product.images?.length ? product.images : [product.image]
 
   return (
     <div className={`container ${styles.page}`}>
@@ -58,7 +56,7 @@ export function ProductDetailPage() {
         <ProductGallery
           images={gallery}
           name={product.name}
-          badgeLabel={getBadgeLabel(product.badge)}
+          badgeLabel={getProductBadge(product)}
         />
         <ProductInfo product={product} />
       </div>

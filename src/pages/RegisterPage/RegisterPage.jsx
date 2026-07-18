@@ -10,9 +10,7 @@ export function RegisterPage() {
   const location = useLocation()
   const from = location.state?.from ?? '/'
 
-  const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
-  const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -27,7 +25,7 @@ export function RegisterPage() {
     setSubmitting(true)
 
     try {
-      await register({ fullName, email, phone, password })
+      await register({ email, password })
       navigate(from, { replace: true })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'ثبت‌نام ناموفق بود.')
@@ -46,21 +44,6 @@ export function RegisterPage() {
           {error && <p className={formStyles.error}>{error}</p>}
 
           <div className={formStyles.field}>
-            <label className={formStyles.label} htmlFor="register-name">
-              نام و نام خانوادگی
-            </label>
-            <input
-              id="register-name"
-              type="text"
-              className={formStyles.input}
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              autoComplete="name"
-              required
-            />
-          </div>
-
-          <div className={formStyles.field}>
             <label className={formStyles.label} htmlFor="register-email">
               ایمیل
             </label>
@@ -72,21 +55,6 @@ export function RegisterPage() {
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
               required
-            />
-          </div>
-
-          <div className={formStyles.field}>
-            <label className={formStyles.label} htmlFor="register-phone">
-              شماره موبایل
-            </label>
-            <input
-              id="register-phone"
-              type="tel"
-              className={formStyles.input}
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              autoComplete="tel"
-              placeholder="۰۹۱۲۱۲۳۴۵۶۷"
             />
           </div>
 

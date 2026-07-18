@@ -22,3 +22,29 @@ export function ProtectedRoute({ children }) {
 
   return children
 }
+
+/**
+ * @param {{ children: import('react').ReactNode }} props
+ */
+export function AdminRoute({ children }) {
+  const { isAuthenticated, isAdmin, loading } = useAuth()
+  const location = useLocation()
+
+  if (loading) {
+    return (
+      <div className="container" style={{ padding: '4rem 0', textAlign: 'center' }}>
+        در حال بارگذاری...
+      </div>
+    )
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace state={{ from: location.pathname }} />
+  }
+
+  if (!isAdmin) {
+    return <Navigate to="/" replace />
+  }
+
+  return children
+}
