@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useCart } from '@/contexts/CartContext'
 import { formatPrice, getBadgeLabel } from '@/utils/formatPrice'
 import { getCategoryLabel, getCategoryPath } from '@/utils/productLabels'
 import styles from './ProductInfo.module.css'
@@ -8,7 +9,11 @@ import styles from './ProductInfo.module.css'
  * @param {{ product: import('@/types/product').Product }} props
  */
 export function ProductInfo({ product }) {
+  const { addItem } = useCart()
+  const navigate = useNavigate()
   const [quantity, setQuantity] = useState(1)
+  const [adding, setAdding] = useState(false)
+  const [added, setAdded] = useState(false)
   const badgeLabel = getBadgeLabel(product.badge)
   const discountPercent =
     product.originalPrice && product.originalPrice > product.price
@@ -23,6 +28,19 @@ export function ProductInfo({ product }) {
 
   function increaseQuantity() {
     setQuantity((value) => value + 1)
+  }
+
+  async function handleAddToCart() {
+    if (product.inStock === false || adding) return
+
+    setAdding(true)
+    try {
+      await addItem(product, quantity)
+      setAdded(true)
+      setTimeout(() => setAdded(false), 2000)
+    } finally {
+      setAdding(false)
+    }
   }
 
   return (
@@ -104,11 +122,28 @@ export function ProductInfo({ product }) {
         <button
           type="button"
           className={styles.addToCart}
-          disabled={product.inStock === false}
+          disabled={product.inStock === false || adding}
+          onClick={handleAddToCart}
         >
-          {product.inStock === false ? 'ناموجود' : 'افزودن به سبد خرید'}
+          {product.inStock === false
+            ? 'ناموجود'
+            : adding
+              ? 'در حال افزودن...'
+              : added
+                ? 'به سبد اضافه شد ✓'
+                : 'افزودن به سبد خرید'}
         </button>
       </div>
+
+      {added && (
+        <button
+          type="button"
+          className={styles.goToCart}
+          onClick={() => navigate('/cart')}
+        >
+          مشاهده سبد خرید
+        </button>
+      )}
     </div>
   )
 }

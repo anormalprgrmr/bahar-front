@@ -184,6 +184,21 @@
   cursor: not-allowed;
 }
 
+.goToCart {
+  align-self: flex-start;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+  border-radius: var(--radius-full);
+  transition: background 0.2s ease;
+}
+
+.goToCart:hover {
+  background: var(--color-primary-light);
+}
+
 @media (max-width: 480px) {
   .specs {
     grid-template-columns: 1fr;

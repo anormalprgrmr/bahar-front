@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
-import { ProductsDropdown } from './ProductsDropdown'
+import { useAuth } from '@/contexts/AuthContext'
 import styles from './MobileMenu.module.css'
 
 /**
@@ -13,8 +13,14 @@ import styles from './MobileMenu.module.css'
  */
 export function MobileMenu({ hotProducts, bestsellers, isOpen, onClose }) {
   const [expandedSection, setExpandedSection] = useState(null)
+  const { isAuthenticated, user, logout } = useAuth()
 
   if (!isOpen) return null
+
+  async function handleLogout() {
+    await logout()
+    onClose()
+  }
 
   return (
     <div className={styles.overlay} onClick={onClose}>
@@ -97,6 +103,38 @@ export function MobileMenu({ hotProducts, bestsellers, isOpen, onClose }) {
               پوستی
             </NavLink>
           </li>
+          <li>
+            <NavLink to="/cart" className={styles.link} onClick={onClose}>
+              سبد خرید
+            </NavLink>
+          </li>
+          {isAuthenticated ? (
+            <>
+              <li>
+                <NavLink to="/profile" className={styles.link} onClick={onClose}>
+                  حساب من ({user?.profile.fullName})
+                </NavLink>
+              </li>
+              <li>
+                <button type="button" className={styles.link} onClick={handleLogout}>
+                  خروج
+                </button>
+              </li>
+            </>
+          ) : (
+            <>
+              <li>
+                <NavLink to="/login" className={styles.link} onClick={onClose}>
+                  ورود
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/register" className={styles.link} onClick={onClose}>
+                  ثبت‌نام
+                </NavLink>
+              </li>
+            </>
+          )}
         </ul>
       </nav>
     </div>

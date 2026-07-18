@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { useAsyncData } from '@/hooks/useAsyncData'
+import { useAuth } from '@/contexts/AuthContext'
+import { useCart } from '@/contexts/CartContext'
 import {
   getHotProducts,
   getBestsellerProducts,
@@ -29,6 +31,15 @@ function CartIcon() {
   )
 }
 
+function UserIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4 20c1.5-3.5 4.5-5 8-5s6.5 1.5 8 5" />
+    </svg>
+  )
+}
+
 function MenuIcon() {
   return (
     <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -53,6 +64,8 @@ function LogoIcon() {
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [dropdownOpen, setDropdownOpen] = useState(false)
+  const { isAuthenticated, user } = useAuth()
+  const { itemCount } = useCart()
 
   const { data: hotProducts = [] } = useAsyncData('hot', getHotProducts)
   const { data: bestsellers = [] } = useAsyncData('bestsellers', getBestsellerProducts)
@@ -64,9 +77,25 @@ export function Header() {
           <button type="button" className={styles.iconBtn} aria-label="جستجو">
             <SearchIcon />
           </button>
-          <button type="button" className={styles.iconBtn} aria-label="سبد خرید">
+
+          <Link to="/cart" className={styles.iconBtn} aria-label="سبد خرید">
             <CartIcon />
-          </button>
+            {itemCount > 0 && (
+              <span className={styles.badge}>
+                {new Intl.NumberFormat('fa-IR').format(itemCount)}
+              </span>
+            )}
+          </Link>
+
+          <Link
+            to={isAuthenticated ? '/profile' : '/login'}
+            className={styles.iconBtn}
+            aria-label={isAuthenticated ? 'حساب کاربری' : 'ورود'}
+            title={isAuthenticated ? user?.profile.fullName : 'ورود'}
+          >
+            <UserIcon />
+          </Link>
+
           <button
             type="button"
             className={styles.menuBtn}
