@@ -11,6 +11,14 @@
   padding: 0.5rem 2rem;
   background: var(--color-primary-light);
   border-radius: var(--radius-full);
+  transition:
+    transform var(--duration-normal) var(--ease-out),
+    box-shadow var(--duration-normal) var(--ease-out);
+}
+
+.wrapper:hover .title {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-soft);
 }
 
 @media (max-width: 640px) {

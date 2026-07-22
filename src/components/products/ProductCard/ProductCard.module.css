@@ -5,7 +5,9 @@
   overflow: hidden;
   background: var(--color-white);
   box-shadow: var(--shadow-soft);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition:
+    transform var(--duration-normal) var(--ease-out),
+    box-shadow var(--duration-normal) var(--ease-out);
 }
 
 .link {
@@ -16,7 +18,7 @@
 }
 
 .card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-6px);
   box-shadow: var(--shadow-card);
 }
 
@@ -31,11 +33,11 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.4s ease;
+  transition: transform 0.55s var(--ease-out);
 }
 
 .card:hover .image {
-  transform: scale(1.05);
+  transform: scale(1.07);
 }
 
 .badge {
@@ -49,6 +51,8 @@
   color: var(--color-white);
   background: var(--color-primary);
   border-radius: var(--radius-full);
+  animation: badgePop 0.5s var(--ease-spring) backwards;
+  animation-delay: 0.2s;
 }
 
 .overlay {
@@ -59,7 +63,7 @@
   justify-content: center;
   background: var(--color-overlay);
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity var(--duration-normal) var(--ease-out);
 }
 
 .card:hover .overlay {
@@ -72,11 +76,22 @@
   align-items: center;
   gap: 0.5rem;
   color: var(--color-white);
+  transform: translateY(10px);
+  transition: transform var(--duration-normal) var(--ease-out);
+}
+
+.card:hover .overlayContent {
+  transform: translateY(0);
 }
 
 .bagIcon {
   width: 32px;
   height: 32px;
+  transition: transform var(--duration-normal) var(--ease-spring);
+}
+
+.card:hover .bagIcon {
+  transform: scale(1.1);
 }
 
 .overlayText {
@@ -87,6 +102,11 @@
 .info {
   padding: 1rem 1.25rem 1.25rem;
   text-align: center;
+  transition: background var(--duration-fast) ease;
+}
+
+.card:hover .info {
+  background: var(--color-primary-soft);
 }
 
 .name {
@@ -94,6 +114,11 @@
   font-weight: 500;
   margin-bottom: 0.5rem;
   color: var(--color-text);
+  transition: color var(--duration-fast) ease;
+}
+
+.card:hover .name {
+  color: var(--color-primary);
 }
 
 .prices {

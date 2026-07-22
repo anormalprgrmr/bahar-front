@@ -6,4 +6,5 @@
 
 .main {
   flex: 1;
+  animation: fadeInUp 0.45s var(--ease-out);
 }

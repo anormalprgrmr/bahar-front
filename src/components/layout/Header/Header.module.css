@@ -2,8 +2,12 @@
   position: sticky;
   top: 0;
   z-index: 50;
-  background: var(--color-white);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   box-shadow: var(--shadow-nav);
+  animation: fadeInDown 0.5s var(--ease-out);
+  transition: box-shadow var(--duration-normal) var(--ease-out);
 }
 
 .inner {
@@ -19,12 +23,22 @@
   align-items: center;
   gap: 0.75rem;
   flex-shrink: 0;
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.brand:hover {
+  transform: scale(1.02);
 }
 
 .logoIcon {
   width: 40px;
   height: 40px;
   flex-shrink: 0;
+  transition: transform var(--duration-normal) var(--ease-spring);
+}
+
+.brand:hover .logoIcon {
+  transform: rotate(-6deg) scale(1.05);
 }
 
 .brandText {
@@ -57,7 +71,10 @@
   font-weight: 500;
   color: var(--color-text);
   border-radius: var(--radius-full);
-  transition: background 0.2s ease, color 0.2s ease;
+  transition:
+    background var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
   white-space: nowrap;
 }
 
@@ -67,6 +84,10 @@
   color: var(--color-primary);
 }
 
+.navLink:hover {
+  transform: translateY(-1px);
+}
+
 .navLinkBtn {
   display: flex;
   align-items: center;
@@ -74,7 +95,7 @@
 }
 
 .chevron {
-  transition: transform 0.2s ease;
+  transition: transform var(--duration-normal) var(--ease-out);
 }
 
 .chevronOpen {
@@ -100,12 +121,16 @@
   height: 40px;
   border-radius: var(--radius-full);
   color: var(--color-text-muted);
-  transition: background 0.2s ease, color 0.2s ease;
+  transition:
+    background var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-spring);
 }
 
 .iconBtn:hover {
   background: var(--color-primary-soft);
   color: var(--color-primary);
+  transform: scale(1.08);
 }
 
 .badge {
@@ -123,6 +148,7 @@
   color: var(--color-white);
   background: var(--color-primary);
   border-radius: var(--radius-full);
+  animation: badgePop 0.4s var(--ease-spring);
 }
 
 .adminChip {
@@ -134,10 +160,14 @@
   background: var(--color-primary);
   border-radius: var(--radius-full);
   white-space: nowrap;
+  transition:
+    background var(--duration-fast) ease,
+    transform var(--duration-fast) var(--ease-out);
 }
 
 .adminChip:hover {
   background: var(--color-primary-dark);
+  transform: translateY(-1px);
 }
 
 @media (min-width: 769px) {
@@ -153,6 +183,11 @@
   width: 40px;
   height: 40px;
   color: var(--color-text);
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.menuBtn:hover {
+  transform: scale(1.08);
 }
 
 @media (max-width: 768px) {

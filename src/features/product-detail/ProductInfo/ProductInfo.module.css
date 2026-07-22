@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+  animation: fadeInUp 0.55s var(--ease-out) 0.15s backwards;
 }
 
 .breadcrumb {
@@ -171,12 +172,20 @@
   color: var(--color-white);
   background: var(--color-primary);
   border-radius: var(--radius-full);
-  transition: background 0.2s ease, transform 0.2s ease;
+  transition:
+    background var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-spring),
+    box-shadow var(--duration-fast) var(--ease-out);
 }
 
 .addToCart:hover:not(:disabled) {
   background: var(--color-primary-dark);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(233, 30, 140, 0.25);
+}
+
+.addToCart:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .addToCart:disabled {
@@ -192,11 +201,15 @@
   color: var(--color-primary);
   background: var(--color-primary-soft);
   border-radius: var(--radius-full);
-  transition: background 0.2s ease;
+  transition:
+    background var(--duration-fast) ease,
+    transform var(--duration-fast) var(--ease-out);
+  animation: fadeInUp 0.4s var(--ease-out);
 }
 
 .goToCart:hover {
   background: var(--color-primary-light);
+  transform: translateY(-1px);
 }
 
 @media (max-width: 480px) {

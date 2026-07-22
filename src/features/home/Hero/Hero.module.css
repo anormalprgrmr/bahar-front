@@ -1,5 +1,6 @@
 .hero {
   padding: 2rem 0 1rem;
+  animation: fadeIn 0.6s var(--ease-out);
 }
 
 .inner {
@@ -19,6 +20,13 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  animation: scaleIn 0.7s var(--ease-out);
+  box-shadow: var(--shadow-soft);
+  transition: box-shadow var(--duration-normal) var(--ease-out);
+}
+
+.banner:hover {
+  box-shadow: var(--shadow-card);
 }
 
 .tagline {
@@ -29,16 +37,19 @@
   margin-bottom: 0.5rem;
   z-index: 2;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  animation: fadeInDown 0.8s var(--ease-out) 0.15s backwards;
 }
 
 .illustration {
   z-index: 2;
+  animation: fadeInUp 0.8s var(--ease-out) 0.25s backwards;
 }
 
 .bunny {
   width: clamp(120px, 25vw, 200px);
   height: auto;
   filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.1));
+  animation: float 4s ease-in-out infinite;
 }
 
 .decorations {
@@ -61,23 +72,27 @@
   top: 15%;
   left: 20%;
   font-size: 1.2rem;
+  animation: pulseSoft 3s ease-in-out infinite;
 }
 
 .star2 {
   bottom: 25%;
   right: 15%;
+  animation: pulseSoft 3.5s ease-in-out infinite 0.5s;
 }
 
 .heart {
   top: 30%;
   right: 25%;
   color: rgba(255, 255, 255, 0.5);
+  animation: floatSoft 4.5s ease-in-out infinite;
 }
 
 .heart2 {
   bottom: 20%;
   left: 15%;
   color: rgba(255, 255, 255, 0.4);
+  animation: floatSoft 5s ease-in-out infinite 0.8s;
 }
 
 .cross {
@@ -85,6 +100,7 @@
   right: 40%;
   font-size: 1.4rem;
   opacity: 0.5;
+  animation: pulseSoft 4s ease-in-out infinite 1s;
 }
 
 @media (max-width: 640px) {

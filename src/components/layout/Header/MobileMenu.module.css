@@ -4,6 +4,7 @@
   background: rgba(0, 0, 0, 0.4);
   z-index: 200;
   display: none;
+  animation: fadeIn 0.25s var(--ease-out);
 }
 
 .menu {
@@ -15,16 +16,7 @@
   background: var(--color-white);
   padding: 1.5rem;
   overflow-y: auto;
-  animation: slideIn 0.3s ease;
-}
-
-@keyframes slideIn {
-  from {
-    transform: translateX(100%);
-  }
-  to {
-    transform: translateX(0);
-  }
+  animation: slideInRight 0.35s var(--ease-out);
 }
 
 .header {
@@ -46,6 +38,11 @@
   align-items: center;
   justify-content: center;
   color: var(--color-text-muted);
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.closeBtn:hover {
+  transform: rotate(90deg);
 }
 
 .links {
@@ -62,7 +59,10 @@
   font-weight: 500;
   font-size: 1rem;
   border-radius: var(--radius-sm);
-  transition: background 0.2s ease;
+  transition:
+    background var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) ease,
+    transform var(--duration-fast) var(--ease-out);
   color: var(--color-text);
 }
 
@@ -70,6 +70,7 @@
 .link:global(.active) {
   background: var(--color-primary-soft);
   color: var(--color-primary);
+  transform: translateX(-4px);
 }
 
 .expandBtn {
@@ -82,10 +83,15 @@
   font-size: 1rem;
   color: var(--color-text);
   border-radius: var(--radius-sm);
+  transition: background var(--duration-fast) ease;
+}
+
+.expandBtn:hover {
+  background: var(--color-primary-soft);
 }
 
 .chevron {
-  transition: transform 0.2s ease;
+  transition: transform var(--duration-normal) var(--ease-out);
 }
 
 .chevronOpen {
@@ -94,6 +100,7 @@
 
 .submenu {
   padding: 0.5rem 0.5rem 0.75rem;
+  animation: fadeInDown 0.25s var(--ease-out);
 }
 
 .subTitle {
@@ -109,11 +116,16 @@
   font-size: 0.85rem;
   color: var(--color-text-muted);
   border-radius: var(--radius-sm);
+  transition:
+    background var(--duration-fast) ease,
+    color var(--duration-fast) ease,
+    transform var(--duration-fast) var(--ease-out);
 }
 
 .subLink:hover {
   background: var(--color-primary-soft);
   color: var(--color-text);
+  transform: translateX(-3px);
 }
 
 @media (max-width: 768px) {

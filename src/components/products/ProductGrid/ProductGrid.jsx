@@ -12,7 +12,11 @@ export function ProductGrid({ products, loading = false }) {
     return (
       <div className={styles.grid}>
         {Array.from({ length: 4 }).map((_, index) => (
-          <div key={index} className={styles.skeleton} />
+          <div
+            key={index}
+            className={styles.skeleton}
+            style={{ '--i': index }}
+          />
         ))}
       </div>
     )
@@ -20,8 +24,10 @@ export function ProductGrid({ products, loading = false }) {
 
   return (
     <div className={styles.grid}>
-      {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
+      {products.map((product, index) => (
+        <div key={product.id} className={styles.item} style={{ '--i': index }}>
+          <ProductCard product={product} />
+        </div>
       ))}
     </div>
   )

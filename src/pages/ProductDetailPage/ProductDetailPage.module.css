@@ -9,6 +9,14 @@
   align-items: start;
 }
 
+.layout > *:nth-child(1) {
+  animation: fadeInUp 0.55s var(--ease-out);
+}
+
+.layout > *:nth-child(2) {
+  animation: fadeInUp 0.55s var(--ease-out) 0.1s backwards;
+}
+
 .loadingLayout {
   display: grid;
   grid-template-columns: 1fr 1fr;
