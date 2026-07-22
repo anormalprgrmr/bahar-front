@@ -61,8 +61,10 @@ src/
 ## Auth & roles
 
 - Login/register via `/login` and `/register` (same login for users and admins).
+- Register accepts optional `name`, `phone`, `address` (OpenAPI `RegisterRequest`).
 - JWT stored in `localStorage` (`bahar_access_token`).
-- `GET /me` → `{ id, email, is_admin }`.
+- `GET /me` → `{ id, email, name, phone, address, is_admin, created_at }`.
+- `PUT /me` → update profile (`ProfileUpdateRequest`: email, name, phone, address, password).
 - `ProtectedRoute` → authenticated users.
 - `AdminRoute` → `is_admin === true` → `/admin/*`.
 - On 401 with `auth: true`, clear token.
@@ -88,6 +90,7 @@ Client-only (`localStorage`), keyed per user / guest. Merged on login. Not part 
 - Create: `POST /orders` with `{ items: [{ product_id, quantity }] }`
 - User list: `GET /orders/my`
 - Admin: `GET/PUT/DELETE /admin/orders...`
+- Admin users: `GET/PUT/DELETE /admin/users...`
 - Status enum: `pending | paid | processing | shipped | delivered | cancelled`
 - Checkout “mock payment” is frontend-only; real gateway TBD. Admin can set status to `paid`.
 
@@ -98,6 +101,7 @@ Routes under `/admin`:
 - Dashboard
 - Products CRUD + optional image upload (`POST /products/{id}/images`)
 - Orders list / status update / delete
+- Users list / edit / delete
 
 ## Conventions for changes
 
@@ -118,13 +122,14 @@ Routes under `/admin`:
 | `/cart` | Basket |
 | `/checkout`, `/checkout/:orderId` | Order + mock pay |
 | `/login`, `/register` | Auth |
-| `/profile` | User orders |
+| `/profile` | User profile (`PUT /me`) + orders |
 | `/admin` | Admin shell |
 | `/admin/products` | Product CRUD |
 | `/admin/orders` | Order CRUD |
+| `/admin/users` | User CRUD |
 
 ## Backend reference
 
 Canonical contract: `../bahar-backend/internal/doc/swagger.yaml` (or the path the user provides).
 
-Do not invent endpoints. If something is missing from the API (e.g. cart, profile address, payment), keep it client-side or ask before adding backend assumptions.
+Do not invent endpoints. If something is missing from the API (e.g. cart, payment gateway), keep it client-side or ask before adding backend assumptions.

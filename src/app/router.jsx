@@ -13,6 +13,7 @@ import { AdminLayout } from '@/pages/admin/AdminLayout'
 import { AdminDashboardPage } from '@/pages/admin/AdminDashboardPage'
 import { AdminProductsPage } from '@/pages/admin/AdminProductsPage'
 import { AdminOrdersPage } from '@/pages/admin/AdminOrdersPage'
+import { AdminUsersPage } from '@/pages/admin/AdminUsersPage'
 
 export const router = createBrowserRouter([
   {
@@ -63,6 +64,7 @@ export const router = createBrowserRouter([
       { index: true, element: <AdminDashboardPage /> },
       { path: 'products', element: <AdminProductsPage /> },
       { path: 'orders', element: <AdminOrdersPage /> },
+      { path: 'users', element: <AdminUsersPage /> },
     ],
   },
 ])

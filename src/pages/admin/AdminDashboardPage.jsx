@@ -17,6 +17,10 @@ export function AdminDashboardPage() {
           <h2>سفارش‌ها</h2>
           <p>مشاهده، تغییر وضعیت و حذف سفارش‌ها</p>
         </Link>
+        <Link to="/admin/users" className={styles.card}>
+          <h2>کاربران</h2>
+          <p>مشاهده، ویرایش و حذف کاربران</p>
+        </Link>
       </div>
     </div>
   )

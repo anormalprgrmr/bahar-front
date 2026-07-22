@@ -11,6 +11,7 @@ import {
   loginUser,
   logoutUser,
   registerUser,
+  updateMyProfile,
 } from '@/services/auth/authService'
 import { mergeGuestCart } from '@/services/cart/cartService'
 
@@ -60,6 +61,12 @@ export function AuthProvider({ children }) {
     setUser(null)
   }, [])
 
+  const updateProfile = useCallback(async (payload) => {
+    const nextUser = await updateMyProfile(payload)
+    setUser(nextUser)
+    return nextUser
+  }, [])
+
   const value = useMemo(
     () => ({
       user,
@@ -69,8 +76,9 @@ export function AuthProvider({ children }) {
       login,
       register,
       logout,
+      updateProfile,
     }),
-    [user, loading, login, register, logout],
+    [user, loading, login, register, logout, updateProfile],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

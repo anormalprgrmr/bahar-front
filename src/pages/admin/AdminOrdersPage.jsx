@@ -106,7 +106,7 @@ export function AdminOrdersPage() {
               {orders.map((order) => (
                 <tr key={order.id}>
                   <td>#{order.id.slice(0, 8)}</td>
-                  <td>{order.user?.email ?? order.user_id.slice(0, 8)}</td>
+                  <td>{order.user?.name || order.user?.email || order.user_id.slice(0, 8)}</td>
                   <td>{formatPrice(order.total_amount)}</td>
                   <td>{new Date(order.created_at).toLocaleDateString('fa-IR')}</td>
                   <td>
