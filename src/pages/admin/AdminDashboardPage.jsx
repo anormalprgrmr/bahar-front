@@ -13,6 +13,10 @@ export function AdminDashboardPage() {
           <h2>محصولات</h2>
           <p>ایجاد، ویرایش و حذف محصولات</p>
         </Link>
+        <Link to="/admin/categories" className={styles.card}>
+          <h2>دسته‌بندی‌ها</h2>
+          <p>ایجاد، ویرایش و حذف دسته‌بندی محصولات</p>
+        </Link>
         <Link to="/admin/orders" className={styles.card}>
           <h2>سفارش‌ها</h2>
           <p>مشاهده، تغییر وضعیت و حذف سفارش‌ها</p>

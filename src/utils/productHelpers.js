@@ -28,25 +28,21 @@ export function getProductBadge(product) {
 }
 
 /**
- * @param {string} category
+ * @param {string} [slug]
+ * @param {import('@/types/category').Category[]} [categories]
  */
-export function getCategoryLabel(category) {
-  const labels = {
-    skincare: 'مراقبت پوست',
-    makeup: 'آرایشی',
-  }
-  return labels[category] ?? category
+export function getCategoryLabel(slug, categories = []) {
+  if (!slug) return '—'
+  const match = categories.find((category) => category.slug === slug)
+  return match?.name ?? slug
 }
 
 /**
- * @param {string} category
+ * @param {string} [slug]
  */
-export function getCategoryPath(category) {
-  const paths = {
-    skincare: '/skincare',
-    makeup: '/makeup',
-  }
-  return paths[category] ?? '/'
+export function getCategoryPath(slug) {
+  if (!slug) return '/'
+  return `/categories/${slug}`
 }
 
 /**

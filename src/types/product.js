@@ -8,7 +8,8 @@
  * @property {string} image
  * @property {number} stock
  * @property {string[]} images
- * @property {string} category
+ * @property {string} [categoryId]
+ * @property {string} [category]
  * @property {boolean} onSale
  * @property {string} [created_at]
  */
@@ -22,7 +23,8 @@
  * @property {string} image
  * @property {number} [stock]
  * @property {string[]} images
- * @property {string} category
+ * @property {string} [categoryId]
+ * @property {string} [category]
  * @property {boolean} [onSale]
  */
 

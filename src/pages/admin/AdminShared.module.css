@@ -9,6 +9,59 @@
   margin-bottom: 1.5rem;
 }
 
+.pageHeader {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.pageHeader .subtitle {
+  margin-bottom: 0;
+}
+
+.backLink {
+  display: inline-block;
+  margin-bottom: 1rem;
+  color: #e91e8c;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.backLink:hover {
+  text-decoration: underline;
+}
+
+.formActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 1.25rem;
+}
+
+.primaryBtn,
+.dangerBtn,
+.ghostBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.65rem 1.1rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition:
+    transform var(--duration-fast) var(--ease-out),
+    background var(--duration-fast) ease,
+    box-shadow var(--duration-fast) ease;
+}
+
 .cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -57,19 +110,6 @@
   border: 1px solid #eee;
   border-radius: 10px;
   font-family: inherit;
-}
-
-.primaryBtn,
-.dangerBtn,
-.ghostBtn {
-  padding: 0.65rem 1.1rem;
-  border-radius: 999px;
-  font-weight: 600;
-  font-size: 0.85rem;
-  transition:
-    transform var(--duration-fast) var(--ease-out),
-    background var(--duration-fast) ease,
-    box-shadow var(--duration-fast) ease;
 }
 
 .primaryBtn:hover,

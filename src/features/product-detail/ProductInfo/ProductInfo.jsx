@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useCart } from '@/contexts/CartContext'
+import { useCategories } from '@/hooks/useCategories'
 import { formatPrice } from '@/utils/formatPrice'
 import {
   getCategoryLabel,
@@ -17,6 +18,7 @@ import styles from './ProductInfo.module.css'
  */
 export function ProductInfo({ product }) {
   const { addItem } = useCart()
+  const { categories } = useCategories()
   const navigate = useNavigate()
   const [quantity, setQuantity] = useState(1)
   const [adding, setAdding] = useState(false)
@@ -58,7 +60,7 @@ export function ProductInfo({ product }) {
         <Link to="/">خانه</Link>
         <span className={styles.sep}>/</span>
         <Link to={getCategoryPath(product.category)}>
-          {getCategoryLabel(product.category)}
+          {getCategoryLabel(product.category, categories)}
         </Link>
         <span className={styles.sep}>/</span>
         <span className={styles.current}>{product.name}</span>
@@ -87,7 +89,7 @@ export function ProductInfo({ product }) {
       <dl className={styles.specs}>
         <div className={styles.spec}>
           <dt>دسته‌بندی</dt>
-          <dd>{getCategoryLabel(product.category)}</dd>
+          <dd>{getCategoryLabel(product.category, categories)}</dd>
         </div>
         <div className={styles.spec}>
           <dt>موجودی</dt>

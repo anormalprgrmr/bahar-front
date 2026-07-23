@@ -1,9 +1,9 @@
-import { createBrowserRouter } from 'react-router-dom'
+import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { MainLayout } from '@/components/layout/MainLayout/MainLayout'
 import { AdminRoute, ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { HomePage } from '@/pages/HomePage/HomePage'
 import { ProductDetailPage } from '@/pages/ProductDetailPage/ProductDetailPage'
-import { PlaceholderPage } from '@/pages/PlaceholderPage/PlaceholderPage'
+import { CategoryProductsPage } from '@/pages/CategoryProductsPage/CategoryProductsPage'
 import { LoginPage } from '@/pages/LoginPage/LoginPage'
 import { RegisterPage } from '@/pages/RegisterPage/RegisterPage'
 import { ProfilePage } from '@/pages/ProfilePage/ProfilePage'
@@ -12,8 +12,12 @@ import { CheckoutPage } from '@/pages/CheckoutPage/CheckoutPage'
 import { AdminLayout } from '@/pages/admin/AdminLayout'
 import { AdminDashboardPage } from '@/pages/admin/AdminDashboardPage'
 import { AdminProductsPage } from '@/pages/admin/AdminProductsPage'
+import { AdminProductFormPage } from '@/pages/admin/AdminProductFormPage'
+import { AdminCategoriesPage } from '@/pages/admin/AdminCategoriesPage'
+import { AdminCategoryFormPage } from '@/pages/admin/AdminCategoryFormPage'
 import { AdminOrdersPage } from '@/pages/admin/AdminOrdersPage'
 import { AdminUsersPage } from '@/pages/admin/AdminUsersPage'
+import { AdminUserEditPage } from '@/pages/admin/AdminUserEditPage'
 
 export const router = createBrowserRouter([
   {
@@ -21,8 +25,9 @@ export const router = createBrowserRouter([
     element: <MainLayout />,
     children: [
       { index: true, element: <HomePage /> },
-      { path: 'makeup', element: <PlaceholderPage title="محصولات آرایشی" /> },
-      { path: 'skincare', element: <PlaceholderPage title="محصولات پوستی" /> },
+      { path: 'categories/:slug', element: <CategoryProductsPage /> },
+      { path: 'makeup', element: <Navigate to="/categories/makeup" replace /> },
+      { path: 'skincare', element: <Navigate to="/categories/skincare" replace /> },
       { path: 'products/:id', element: <ProductDetailPage /> },
       { path: 'cart', element: <CartPage /> },
       { path: 'login', element: <LoginPage /> },
@@ -63,8 +68,14 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <AdminDashboardPage /> },
       { path: 'products', element: <AdminProductsPage /> },
+      { path: 'products/new', element: <AdminProductFormPage /> },
+      { path: 'products/:id/edit', element: <AdminProductFormPage /> },
+      { path: 'categories', element: <AdminCategoriesPage /> },
+      { path: 'categories/new', element: <AdminCategoryFormPage /> },
+      { path: 'categories/:id/edit', element: <AdminCategoryFormPage /> },
       { path: 'orders', element: <AdminOrdersPage /> },
       { path: 'users', element: <AdminUsersPage /> },
+      { path: 'users/:id/edit', element: <AdminUserEditPage /> },
     ],
   },
 ])

@@ -73,7 +73,16 @@ src/
 
 ### Products (API)
 
-Fields: `id`, `name`, `description`, `price`, `newPrice`, `image`, `images`, `stock`, `category`, `onSale`, `created_at`.
+Fields: `id`, `name`, `description`, `price`, `newPrice`, `image`, `images`, `stock`, `categoryId`, `category` (slug), `onSale`, `created_at`.
+
+Product filter `category` query param uses category **slug**.
+
+### Categories (API)
+
+- Public: `GET /categories`, `GET /categories/{id}`
+- Admin: `POST /categories`, `PUT /categories/{id}`, `DELETE /categories/{id}`
+- Fields: `id`, `name`, `slug`, `created_at`
+- Product upsert prefers `categoryId`; `category` slug is fallback.
 
 Helpers in `src/utils/productHelpers.js`:
 
@@ -100,6 +109,7 @@ Routes under `/admin`:
 
 - Dashboard
 - Products CRUD + optional image upload (`POST /products/{id}/images`)
+- Categories CRUD (`/categories`)
 - Orders list / status update / delete
 - Users list / edit / delete
 
@@ -124,7 +134,9 @@ Routes under `/admin`:
 | `/login`, `/register` | Auth |
 | `/profile` | User profile (`PUT /me`) + orders |
 | `/admin` | Admin shell |
+| `/categories/:slug` | Products by category |
 | `/admin/products` | Product CRUD |
+| `/admin/categories` | Category CRUD |
 | `/admin/orders` | Order CRUD |
 | `/admin/users` | User CRUD |
 

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { useAsyncData } from '@/hooks/useAsyncData'
+import { useCategories } from '@/hooks/useCategories'
 import { useAuth } from '@/contexts/AuthContext'
 import { useCart } from '@/contexts/CartContext'
 import {
@@ -66,6 +67,7 @@ export function Header() {
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const { isAuthenticated, isAdmin, user } = useAuth()
   const { itemCount } = useCart()
+  const { categories } = useCategories()
 
   const { data: hotProducts = [] } = useAsyncData('hot', getHotProducts)
   const { data: bestsellers = [] } = useAsyncData('bestsellers', getBestsellerProducts)
@@ -149,12 +151,15 @@ export function Header() {
             )}
           </div>
 
-          <NavLink to="/makeup" className={styles.navLink}>
-            آرایشی
-          </NavLink>
-          <NavLink to="/skincare" className={styles.navLink}>
-            پوستی
-          </NavLink>
+          {categories.map((category) => (
+            <NavLink
+              key={category.id}
+              to={`/categories/${category.slug}`}
+              className={styles.navLink}
+            >
+              {category.name}
+            </NavLink>
+          ))}
         </nav>
 
         <Link to="/" className={styles.brand}>
@@ -169,6 +174,7 @@ export function Header() {
       <MobileMenu
         hotProducts={hotProducts}
         bestsellers={bestsellers}
+        categories={categories}
         isOpen={menuOpen}
         onClose={() => setMenuOpen(false)}
       />
