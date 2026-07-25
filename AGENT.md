@@ -139,6 +139,7 @@ Routes under `/admin`:
 | `/profile` | User profile (`PUT /me`) + orders |
 | `/admin` | Admin shell |
 | `/categories/:slug` | Products by category |
+| `/search?q=` | Product search results |
 | `/admin/products` | Product CRUD |
 | `/admin/categories` | Category CRUD |
 | `/admin/orders` | Order CRUD |

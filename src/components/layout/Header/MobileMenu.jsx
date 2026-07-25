@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
+import { ProductSearchForm } from '@/components/products/ProductSearchForm/ProductSearchForm'
 import styles from './MobileMenu.module.css'
 
 /**
@@ -38,6 +39,10 @@ export function MobileMenu({ hotProducts, bestsellers, categories, isOpen, onClo
               <path d="M6 6l12 12M18 6L6 18" />
             </svg>
           </button>
+        </div>
+
+        <div className={styles.searchWrap}>
+          <ProductSearchForm onSubmit={onClose} />
         </div>
 
         <ul className={styles.links}>

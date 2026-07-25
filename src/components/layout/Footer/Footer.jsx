@@ -8,22 +8,6 @@ function InstagramIcon() {
   )
 }
 
-function TwitterIcon() {
-  return (
-    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-      <path d="M18.9 4H22l-6.8 7.8L23 20h-6.2l-4.8-6.3L6 20H3l7.3-8.4L1 4h6.4l4.3 5.7L18.9 4zm-1.1 14.3h1.7L7.1 5.6H5.3l12.5 12.7z" />
-    </svg>
-  )
-}
-
-function FacebookIcon() {
-  return (
-    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-      <path d="M13.5 22v-8h2.7l.4-3h-3.1V9.1c0-.9.2-1.5 1.5-1.5H17V5c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3V11H8v3h2.3v8h3.2z" />
-    </svg>
-  )
-}
-
 export function Footer() {
   return (
     <footer className={styles.footer}>
@@ -55,12 +39,6 @@ export function Footer() {
                 rel="noopener noreferrer"
               >
                 <InstagramIcon />
-              </a>
-              <a href="#" className={styles.socialLink} aria-label="توییتر">
-                <TwitterIcon />
-              </a>
-              <a href="#" className={styles.socialLink} aria-label="فیسبوک">
-                <FacebookIcon />
               </a>
             </div>
             <a

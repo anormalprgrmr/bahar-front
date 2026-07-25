@@ -4,6 +4,7 @@ import { useAsyncData } from '@/hooks/useAsyncData'
 import { useCategories } from '@/hooks/useCategories'
 import { useAuth } from '@/contexts/AuthContext'
 import { useCart } from '@/contexts/CartContext'
+import { ProductSearchForm } from '@/components/products/ProductSearchForm/ProductSearchForm'
 import {
   getHotProducts,
   getBestsellerProducts,
@@ -65,6 +66,7 @@ function LogoIcon() {
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
   const { isAuthenticated, isAdmin, user } = useAuth()
   const { itemCount } = useCart()
   const { categories } = useCategories()
@@ -76,7 +78,13 @@ export function Header() {
     <header className={styles.header}>
       <div className={`container ${styles.inner}`}>
         <div className={styles.actions}>
-          <button type="button" className={styles.iconBtn} aria-label="جستجو">
+          <button
+            type="button"
+            className={styles.iconBtn}
+            aria-label="جستجو"
+            aria-expanded={searchOpen}
+            onClick={() => setSearchOpen((open) => !open)}
+          >
             <SearchIcon />
           </button>
 
@@ -170,6 +178,15 @@ export function Header() {
           </span>
         </Link>
       </div>
+
+      {searchOpen && (
+        <div className={`container ${styles.searchPanel}`}>
+          <ProductSearchForm
+            autoFocus
+            onSubmit={() => setSearchOpen(false)}
+          />
+        </div>
+      )}
 
       <MobileMenu
         hotProducts={hotProducts}
