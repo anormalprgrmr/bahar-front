@@ -51,35 +51,35 @@ export async function getAllProducts() {
 }
 
 /** @returns {Promise<import('@/types/product').Product[]>} */
-export async function getHotProducts() {
+export async function getMostSalesProducts(limit = 4) {
   try {
-    const result = await listProducts({
-      page: 1,
-      pageSize: 4,
-      onSale: true,
-      sortBy: 'created_at',
-      sortOrder: 'desc',
-    })
-    return result.data
+    const query = toQueryString({ limit })
+    const result = await apiClient(`/products/most-sales${query}`)
+    return (Array.isArray(result) ? result : []).map(normalizeProduct)
   } catch {
     return []
   }
 }
 
 /** @returns {Promise<import('@/types/product').Product[]>} */
-export async function getBestsellerProducts() {
+export async function getRecentlyAddedProducts(limit = 4) {
   try {
-    const result = await listProducts({
-      page: 1,
-      pageSize: 4,
-      inStock: true,
-      sortBy: 'created_at',
-      sortOrder: 'desc',
-    })
-    return result.data
+    const query = toQueryString({ limit })
+    const result = await apiClient(`/products/recently-added${query}`)
+    return (Array.isArray(result) ? result : []).map(normalizeProduct)
   } catch {
     return []
   }
+}
+
+/** @returns {Promise<import('@/types/product').Product[]>} */
+export async function getHotProducts() {
+  return getRecentlyAddedProducts(4)
+}
+
+/** @returns {Promise<import('@/types/product').Product[]>} */
+export async function getBestsellerProducts() {
+  return getMostSalesProducts(4)
 }
 
 /** @returns {Promise<import('@/types/product').Product[]>} */
@@ -98,17 +98,7 @@ export async function getWeeklyDeals() {
 
 /** @returns {Promise<import('@/types/product').Product[]>} */
 export async function getFeaturedProducts() {
-  try {
-    const result = await listProducts({
-      page: 1,
-      pageSize: 4,
-      sortBy: 'created_at',
-      sortOrder: 'desc',
-    })
-    return result.data
-  } catch {
-    return []
-  }
+  return getRecentlyAddedProducts(4)
 }
 
 /**

@@ -37,10 +37,23 @@ export function Footer() {
             </p>
           </div>
 
+          <div className={styles.contact}>
+            <h3 className={styles.title}>تماس با ما</h3>
+            <p className={styles.text}>
+              مشهد بلوار پیروزی بین پیروزی ۳۲ و میدان حر
+            </p>
+          </div>
+
           <div className={styles.social}>
             <h3 className={styles.title}>ما را دنبال کنید</h3>
             <div className={styles.icons}>
-              <a href="#" className={styles.socialLink} aria-label="اینستاگرام">
+              <a
+                href="https://www.instagram.com/bahar_arayeshi"
+                className={styles.socialLink}
+                aria-label="اینستاگرام بهار"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <InstagramIcon />
               </a>
               <a href="#" className={styles.socialLink} aria-label="توییتر">
@@ -50,6 +63,14 @@ export function Footer() {
                 <FacebookIcon />
               </a>
             </div>
+            <a
+              href="https://www.instagram.com/bahar_arayeshi"
+              className={styles.instagramHandle}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              @bahar_arayeshi
+            </a>
           </div>
         </div>
 

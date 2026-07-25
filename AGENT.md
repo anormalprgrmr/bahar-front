@@ -77,6 +77,10 @@ Fields: `id`, `name`, `description`, `price`, `newPrice`, `image`, `images`, `st
 
 Product filter `category` query param uses category **slug**.
 
+Curated lists:
+- `GET /products/most-sales?limit=` — best sellers by order quantity
+- `GET /products/recently-added?limit=` — newest products
+
 ### Categories (API)
 
 - Public: `GET /categories`, `GET /categories/{id}`
