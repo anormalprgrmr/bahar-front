@@ -9,6 +9,7 @@ import { LoginPage } from '@/pages/LoginPage/LoginPage'
 import { RegisterPage } from '@/pages/RegisterPage/RegisterPage'
 import { ProfilePage } from '@/pages/ProfilePage/ProfilePage'
 import { CartPage } from '@/pages/CartPage/CartPage'
+import { WishlistPage } from '@/pages/WishlistPage/WishlistPage'
 import { CheckoutPage } from '@/pages/CheckoutPage/CheckoutPage'
 import { AdminLayout } from '@/pages/admin/AdminLayout'
 import { AdminDashboardPage } from '@/pages/admin/AdminDashboardPage'
@@ -32,6 +33,7 @@ export const router = createBrowserRouter([
       { path: 'skincare', element: <Navigate to="/categories/skincare" replace /> },
       { path: 'products/:id', element: <ProductDetailPage /> },
       { path: 'cart', element: <CartPage /> },
+      { path: 'wishlist', element: <WishlistPage /> },
       { path: 'login', element: <LoginPage /> },
       { path: 'register', element: <RegisterPage /> },
       {

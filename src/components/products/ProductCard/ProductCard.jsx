@@ -5,6 +5,8 @@ import {
   getProductBadge,
   getSalePrice,
 } from '@/utils/productHelpers'
+import { ProductAskLink } from '@/components/products/ProductAskLink/ProductAskLink'
+import { WishlistButton } from '@/components/products/WishlistButton/WishlistButton'
 import styles from './ProductCard.module.css'
 
 /**
@@ -58,6 +60,11 @@ export function ProductCard({ product }) {
           </div>
         </div>
       </Link>
+
+      <div className={styles.actions}>
+        <ProductAskLink productName={product.name} />
+        <WishlistButton product={product} compact />
+      </div>
     </article>
   )
 }

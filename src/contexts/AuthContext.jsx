@@ -14,6 +14,7 @@ import {
   updateMyProfile,
 } from '@/services/auth/authService'
 import { mergeGuestCart } from '@/services/cart/cartService'
+import { mergeGuestWishlist } from '@/services/wishlist/wishlistService'
 
 const AuthContext = createContext(null)
 
@@ -45,6 +46,7 @@ export function AuthProvider({ children }) {
   const login = useCallback(async (payload) => {
     const nextUser = await loginUser(payload)
     await mergeGuestCart(nextUser.id)
+    await mergeGuestWishlist(nextUser.id)
     setUser(nextUser)
     return nextUser
   }, [])
@@ -52,6 +54,7 @@ export function AuthProvider({ children }) {
   const register = useCallback(async (payload) => {
     const nextUser = await registerUser(payload)
     await mergeGuestCart(nextUser.id)
+    await mergeGuestWishlist(nextUser.id)
     setUser(nextUser)
     return nextUser
   }, [])

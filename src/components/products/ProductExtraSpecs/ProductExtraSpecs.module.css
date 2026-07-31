@@ -1,0 +1,21 @@
+.list {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.item {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.item dt {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #888;
+}
+
+.item dd {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: #333;
+}

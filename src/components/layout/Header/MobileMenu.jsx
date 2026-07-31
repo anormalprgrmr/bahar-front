@@ -111,6 +111,11 @@ export function MobileMenu({ hotProducts, bestsellers, categories, isOpen, onClo
             </li>
           ))}
           <li>
+            <NavLink to="/wishlist" className={styles.link} onClick={onClose}>
+              علاقه‌مندی‌ها
+            </NavLink>
+          </li>
+          <li>
             <NavLink to="/cart" className={styles.link} onClick={onClose}>
               سبد خرید
             </NavLink>

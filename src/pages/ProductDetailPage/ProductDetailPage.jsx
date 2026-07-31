@@ -1,7 +1,6 @@
 import { getProductBadge } from '@/utils/productHelpers'
 import { ProductGallery } from '@/features/product-detail/ProductGallery/ProductGallery'
 import { ProductInfo } from '@/features/product-detail/ProductInfo/ProductInfo'
-import { ProductDetailsTabs } from '@/features/product-detail/ProductDetailsTabs/ProductDetailsTabs'
 import { RelatedProducts } from '@/features/product-detail/RelatedProducts/RelatedProducts'
 import { useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
@@ -61,7 +60,6 @@ export function ProductDetailPage() {
         <ProductInfo product={product} />
       </div>
 
-      <ProductDetailsTabs product={product} />
       <RelatedProducts productId={product.id} category={product.category} />
     </div>
   )

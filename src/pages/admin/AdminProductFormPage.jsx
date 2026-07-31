@@ -18,6 +18,10 @@ const emptyForm = {
   stock: '0',
   images: '',
   categoryId: '',
+  country: '',
+  skinType: '',
+  famousProducts: '',
+  suitableFor: '',
   onSale: false,
 }
 
@@ -86,6 +90,10 @@ export function AdminProductFormPage() {
           stock: String(product.stock ?? 0),
           images: (product.images ?? []).join('\n'),
           categoryId: product.categoryId ?? matchedCategory?.id ?? '',
+          country: product.country ?? '',
+          skinType: product.skinType ?? '',
+          famousProducts: product.famousProducts ?? '',
+          suitableFor: product.suitableFor ?? '',
           onSale: Boolean(product.onSale),
         })
       } catch (err) {
@@ -126,6 +134,11 @@ export function AdminProductFormPage() {
       images,
       onSale: form.onSale,
     }
+
+    if (form.country.trim()) payload.country = form.country.trim()
+    if (form.skinType.trim()) payload.skinType = form.skinType.trim()
+    if (form.famousProducts.trim()) payload.famousProducts = form.famousProducts.trim()
+    if (form.suitableFor.trim()) payload.suitableFor = form.suitableFor.trim()
 
     if (form.categoryId) {
       payload.categoryId = form.categoryId
@@ -279,6 +292,38 @@ export function AdminProductFormPage() {
               onChange={(e) => setForm((f) => ({ ...f, onSale: e.target.checked }))}
             />
             <label htmlFor="on-sale">در تخفیف</label>
+          </div>
+          <div className={styles.field}>
+            <label className={styles.label}>کشور</label>
+            <input
+              className={styles.input}
+              value={form.country}
+              onChange={(e) => setForm((f) => ({ ...f, country: e.target.value }))}
+            />
+          </div>
+          <div className={styles.field}>
+            <label className={styles.label}>برای چه پوستیه</label>
+            <input
+              className={styles.input}
+              value={form.skinType}
+              onChange={(e) => setForm((f) => ({ ...f, skinType: e.target.value }))}
+            />
+          </div>
+          <div className={`${styles.field} ${styles.fieldFull}`}>
+            <label className={styles.label}>معروف‌ترین محصولات</label>
+            <textarea
+              className={styles.textarea}
+              value={form.famousProducts}
+              onChange={(e) => setForm((f) => ({ ...f, famousProducts: e.target.value }))}
+            />
+          </div>
+          <div className={`${styles.field} ${styles.fieldFull}`}>
+            <label className={styles.label}>مناسب چه افرادیه</label>
+            <textarea
+              className={styles.textarea}
+              value={form.suitableFor}
+              onChange={(e) => setForm((f) => ({ ...f, suitableFor: e.target.value }))}
+            />
           </div>
           <div className={`${styles.field} ${styles.fieldFull}`}>
             <label className={styles.label}>آدرس تصویر اصلی</label>

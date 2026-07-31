@@ -11,6 +11,9 @@ import {
   getSalePrice,
   isInStock,
 } from '@/utils/productHelpers'
+import { ProductAskLink } from '@/components/products/ProductAskLink/ProductAskLink'
+import { ProductExtraSpecs } from '@/components/products/ProductExtraSpecs/ProductExtraSpecs'
+import { WishlistButton } from '@/components/products/WishlistButton/WishlistButton'
 import styles from './ProductInfo.module.css'
 
 /**
@@ -86,6 +89,8 @@ export function ProductInfo({ product }) {
 
       <p className={styles.description}>{product.description}</p>
 
+      <ProductExtraSpecs product={product} />
+
       <dl className={styles.specs}>
         <div className={styles.spec}>
           <dt>دسته‌بندی</dt>
@@ -100,6 +105,11 @@ export function ProductInfo({ product }) {
           </dd>
         </div>
       </dl>
+
+      <div className={styles.secondaryActions}>
+        <ProductAskLink productName={product.name} />
+        <WishlistButton product={product} />
+      </div>
 
       <div className={styles.actions}>
         <div className={styles.quantity}>

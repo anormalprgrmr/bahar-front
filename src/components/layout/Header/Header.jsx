@@ -4,6 +4,7 @@ import { useAsyncData } from '@/hooks/useAsyncData'
 import { useCategories } from '@/hooks/useCategories'
 import { useAuth } from '@/contexts/AuthContext'
 import { useCart } from '@/contexts/CartContext'
+import { useWishlist } from '@/contexts/WishlistContext'
 import { ProductSearchForm } from '@/components/products/ProductSearchForm/ProductSearchForm'
 import {
   getHotProducts,
@@ -18,6 +19,14 @@ function SearchIcon() {
     <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8">
       <circle cx="11" cy="11" r="7" />
       <path d="M20 20l-3-3" />
+    </svg>
+  )
+}
+
+function HeartIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d="M12 21s-7.2-4.7-9.8-8.4C.1 9.8 1.2 6.4 4.4 5.2c2-.8 4.2.1 5.4 1.8 1.2-1.7 3.4-2.6 5.4-1.8 3.2 1.2 4.3 4.6 2.2 7.4C19.2 16.3 12 21 12 21z" />
     </svg>
   )
 }
@@ -69,6 +78,7 @@ export function Header() {
   const [searchOpen, setSearchOpen] = useState(false)
   const { isAuthenticated, isAdmin, user } = useAuth()
   const { itemCount } = useCart()
+  const { itemCount: wishlistCount } = useWishlist()
   const { categories } = useCategories()
 
   const { data: hotProducts = [] } = useAsyncData('hot', getHotProducts)
@@ -87,6 +97,15 @@ export function Header() {
           >
             <SearchIcon />
           </button>
+
+          <Link to="/wishlist" className={styles.iconBtn} aria-label="علاقه‌مندی‌ها">
+            <HeartIcon />
+            {wishlistCount > 0 && (
+              <span className={styles.badge}>
+                {new Intl.NumberFormat('fa-IR').format(wishlistCount)}
+              </span>
+            )}
+          </Link>
 
           <Link to="/cart" className={styles.iconBtn} aria-label="سبد خرید">
             <CartIcon />

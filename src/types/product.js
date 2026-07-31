@@ -10,6 +10,10 @@
  * @property {string[]} images
  * @property {string} [categoryId]
  * @property {string} [category]
+ * @property {string} [country]
+ * @property {string} [skinType]
+ * @property {string} [famousProducts]
+ * @property {string} [suitableFor]
  * @property {boolean} onSale
  * @property {string} [created_at]
  */
@@ -25,6 +29,10 @@
  * @property {string[]} images
  * @property {string} [categoryId]
  * @property {string} [category]
+ * @property {string} [country]
+ * @property {string} [skinType]
+ * @property {string} [famousProducts]
+ * @property {string} [suitableFor]
  * @property {boolean} [onSale]
  */
 

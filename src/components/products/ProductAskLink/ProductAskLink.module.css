@@ -1,0 +1,11 @@
+.link {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #666;
+  transition: color var(--duration-fast) ease;
+}
+
+.link:hover {
+  color: #e91e8c;
+  text-decoration: underline;
+}
