@@ -294,6 +294,80 @@
   margin-top: 0.5rem;
 }
 
+.imageGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.imagePreviewCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: #fafafa;
+  border: 1px solid #eee;
+  border-radius: 12px;
+}
+
+.imagePreview {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 8px;
+  background: #fce7f0;
+}
+
+.imagePreviewActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.fileDrop,
+.fileBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1rem;
+  border: 1px dashed #e91e8c;
+  border-radius: 10px;
+  color: #e91e8c;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: #fff5fa;
+}
+
+.fileBtn {
+  border-style: solid;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.8rem;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.removeImageBtn {
+  padding: 0.45rem 0.75rem;
+  border: none;
+  border-radius: 8px;
+  background: #ffebee;
+  color: #c62828;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.hint {
+  margin: 0;
+  color: #888;
+  font-size: 0.8rem;
+}
+
 @media (max-width: 800px) {
   .formGrid {
     grid-template-columns: 1fr;

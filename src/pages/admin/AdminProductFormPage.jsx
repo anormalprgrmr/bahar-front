@@ -4,9 +4,11 @@ import {
   adminCreateProduct,
   adminUpdateProduct,
   adminUploadProductImage,
+  adminUploadProductImages,
 } from '@/services/admin/adminProductService'
 import { adminListCategories } from '@/services/admin/adminCategoryService'
 import { getProductById } from '@/services/products/productService'
+import { resolveMediaUrl, toApiImagePath } from '@/services/api/client'
 import styles from './AdminShared.module.css'
 
 const emptyForm = {
@@ -14,15 +16,20 @@ const emptyForm = {
   description: '',
   price: '',
   newPrice: '',
-  image: '',
   stock: '0',
-  images: '',
   categoryId: '',
   country: '',
   skinType: '',
   famousProducts: '',
   suitableFor: '',
   onSale: false,
+}
+
+/**
+ * @param {File} file
+ */
+function createPreviewUrl(file) {
+  return URL.createObjectURL(file)
 }
 
 export function AdminProductFormPage() {
@@ -37,7 +44,21 @@ export function AdminProductFormPage() {
   const [loading, setLoading] = useState(isEditing)
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
-  const [uploadFile, setUploadFile] = useState(/** @type {File | null} */ (null))
+
+  const [mainImageUrl, setMainImageUrl] = useState('')
+  const [mainImageFile, setMainImageFile] = useState(/** @type {File | null} */ (null))
+  const [mainImagePreview, setMainImagePreview] = useState('')
+
+  const [sliderImageUrls, setSliderImageUrls] = useState(/** @type {string[]} */ ([]))
+  const [sliderImageFiles, setSliderImageFiles] = useState(/** @type {File[]} */ ([]))
+  const [sliderImagePreviews, setSliderImagePreviews] = useState(/** @type {string[]} */ ([]))
+
+  useEffect(() => {
+    return () => {
+      if (mainImagePreview) URL.revokeObjectURL(mainImagePreview)
+      sliderImagePreviews.forEach((preview) => URL.revokeObjectURL(preview))
+    }
+  }, [mainImagePreview, sliderImagePreviews])
 
   useEffect(() => {
     let cancelled = false
@@ -86,9 +107,7 @@ export function AdminProductFormPage() {
           description: product.description,
           price: String(product.price),
           newPrice: product.newPrice != null ? String(product.newPrice) : '',
-          image: product.image,
           stock: String(product.stock ?? 0),
-          images: (product.images ?? []).join('\n'),
           categoryId: product.categoryId ?? matchedCategory?.id ?? '',
           country: product.country ?? '',
           skinType: product.skinType ?? '',
@@ -96,6 +115,13 @@ export function AdminProductFormPage() {
           suitableFor: product.suitableFor ?? '',
           onSale: Boolean(product.onSale),
         })
+
+        const mainPath = toApiImagePath(product.image)
+        const allImages = (product.images ?? []).map((image) => toApiImagePath(image))
+        const sliderPaths = allImages.filter((image) => image && image !== mainPath)
+
+        setMainImageUrl(mainPath)
+        setSliderImageUrls(sliderPaths)
       } catch (err) {
         if (!cancelled) {
           setError(err instanceof Error ? err.message : 'بارگذاری محصول ناموفق بود.')
@@ -111,17 +137,53 @@ export function AdminProductFormPage() {
     }
   }, [id])
 
+  function handleMainImageChange(event) {
+    const file = event.target.files?.[0] ?? null
+    if (mainImagePreview) URL.revokeObjectURL(mainImagePreview)
+
+    setMainImageFile(file)
+    setMainImagePreview(file ? createPreviewUrl(file) : '')
+    event.target.value = ''
+  }
+
+  function handleRemoveMainImage() {
+    if (mainImagePreview) URL.revokeObjectURL(mainImagePreview)
+    setMainImageFile(null)
+    setMainImagePreview('')
+    setMainImageUrl('')
+  }
+
+  function handleSliderImagesChange(event) {
+    const files = Array.from(event.target.files ?? [])
+    if (files.length === 0) return
+
+    const previews = files.map(createPreviewUrl)
+    setSliderImageFiles((current) => [...current, ...files])
+    setSliderImagePreviews((current) => [...current, ...previews])
+    event.target.value = ''
+  }
+
+  function handleRemoveExistingSliderImage(index) {
+    setSliderImageUrls((current) => current.filter((_, itemIndex) => itemIndex !== index))
+  }
+
+  function handleRemoveNewSliderImage(index) {
+    setSliderImageFiles((current) => current.filter((_, itemIndex) => itemIndex !== index))
+    setSliderImagePreviews((current) => {
+      const preview = current[index]
+      if (preview) URL.revokeObjectURL(preview)
+      return current.filter((_, itemIndex) => itemIndex !== index)
+    })
+  }
+
   function buildPayload() {
-    const images = form.images
-      .split('\n')
-      .map((line) => line.trim())
-      .filter(Boolean)
-
-    const image = form.image.trim() || images[0] || ''
-    if (!images.length && image) images.push(image)
-
     const newPriceRaw = form.newPrice.trim()
     const selectedCategory = categories.find((category) => category.id === form.categoryId)
+    const mainPath = mainImageUrl.trim()
+    const sliderPaths = sliderImageUrls.map((url) => url.trim()).filter(Boolean)
+    const images = mainPath
+      ? [mainPath, ...sliderPaths.filter((url) => url !== mainPath)]
+      : sliderPaths
 
     /** @type {import('@/types/product').ProductUpsertPayload} */
     const payload = {
@@ -129,7 +191,7 @@ export function AdminProductFormPage() {
       description: form.description.trim(),
       price: Number(form.price),
       newPrice: newPriceRaw === '' ? null : Number(newPriceRaw),
-      image,
+      image: mainPath,
       stock: Number(form.stock) || 0,
       images,
       onSale: form.onSale,
@@ -155,25 +217,43 @@ export function AdminProductFormPage() {
     setError('')
 
     try {
+      const hasMainImage = Boolean(mainImageUrl || mainImageFile)
+      if (!hasMainImage) {
+        throw new Error('تصویر اصلی محصول الزامی است.')
+      }
+
       const payload = buildPayload()
-      if (!payload.name || !payload.description || !payload.image || !payload.images.length) {
-        throw new Error('نام، توضیحات و حداقل یک تصویر الزامی است.')
+      if (!payload.name || !payload.description) {
+        throw new Error('نام و توضیحات الزامی است.')
       }
 
       if (!payload.categoryId && !payload.category) {
         throw new Error('انتخاب دسته‌بندی الزامی است.')
       }
 
+      let productId = id
+
       if (isEditing && id) {
         await adminUpdateProduct(id, payload)
-        if (uploadFile) {
-          await adminUploadProductImage(id, uploadFile, true)
-        }
       } else {
-        const created = await adminCreateProduct(payload)
-        if (uploadFile) {
-          await adminUploadProductImage(created.id, uploadFile, true)
-        }
+        const created = await adminCreateProduct({
+          ...payload,
+          image: '',
+          images: [],
+        })
+        productId = created.id
+      }
+
+      if (!productId) {
+        throw new Error('شناسه محصول نامعتبر است.')
+      }
+
+      if (mainImageFile) {
+        await adminUploadProductImage(productId, mainImageFile, true)
+      }
+
+      if (sliderImageFiles.length > 0) {
+        await adminUploadProductImages(productId, sliderImageFiles, false)
       }
 
       navigate('/admin/products', {
@@ -185,6 +265,8 @@ export function AdminProductFormPage() {
       setSaving(false)
     }
   }
+
+  const mainPreviewSrc = mainImagePreview || (mainImageUrl ? resolveMediaUrl(mainImageUrl) : '')
 
   if (loading) {
     return (
@@ -325,33 +407,89 @@ export function AdminProductFormPage() {
               onChange={(e) => setForm((f) => ({ ...f, suitableFor: e.target.value }))}
             />
           </div>
+
           <div className={`${styles.field} ${styles.fieldFull}`}>
-            <label className={styles.label}>آدرس تصویر اصلی</label>
-            <input
-              className={styles.input}
-              value={form.image}
-              onChange={(e) => setForm((f) => ({ ...f, image: e.target.value }))}
-              placeholder="https://..."
-            />
+            <label className={styles.label}>تصویر اصلی</label>
+            <p className={styles.hint}>فقط آپلود فایل — فرمت‌های JPG، PNG، WebP و GIF</p>
+            {mainPreviewSrc ? (
+              <div className={styles.imagePreviewCard}>
+                <img src={mainPreviewSrc} alt="پیش‌نمایش تصویر اصلی" className={styles.imagePreview} />
+                <div className={styles.imagePreviewActions}>
+                  <label className={styles.fileBtn}>
+                    تغییر تصویر
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/gif"
+                      className={styles.hiddenInput}
+                      onChange={handleMainImageChange}
+                    />
+                  </label>
+                  <button type="button" className={styles.removeImageBtn} onClick={handleRemoveMainImage}>
+                    حذف
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <label className={styles.fileDrop}>
+                انتخاب تصویر اصلی
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  className={styles.hiddenInput}
+                  onChange={handleMainImageChange}
+                  required={!isEditing}
+                />
+              </label>
+            )}
           </div>
+
           <div className={`${styles.field} ${styles.fieldFull}`}>
-            <label className={styles.label}>گالری تصاویر (هر خط یک آدرس)</label>
-            <textarea
-              className={styles.textarea}
-              value={form.images}
-              onChange={(e) => setForm((f) => ({ ...f, images: e.target.value }))}
-            />
-          </div>
-          <div className={`${styles.field} ${styles.fieldFull}`}>
-            <label className={styles.label}>
-              آپلود تصویر {isEditing ? '(اختیاری، به‌عنوان تصویر اصلی)' : '(پس از ایجاد، اختیاری)'}
+            <label className={styles.label}>تصاویر اسلایدر</label>
+            <p className={styles.hint}>می‌توانید چند تصویر برای گالری محصول آپلود کنید.</p>
+
+            {(sliderImageUrls.length > 0 || sliderImagePreviews.length > 0) && (
+              <div className={styles.imageGrid}>
+                {sliderImageUrls.map((url, index) => (
+                  <div key={`existing-${url}-${index}`} className={styles.imagePreviewCard}>
+                    <img
+                      src={resolveMediaUrl(url)}
+                      alt={`اسلایدر ${index + 1}`}
+                      className={styles.imagePreview}
+                    />
+                    <button
+                      type="button"
+                      className={styles.removeImageBtn}
+                      onClick={() => handleRemoveExistingSliderImage(index)}
+                    >
+                      حذف
+                    </button>
+                  </div>
+                ))}
+                {sliderImagePreviews.map((preview, index) => (
+                  <div key={`new-${preview}`} className={styles.imagePreviewCard}>
+                    <img src={preview} alt={`اسلایدر جدید ${index + 1}`} className={styles.imagePreview} />
+                    <button
+                      type="button"
+                      className={styles.removeImageBtn}
+                      onClick={() => handleRemoveNewSliderImage(index)}
+                    >
+                      حذف
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <label className={styles.fileDrop}>
+              افزودن تصویر اسلایدر
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                className={styles.hiddenInput}
+                multiple
+                onChange={handleSliderImagesChange}
+              />
             </label>
-            <input
-              className={styles.input}
-              type="file"
-              accept="image/jpeg,image/png,image/webp,image/gif"
-              onChange={(e) => setUploadFile(e.target.files?.[0] ?? null)}
-            />
           </div>
         </div>
 

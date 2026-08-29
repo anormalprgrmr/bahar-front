@@ -75,3 +75,16 @@ export async function adminUploadProductImage(productId, file, setAsMain = false
     product: result?.product ? normalizeProduct(result.product) : null,
   }
 }
+
+/**
+ * @param {string} productId
+ * @param {File[]} files
+ * @param {boolean} [setAsMain=false]
+ */
+export async function adminUploadProductImages(productId, files, setAsMain = false) {
+  const results = []
+  for (const file of files) {
+    results.push(await adminUploadProductImage(productId, file, setAsMain))
+  }
+  return results
+}

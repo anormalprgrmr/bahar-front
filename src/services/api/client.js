@@ -83,6 +83,31 @@ export function resolveMediaUrl(url) {
 }
 
 /**
+ * Convert a resolved media URL back to the API-relative path for persistence.
+ * @param {string | null | undefined} url
+ */
+export function toApiImagePath(url) {
+  if (!url) return ''
+  if (url.startsWith('/')) return url
+
+  const base = API_BASE_URL.replace(/\/$/, '')
+  if (url.startsWith(`${base}/`)) {
+    return url.slice(base.length)
+  }
+
+  try {
+    const parsed = new URL(url)
+    const basePath = new URL(`${base}/`).pathname.replace(/\/$/, '')
+    if (parsed.pathname.startsWith(`${basePath}/`)) {
+      return parsed.pathname.slice(basePath.length)
+    }
+    return parsed.pathname
+  } catch {
+    return url
+  }
+}
+
+/**
  * @param {Record<string, string | number | boolean | null | undefined>} params
  */
 export function toQueryString(params) {
