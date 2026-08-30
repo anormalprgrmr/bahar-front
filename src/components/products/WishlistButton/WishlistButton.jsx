@@ -2,6 +2,30 @@ import { useState } from 'react'
 import { useWishlist } from '@/contexts/WishlistContext'
 import styles from './WishlistButton.module.css'
 
+function BookmarkIcon({ filled = false }) {
+  if (filled) {
+    return (
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+        <path d="M7 4h10a1 1 0 0 1 1 1v15l-6-4-6 4V5a1 1 0 0 1 1-1z" />
+      </svg>
+    )
+  }
+
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width="18"
+      height="18"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      aria-hidden="true"
+    >
+      <path d="M7 4h10a1 1 0 0 1 1 1v15l-6-4-6 4V5a1 1 0 0 1 1-1z" />
+    </svg>
+  )
+}
+
 /**
  * @param {{
  *   product: import('@/types/product').Product
@@ -33,11 +57,10 @@ export function WishlistButton({ product, compact = false }) {
       onClick={handleClick}
       disabled={busy}
       aria-label={saved ? 'حذف از علاقه‌مندی‌ها' : 'افزودن به علاقه‌مندی‌ها'}
+      aria-pressed={saved}
       title={saved ? 'حذف از علاقه‌مندی‌ها' : 'افزودن به علاقه‌مندی‌ها'}
     >
-      <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
-        <path d="M12 21s-7.2-4.7-9.8-8.4C.1 9.8 1.2 6.4 4.4 5.2c2-.8 4.2.1 5.4 1.8 1.2-1.7 3.4-2.6 5.4-1.8 3.2 1.2 4.3 4.6 2.2 7.4C19.2 16.3 12 21 12 21z" />
-      </svg>
+      <BookmarkIcon filled={saved} />
       {!compact && <span>{saved ? 'ذخیره شد' : 'علاقه‌مندی'}</span>}
     </button>
   )

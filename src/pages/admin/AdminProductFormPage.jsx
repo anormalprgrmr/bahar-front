@@ -22,6 +22,7 @@ const emptyForm = {
   skinType: '',
   famousProducts: '',
   suitableFor: '',
+  keywords: '',
   onSale: false,
 }
 
@@ -113,6 +114,7 @@ export function AdminProductFormPage() {
           skinType: product.skinType ?? '',
           famousProducts: product.famousProducts ?? '',
           suitableFor: product.suitableFor ?? '',
+          keywords: product.keywords ?? '',
           onSale: Boolean(product.onSale),
         })
 
@@ -201,6 +203,7 @@ export function AdminProductFormPage() {
     if (form.skinType.trim()) payload.skinType = form.skinType.trim()
     if (form.famousProducts.trim()) payload.famousProducts = form.famousProducts.trim()
     if (form.suitableFor.trim()) payload.suitableFor = form.suitableFor.trim()
+    if (form.keywords.trim()) payload.keywords = form.keywords.trim()
 
     if (form.categoryId) {
       payload.categoryId = form.categoryId
@@ -405,6 +408,16 @@ export function AdminProductFormPage() {
               className={styles.textarea}
               value={form.suitableFor}
               onChange={(e) => setForm((f) => ({ ...f, suitableFor: e.target.value }))}
+            />
+          </div>
+
+          <div className={`${styles.field} ${styles.fieldFull}`}>
+            <label className={styles.label}>کلمات کلیدی</label>
+            <textarea
+              className={styles.textarea}
+              value={form.keywords}
+              onChange={(e) => setForm((f) => ({ ...f, keywords: e.target.value }))}
+              placeholder="هر کلمه در یک خط یا با ویرگول جدا کنید"
             />
           </div>
 

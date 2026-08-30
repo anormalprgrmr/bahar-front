@@ -10,6 +10,7 @@ import styles from './AdminShared.module.css'
 const emptyForm = {
   name: '',
   slug: '',
+  showInNav: false,
 }
 
 export function AdminCategoryFormPage() {
@@ -39,6 +40,7 @@ export function AdminCategoryFormPage() {
         setForm({
           name: category.name,
           slug: category.slug,
+          showInNav: Boolean(category.showInNav),
         })
       } catch (err) {
         if (!cancelled) {
@@ -64,6 +66,7 @@ export function AdminCategoryFormPage() {
       const payload = {
         name: form.name.trim(),
         slug: form.slug.trim() || undefined,
+        showInNav: form.showInNav,
       }
 
       if (!payload.name) {
@@ -142,6 +145,19 @@ export function AdminCategoryFormPage() {
               placeholder="مثلاً skincare"
               dir="ltr"
             />
+          </div>
+          <div className={`${styles.field} ${styles.fieldFull}`}>
+            <label className={styles.checkboxRow}>
+              <input
+                id="show-in-nav"
+                type="checkbox"
+                checked={form.showInNav}
+                onChange={(e) =>
+                  setForm((current) => ({ ...current, showInNav: e.target.checked }))
+                }
+              />
+              <span>نمایش در منوی اصلی سایت</span>
+            </label>
           </div>
         </div>
 

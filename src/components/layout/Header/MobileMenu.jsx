@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { ProductSearchForm } from '@/components/products/ProductSearchForm/ProductSearchForm'
@@ -17,6 +17,20 @@ export function MobileMenu({ hotProducts, bestsellers, categories, isOpen, onClo
   const [expandedSection, setExpandedSection] = useState(null)
   const { isAuthenticated, isAdmin, user, logout } = useAuth()
 
+  useEffect(() => {
+    if (!isOpen) return undefined
+
+    const previousOverflow = document.body.style.overflow
+    const previousTouchAction = document.body.style.touchAction
+    document.body.style.overflow = 'hidden'
+    document.body.style.touchAction = 'none'
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+      document.body.style.touchAction = previousTouchAction
+    }
+  }, [isOpen])
+
   if (!isOpen) return null
 
   async function handleLogout() {
@@ -25,8 +39,12 @@ export function MobileMenu({ hotProducts, bestsellers, categories, isOpen, onClo
   }
 
   return (
-    <div className={styles.overlay} onClick={onClose}>
-      <nav className={styles.menu} onClick={(e) => e.stopPropagation()}>
+    <div className={styles.overlay} onClick={onClose} role="presentation">
+      <nav
+        className={styles.menu}
+        onClick={(event) => event.stopPropagation()}
+        aria-label="منوی موبایل"
+      >
         <div className={styles.header}>
           <span className={styles.menuTitle}>منو</span>
           <button

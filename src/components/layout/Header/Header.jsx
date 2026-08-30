@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { useAsyncData } from '@/hooks/useAsyncData'
 import { useCategories } from '@/hooks/useCategories'
+import { getNavCategories } from '@/utils/categoryHelpers'
 import { useAuth } from '@/contexts/AuthContext'
 import { useCart } from '@/contexts/CartContext'
 import { useWishlist } from '@/contexts/WishlistContext'
@@ -23,10 +24,10 @@ function SearchIcon() {
   )
 }
 
-function HeartIcon() {
+function BookmarkIcon() {
   return (
     <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <path d="M12 21s-7.2-4.7-9.8-8.4C.1 9.8 1.2 6.4 4.4 5.2c2-.8 4.2.1 5.4 1.8 1.2-1.7 3.4-2.6 5.4-1.8 3.2 1.2 4.3 4.6 2.2 7.4C19.2 16.3 12 21 12 21z" />
+      <path d="M7 4h10a1 1 0 0 1 1 1v15l-6-4-6 4V5a1 1 0 0 1 1-1z" />
     </svg>
   )
 }
@@ -80,6 +81,7 @@ export function Header() {
   const { itemCount } = useCart()
   const { itemCount: wishlistCount } = useWishlist()
   const { categories } = useCategories()
+  const navCategories = getNavCategories(categories)
 
   const { data: hotProducts = [] } = useAsyncData('hot', getHotProducts)
   const { data: bestsellers = [] } = useAsyncData('bestsellers', getBestsellerProducts)
@@ -99,7 +101,7 @@ export function Header() {
           </button>
 
           <Link to="/wishlist" className={styles.iconBtn} aria-label="علاقه‌مندی‌ها">
-            <HeartIcon />
+            <BookmarkIcon />
             {wishlistCount > 0 && (
               <span className={styles.badge}>
                 {new Intl.NumberFormat('fa-IR').format(wishlistCount)}
@@ -178,7 +180,7 @@ export function Header() {
             )}
           </div>
 
-          {categories.map((category) => (
+          {navCategories.map((category) => (
             <NavLink
               key={category.id}
               to={`/categories/${category.slug}`}
@@ -210,7 +212,7 @@ export function Header() {
       <MobileMenu
         hotProducts={hotProducts}
         bestsellers={bestsellers}
-        categories={categories}
+        categories={navCategories}
         isOpen={menuOpen}
         onClose={() => setMenuOpen(false)}
       />

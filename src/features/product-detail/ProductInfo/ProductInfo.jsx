@@ -13,6 +13,7 @@ import {
 } from '@/utils/productHelpers'
 import { ProductAskLink } from '@/components/products/ProductAskLink/ProductAskLink'
 import { ProductExtraSpecs } from '@/components/products/ProductExtraSpecs/ProductExtraSpecs'
+import { ProductKeywords } from '@/components/products/ProductKeywords/ProductKeywords'
 import { WishlistButton } from '@/components/products/WishlistButton/WishlistButton'
 import styles from './ProductInfo.module.css'
 
@@ -90,6 +91,7 @@ export function ProductInfo({ product }) {
       <p className={styles.description}>{product.description}</p>
 
       <ProductExtraSpecs product={product} />
+      <ProductKeywords product={product} />
 
       <dl className={styles.specs}>
         <div className={styles.spec}>

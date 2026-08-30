@@ -1,22 +1,47 @@
 .overlay {
   position: fixed;
   inset: 0;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
   background: rgba(0, 0, 0, 0.4);
   z-index: 200;
   display: none;
   animation: fadeIn 0.25s var(--ease-out);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+  overscroll-behavior: none;
 }
 
 .menu {
-  position: absolute;
+  position: fixed;
   top: 0;
   right: 0;
   width: min(320px, 85vw);
   height: 100%;
+  height: 100dvh;
+  max-height: -webkit-fill-available;
   background: var(--color-white);
   padding: 1.5rem;
+  padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
   overflow-y: auto;
-  animation: slideInRight 0.35s var(--ease-out);
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  transform: translateZ(0);
+  animation: slideInPanel 0.35s var(--ease-out);
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.12);
+}
+
+@keyframes slideInPanel {
+  from {
+    opacity: 0;
+    transform: translate3d(100%, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
 }
 
 .header {
@@ -43,8 +68,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 40px;
+  height: 40px;
   color: var(--color-text-muted);
   transition: transform var(--duration-fast) var(--ease-out);
+  -webkit-tap-highlight-color: transparent;
 }
 
 .closeBtn:hover {
@@ -55,6 +83,9 @@
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 .link {
@@ -67,16 +98,19 @@
   border-radius: var(--radius-sm);
   transition:
     background var(--duration-fast) var(--ease-out),
-    color var(--duration-fast) ease,
-    transform var(--duration-fast) var(--ease-out);
+    color var(--duration-fast) ease;
   color: var(--color-text);
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .link:hover,
 .link:global(.active) {
   background: var(--color-primary-soft);
   color: var(--color-primary);
-  transform: translateX(-4px);
 }
 
 .expandBtn {
@@ -90,6 +124,7 @@
   color: var(--color-text);
   border-radius: var(--radius-sm);
   transition: background var(--duration-fast) ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .expandBtn:hover {
@@ -97,6 +132,7 @@
 }
 
 .chevron {
+  flex-shrink: 0;
   transition: transform var(--duration-normal) var(--ease-out);
 }
 
@@ -124,14 +160,13 @@
   border-radius: var(--radius-sm);
   transition:
     background var(--duration-fast) ease,
-    color var(--duration-fast) ease,
-    transform var(--duration-fast) var(--ease-out);
+    color var(--duration-fast) ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .subLink:hover {
   background: var(--color-primary-soft);
   color: var(--color-text);
-  transform: translateX(-3px);
 }
 
 @media (max-width: 768px) {

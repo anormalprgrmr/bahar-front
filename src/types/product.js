@@ -14,6 +14,7 @@
  * @property {string} [skinType]
  * @property {string} [famousProducts]
  * @property {string} [suitableFor]
+ * @property {string} [keywords]
  * @property {boolean} onSale
  * @property {string} [created_at]
  */
@@ -33,6 +34,7 @@
  * @property {string} [skinType]
  * @property {string} [famousProducts]
  * @property {string} [suitableFor]
+ * @property {string} [keywords]
  * @property {boolean} [onSale]
  */
 
