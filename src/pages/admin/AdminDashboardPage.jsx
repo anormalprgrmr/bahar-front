@@ -25,6 +25,10 @@ export function AdminDashboardPage() {
           <h2>کاربران</h2>
           <p>مشاهده، ویرایش و حذف کاربران</p>
         </Link>
+        <Link to="/admin/backup" className={styles.card}>
+          <h2>پشتیبان‌گیری</h2>
+          <p>دانلود و بازیابی داده‌های فروشگاه</p>
+        </Link>
       </div>
     </div>
   )

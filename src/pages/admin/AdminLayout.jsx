@@ -27,6 +27,9 @@ export function AdminLayout() {
           <NavLink to="/admin/users" className={styles.link}>
             کاربران
           </NavLink>
+          <NavLink to="/admin/backup" className={styles.link}>
+            پشتیبان‌گیری
+          </NavLink>
         </nav>
         <div className={styles.footer}>
           <p className={styles.email}>{user?.email}</p>

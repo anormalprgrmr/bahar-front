@@ -362,6 +362,12 @@
   font-family: inherit;
 }
 
+.sectionTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
 .hint {
   margin: 0;
   color: #888;

@@ -20,6 +20,7 @@ import { AdminCategoryFormPage } from '@/pages/admin/AdminCategoryFormPage'
 import { AdminOrdersPage } from '@/pages/admin/AdminOrdersPage'
 import { AdminUsersPage } from '@/pages/admin/AdminUsersPage'
 import { AdminUserEditPage } from '@/pages/admin/AdminUserEditPage'
+import { AdminBackupPage } from '@/pages/admin/AdminBackupPage'
 
 export const router = createBrowserRouter([
   {
@@ -80,6 +81,7 @@ export const router = createBrowserRouter([
       { path: 'orders', element: <AdminOrdersPage /> },
       { path: 'users', element: <AdminUsersPage /> },
       { path: 'users/:id/edit', element: <AdminUserEditPage /> },
+      { path: 'backup', element: <AdminBackupPage /> },
     ],
   },
 ])
