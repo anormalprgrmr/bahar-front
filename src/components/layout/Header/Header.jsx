@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { useAsyncData } from '@/hooks/useAsyncData'
+import { useAuth } from '@/contexts/AuthContext'
+import { useCart } from '@/contexts/CartContext'
+import { useWishlist } from '@/contexts/WishlistContext'
 import { ProductSearchForm } from '@/components/products/ProductSearchForm/ProductSearchForm'
 import {
   getHotProducts,
