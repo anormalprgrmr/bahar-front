@@ -5,7 +5,7 @@ import {
   adminListProducts,
 } from '@/services/admin/adminProductService'
 import { formatPrice } from '@/utils/formatPrice'
-import { getCategoryLabel, getSalePrice } from '@/utils/productHelpers'
+import { getProductCategoryLabels, getSalePrice } from '@/utils/productHelpers'
 import { useCategories } from '@/hooks/useCategories'
 import styles from './AdminShared.module.css'
 
@@ -122,7 +122,7 @@ export function AdminProductsPage() {
                     <img src={product.image} alt="" className={styles.thumb} />
                   </td>
                   <td>{product.name}</td>
-                  <td>{getCategoryLabel(product.category, categories)}</td>
+                  <td>{getProductCategoryLabels(product, categories)}</td>
                   <td>{formatPrice(getSalePrice(product))}</td>
                   <td>{new Intl.NumberFormat('fa-IR').format(product.stock)}</td>
                   <td>

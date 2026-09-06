@@ -3,13 +3,16 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import {
   adminCreateCategory,
   adminGetCategoryById,
+  adminListCategories,
   adminUpdateCategory,
 } from '@/services/admin/adminCategoryService'
+import { getTopLevelCategories } from '@/utils/categoryHelpers'
 import styles from './AdminShared.module.css'
 
 const emptyForm = {
   name: '',
   slug: '',
+  parentId: '',
   showInNav: false,
 }
 
@@ -18,10 +21,31 @@ export function AdminCategoryFormPage() {
   const navigate = useNavigate()
   const isEditing = Boolean(id)
 
+  const [allCategories, setAllCategories] = useState(
+    /** @type {import('@/types/category').Category[]} */ ([]),
+  )
   const [form, setForm] = useState(emptyForm)
   const [loading, setLoading] = useState(isEditing)
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    let cancelled = false
+
+    async function loadCategories() {
+      try {
+        const result = await adminListCategories()
+        if (!cancelled) setAllCategories(result)
+      } catch {
+        if (!cancelled) setAllCategories([])
+      }
+    }
+
+    loadCategories()
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   useEffect(() => {
     if (!id) return
@@ -40,6 +64,7 @@ export function AdminCategoryFormPage() {
         setForm({
           name: category.name,
           slug: category.slug,
+          parentId: category.parentId ?? '',
           showInNav: Boolean(category.showInNav),
         })
       } catch (err) {
@@ -57,6 +82,10 @@ export function AdminCategoryFormPage() {
     }
   }, [id])
 
+  const parentOptions = getTopLevelCategories(allCategories).filter(
+    (category) => category.id !== id,
+  )
+
   async function handleSubmit(event) {
     event.preventDefault()
     setSaving(true)
@@ -66,6 +95,7 @@ export function AdminCategoryFormPage() {
       const payload = {
         name: form.name.trim(),
         slug: form.slug.trim() || undefined,
+        parentId: form.parentId || undefined,
         showInNav: form.showInNav,
       }
 
@@ -146,6 +176,24 @@ export function AdminCategoryFormPage() {
               dir="ltr"
             />
           </div>
+          <div className={styles.field}>
+            <label className={styles.label} htmlFor="category-parent">
+              دسته والد (اختیاری)
+            </label>
+            <select
+              id="category-parent"
+              className={styles.select}
+              value={form.parentId}
+              onChange={(e) => setForm((current) => ({ ...current, parentId: e.target.value }))}
+            >
+              <option value="">بدون والد (دسته اصلی)</option>
+              {parentOptions.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+          </div>
           <div className={`${styles.field} ${styles.fieldFull}`}>
             <label className={styles.checkboxRow}>
               <input
@@ -162,7 +210,8 @@ export function AdminCategoryFormPage() {
         </div>
 
         <p className={styles.muted}>
-          اگر اسلاگ را خالی بگذارید، از روی نام به‌صورت خودکار ساخته می‌شود.
+          اگر اسلاگ را خالی بگذارید، از روی نام به‌صورت خودکار ساخته می‌شود. زیردسته‌ها فقط می‌توانند
+          زیر دسته‌های اصلی قرار بگیرند.
         </p>
 
         <div className={styles.formActions}>

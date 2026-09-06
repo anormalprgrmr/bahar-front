@@ -28,6 +28,32 @@ export function getProductBadge(product) {
 }
 
 /**
+ * @param {import('@/types/product').Product} product
+ * @param {import('@/types/category').Category[]} [categories]
+ */
+export function getProductCategoryLabels(product, categories = []) {
+  if (product.categories?.length) {
+    return product.categories.map((category) => category.name).join('، ')
+  }
+
+  if (product.categoryIds?.length && categories.length) {
+    return product.categoryIds
+      .map((id) => categories.find((category) => category.id === id)?.name ?? id)
+      .join('، ')
+  }
+
+  return getCategoryLabel(product.category, categories)
+}
+
+/**
+ * @param {import('@/types/product').Product} product
+ */
+export function getPrimaryCategorySlug(product) {
+  if (product.categories?.length) return product.categories[0].slug
+  return product.category ?? ''
+}
+
+/**
  * @param {string} [slug]
  * @param {import('@/types/category').Category[]} [categories]
  */

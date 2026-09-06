@@ -17,6 +17,8 @@ export async function adminCreateCategory(payload) {
     body: JSON.stringify({
       name: payload.name.trim(),
       slug: payload.slug?.trim() || undefined,
+      parentId: payload.parentId?.trim() || undefined,
+      showInNav: Boolean(payload.showInNav),
     }),
   })
 }
@@ -33,6 +35,8 @@ export async function adminUpdateCategory(id, payload) {
     body: JSON.stringify({
       name: payload.name.trim(),
       slug: payload.slug?.trim() || undefined,
+      parentId: payload.parentId?.trim() || undefined,
+      showInNav: Boolean(payload.showInNav),
     }),
   })
 }

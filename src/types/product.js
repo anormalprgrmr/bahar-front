@@ -1,4 +1,12 @@
 /**
+ * @typedef {Object} ProductCategorySummary
+ * @property {string} id
+ * @property {string} name
+ * @property {string} slug
+ * @property {string} [parentId]
+ */
+
+/**
  * @typedef {Object} Product
  * @property {string} id
  * @property {string} name
@@ -8,7 +16,8 @@
  * @property {string} image
  * @property {number} stock
  * @property {string[]} images
- * @property {string} [categoryId]
+ * @property {string[]} [categoryIds]
+ * @property {ProductCategorySummary[]} [categories]
  * @property {string} [category]
  * @property {string} [country]
  * @property {string} [skinType]
@@ -28,8 +37,7 @@
  * @property {string} image
  * @property {number} [stock]
  * @property {string[]} images
- * @property {string} [categoryId]
- * @property {string} [category]
+ * @property {string[]} categoryIds
  * @property {string} [country]
  * @property {string} [skinType]
  * @property {string} [famousProducts]

@@ -47,12 +47,23 @@ export function CategoryProductsPage() {
 
   const pageLoading = categoriesLoading || loading
   const title = category?.name ?? slug ?? 'دسته‌بندی'
+  const parentCategory = category?.parentId
+    ? categories.find((item) => item.id === category.parentId)
+    : null
 
   return (
     <div className={`container ${styles.page}`}>
       <Reveal>
         <nav className={styles.breadcrumb} aria-label="مسیر صفحه">
           <Link to="/">خانه</Link>
+          <span>/</span>
+          <Link to="/shop">دسته‌بندی‌ها</Link>
+          {parentCategory && (
+            <>
+              <span>/</span>
+              <Link to={`/shop/${parentCategory.slug}`}>{parentCategory.name}</Link>
+            </>
+          )}
           <span>/</span>
           <span>{title}</span>
         </nav>

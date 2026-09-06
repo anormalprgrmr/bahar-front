@@ -1,3 +1,4 @@
+import { INSTAGRAM_HANDLE, INSTAGRAM_URL } from '@/constants/contact'
 import styles from './Footer.module.css'
 
 function InstagramIcon() {
@@ -32,7 +33,7 @@ export function Footer() {
             <h3 className={styles.title}>ما را دنبال کنید</h3>
             <div className={styles.icons}>
               <a
-                href="https://www.instagram.com/bahar_arayeshi"
+                href={INSTAGRAM_URL}
                 className={styles.socialLink}
                 aria-label="اینستاگرام بهار"
                 target="_blank"
@@ -42,12 +43,12 @@ export function Footer() {
               </a>
             </div>
             <a
-              href="https://www.instagram.com/bahar_arayeshi"
+              href={INSTAGRAM_URL}
               className={styles.instagramHandle}
               target="_blank"
               rel="noopener noreferrer"
             >
-              @bahar_arayeshi
+              {INSTAGRAM_HANDLE}
             </a>
           </div>
         </div>

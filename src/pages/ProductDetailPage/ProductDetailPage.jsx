@@ -1,4 +1,4 @@
-import { getProductBadge } from '@/utils/productHelpers'
+import { getPrimaryCategorySlug, getProductBadge } from '@/utils/productHelpers'
 import { ProductGallery } from '@/features/product-detail/ProductGallery/ProductGallery'
 import { ProductInfo } from '@/features/product-detail/ProductInfo/ProductInfo'
 import { RelatedProducts } from '@/features/product-detail/RelatedProducts/RelatedProducts'
@@ -60,7 +60,10 @@ export function ProductDetailPage() {
         <ProductInfo product={product} />
       </div>
 
-      <RelatedProducts productId={product.id} category={product.category} />
+      <RelatedProducts
+        productId={product.id}
+        category={getPrimaryCategorySlug(product)}
+      />
     </div>
   )
 }

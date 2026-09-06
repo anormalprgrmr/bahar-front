@@ -4,6 +4,7 @@ import {
   adminDeleteCategory,
   adminListCategories,
 } from '@/services/admin/adminCategoryService'
+import { getParentCategoryName } from '@/utils/categoryHelpers'
 import styles from './AdminShared.module.css'
 
 export function AdminCategoriesPage() {
@@ -53,12 +54,23 @@ export function AdminCategoriesPage() {
     }
   }
 
+  const sortedCategories = [...categories].sort((left, right) => {
+    const leftParent = left.parentId ?? ''
+    const rightParent = right.parentId ?? ''
+    if (leftParent !== rightParent) {
+      if (!leftParent) return -1
+      if (!rightParent) return 1
+      return leftParent.localeCompare(rightParent)
+    }
+    return left.name.localeCompare(right.name, 'fa')
+  })
+
   return (
     <div>
       <div className={styles.pageHeader}>
         <div>
           <h1 className={styles.title}>مدیریت دسته‌بندی‌ها</h1>
-          <p className={styles.subtitle}>لیست دسته‌بندی‌های محصولات</p>
+          <p className={styles.subtitle}>لیست دسته‌بندی‌ها و زیردسته‌ها</p>
         </div>
         <Link to="/admin/categories/new" className={styles.primaryBtn}>
           ایجاد دسته‌بندی
@@ -83,15 +95,19 @@ export function AdminCategoriesPage() {
               <tr>
                 <th>نام</th>
                 <th>اسلاگ</th>
+                <th>دسته والد</th>
                 <th>تاریخ ایجاد</th>
                 <th>عملیات</th>
               </tr>
             </thead>
             <tbody>
-              {categories.map((category) => (
+              {sortedCategories.map((category) => (
                 <tr key={category.id}>
-                  <td>{category.name}</td>
+                  <td>
+                    {category.parentId ? `↳ ${category.name}` : category.name}
+                  </td>
                   <td>{category.slug}</td>
+                  <td>{getParentCategoryName(categories, category.parentId) || '—'}</td>
                   <td>
                     {category.created_at
                       ? new Date(category.created_at).toLocaleDateString('fa-IR')

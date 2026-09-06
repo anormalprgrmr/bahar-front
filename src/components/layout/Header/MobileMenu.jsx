@@ -8,12 +8,11 @@ import styles from './MobileMenu.module.css'
  * @param {{
  *   hotProducts: import('@/types/product').Product[]
  *   bestsellers: import('@/types/product').Product[]
- *   categories: import('@/types/category').Category[]
  *   isOpen: boolean
  *   onClose: () => void
  * }} props
  */
-export function MobileMenu({ hotProducts, bestsellers, categories, isOpen, onClose }) {
+export function MobileMenu({ hotProducts, bestsellers, isOpen, onClose }) {
   const [expandedSection, setExpandedSection] = useState(null)
   const { isAuthenticated, isAdmin, user, logout } = useAuth()
 
@@ -117,17 +116,11 @@ export function MobileMenu({ hotProducts, bestsellers, categories, isOpen, onClo
               </div>
             )}
           </li>
-          {categories.map((category) => (
-            <li key={category.id}>
-              <NavLink
-                to={`/categories/${category.slug}`}
-                className={styles.link}
-                onClick={onClose}
-              >
-                {category.name}
-              </NavLink>
-            </li>
-          ))}
+          <li>
+            <NavLink to="/shop" className={styles.link} onClick={onClose}>
+              دسته‌بندی‌ها
+            </NavLink>
+          </li>
           <li>
             <NavLink to="/wishlist" className={styles.link} onClick={onClose}>
               علاقه‌مندی‌ها

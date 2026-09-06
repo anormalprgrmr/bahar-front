@@ -1,5 +1,5 @@
-export const INSTAGRAM_URL = 'https://www.instagram.com/bahar_arayeshi'
-export const INSTAGRAM_HANDLE = '@bahar_arayeshi'
+export const INSTAGRAM_URL = 'https://www.instagram.com/bahar_arayeshi__'
+export const INSTAGRAM_HANDLE = '@bahar_arayeshi__'
 
 /**
  * @param {string} [productName]

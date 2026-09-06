@@ -247,6 +247,30 @@
   margin-top: 1.6rem;
 }
 
+.checkboxGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.75rem;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  background: #fafafa;
+}
+
+.checkboxGroup .checkboxRow {
+  margin-top: 0;
+}
+
+.checkboxGroupSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.checkboxIndented {
+  padding-right: 1.25rem;
+}
+
 .pagination {
   display: flex;
   gap: 0.5rem;

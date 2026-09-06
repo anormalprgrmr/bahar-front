@@ -4,6 +4,7 @@ import { AdminRoute, ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { HomePage } from '@/pages/HomePage/HomePage'
 import { ProductDetailPage } from '@/pages/ProductDetailPage/ProductDetailPage'
 import { CategoryProductsPage } from '@/pages/CategoryProductsPage/CategoryProductsPage'
+import { CategoryBrowsePage } from '@/pages/CategoryBrowsePage/CategoryBrowsePage'
 import { SearchProductsPage } from '@/pages/SearchProductsPage/SearchProductsPage'
 import { LoginPage } from '@/pages/LoginPage/LoginPage'
 import { RegisterPage } from '@/pages/RegisterPage/RegisterPage'
@@ -28,6 +29,8 @@ export const router = createBrowserRouter([
     element: <MainLayout />,
     children: [
       { index: true, element: <HomePage /> },
+      { path: 'shop', element: <CategoryBrowsePage /> },
+      { path: 'shop/:parentSlug', element: <CategoryBrowsePage /> },
       { path: 'categories/:slug', element: <CategoryProductsPage /> },
       { path: 'search', element: <SearchProductsPage /> },
       { path: 'makeup', element: <Navigate to="/categories/makeup" replace /> },

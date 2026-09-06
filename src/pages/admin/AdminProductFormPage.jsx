@@ -9,6 +9,7 @@ import {
 import { adminListCategories } from '@/services/admin/adminCategoryService'
 import { getProductById } from '@/services/products/productService'
 import { resolveMediaUrl, toApiImagePath } from '@/services/api/client'
+import { getSubcategories, getTopLevelCategories } from '@/utils/categoryHelpers'
 import styles from './AdminShared.module.css'
 
 const emptyForm = {
@@ -17,7 +18,7 @@ const emptyForm = {
   price: '',
   newPrice: '',
   stock: '0',
-  categoryId: '',
+  categoryIds: [],
   country: '',
   skinType: '',
   famousProducts: '',
@@ -98,10 +99,15 @@ export function AdminProductFormPage() {
         }
 
         setCategories(categoryList)
-        const matchedCategory = categoryList.find(
-          (category) =>
-            category.id === product.categoryId || category.slug === product.category,
-        )
+        const initialCategoryIds =
+          product.categoryIds?.length
+            ? product.categoryIds
+            : product.categories?.map((category) => category.id) ??
+              (product.category
+                ? categoryList
+                    .filter((category) => category.slug === product.category)
+                    .map((category) => category.id)
+                : [])
 
         setForm({
           name: product.name,
@@ -109,7 +115,7 @@ export function AdminProductFormPage() {
           price: String(product.price),
           newPrice: product.newPrice != null ? String(product.newPrice) : '',
           stock: String(product.stock ?? 0),
-          categoryId: product.categoryId ?? matchedCategory?.id ?? '',
+          categoryIds: initialCategoryIds,
           country: product.country ?? '',
           skinType: product.skinType ?? '',
           famousProducts: product.famousProducts ?? '',
@@ -178,9 +184,20 @@ export function AdminProductFormPage() {
     })
   }
 
+  function toggleCategory(categoryId) {
+    setForm((current) => {
+      const exists = current.categoryIds.includes(categoryId)
+      return {
+        ...current,
+        categoryIds: exists
+          ? current.categoryIds.filter((id) => id !== categoryId)
+          : [...current.categoryIds, categoryId],
+      }
+    })
+  }
+
   function buildPayload() {
     const newPriceRaw = form.newPrice.trim()
-    const selectedCategory = categories.find((category) => category.id === form.categoryId)
     const mainPath = mainImageUrl.trim()
     const sliderPaths = sliderImageUrls.map((url) => url.trim()).filter(Boolean)
     const images = mainPath
@@ -196,6 +213,7 @@ export function AdminProductFormPage() {
       image: mainPath,
       stock: Number(form.stock) || 0,
       images,
+      categoryIds: form.categoryIds,
       onSale: form.onSale,
     }
 
@@ -204,12 +222,6 @@ export function AdminProductFormPage() {
     if (form.famousProducts.trim()) payload.famousProducts = form.famousProducts.trim()
     if (form.suitableFor.trim()) payload.suitableFor = form.suitableFor.trim()
     if (form.keywords.trim()) payload.keywords = form.keywords.trim()
-
-    if (form.categoryId) {
-      payload.categoryId = form.categoryId
-    } else if (selectedCategory?.slug) {
-      payload.category = selectedCategory.slug
-    }
 
     return payload
   }
@@ -230,8 +242,8 @@ export function AdminProductFormPage() {
         throw new Error('نام و توضیحات الزامی است.')
       }
 
-      if (!payload.categoryId && !payload.category) {
-        throw new Error('انتخاب دسته‌بندی الزامی است.')
+      if (!payload.categoryIds?.length) {
+        throw new Error('انتخاب حداقل یک دسته‌بندی الزامی است.')
       }
 
       let productId = id
@@ -270,6 +282,7 @@ export function AdminProductFormPage() {
   }
 
   const mainPreviewSrc = mainImagePreview || (mainImageUrl ? resolveMediaUrl(mainImageUrl) : '')
+  const topLevelCategories = getTopLevelCategories(categories)
 
   if (loading) {
     return (
@@ -313,21 +326,49 @@ export function AdminProductFormPage() {
               required
             />
           </div>
-          <div className={styles.field}>
-            <label className={styles.label}>دسته‌بندی</label>
-            <select
-              className={styles.select}
-              value={form.categoryId}
-              onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value }))}
-              required
-            >
-              <option value="">انتخاب دسته‌بندی</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
+          <div className={`${styles.field} ${styles.fieldFull}`}>
+            <label className={styles.label}>دسته‌بندی‌ها</label>
+            <div className={styles.checkboxGroup}>
+              {topLevelCategories.map((parent) => {
+                const children = getSubcategories(categories, parent.id)
+
+                if (children.length === 0) {
+                  return (
+                    <label key={parent.id} className={styles.checkboxRow}>
+                      <input
+                        type="checkbox"
+                        checked={form.categoryIds.includes(parent.id)}
+                        onChange={() => toggleCategory(parent.id)}
+                      />
+                      <span>{parent.name}</span>
+                    </label>
+                  )
+                }
+
+                return (
+                  <div key={parent.id} className={styles.checkboxGroupSection}>
+                    <label className={styles.checkboxRow}>
+                      <input
+                        type="checkbox"
+                        checked={form.categoryIds.includes(parent.id)}
+                        onChange={() => toggleCategory(parent.id)}
+                      />
+                      <span>{parent.name}</span>
+                    </label>
+                    {children.map((child) => (
+                      <label key={child.id} className={`${styles.checkboxRow} ${styles.checkboxIndented}`}>
+                        <input
+                          type="checkbox"
+                          checked={form.categoryIds.includes(child.id)}
+                          onChange={() => toggleCategory(child.id)}
+                        />
+                        <span>{child.name}</span>
+                      </label>
+                    ))}
+                  </div>
+                )
+              })}
+            </div>
           </div>
           <div className={`${styles.field} ${styles.fieldFull}`}>
             <label className={styles.label}>توضیحات</label>

@@ -1,11 +1,6 @@
 import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { useAsyncData } from '@/hooks/useAsyncData'
-import { useCategories } from '@/hooks/useCategories'
-import { getNavCategories } from '@/utils/categoryHelpers'
-import { useAuth } from '@/contexts/AuthContext'
-import { useCart } from '@/contexts/CartContext'
-import { useWishlist } from '@/contexts/WishlistContext'
 import { ProductSearchForm } from '@/components/products/ProductSearchForm/ProductSearchForm'
 import {
   getHotProducts,
@@ -80,8 +75,6 @@ export function Header() {
   const { isAuthenticated, isAdmin, user } = useAuth()
   const { itemCount } = useCart()
   const { itemCount: wishlistCount } = useWishlist()
-  const { categories } = useCategories()
-  const navCategories = getNavCategories(categories)
 
   const { data: hotProducts = [] } = useAsyncData('hot', getHotProducts)
   const { data: bestsellers = [] } = useAsyncData('bestsellers', getBestsellerProducts)
@@ -180,15 +173,9 @@ export function Header() {
             )}
           </div>
 
-          {navCategories.map((category) => (
-            <NavLink
-              key={category.id}
-              to={`/categories/${category.slug}`}
-              className={styles.navLink}
-            >
-              {category.name}
-            </NavLink>
-          ))}
+          <NavLink to="/shop" className={styles.navLink}>
+            دسته‌بندی‌ها
+          </NavLink>
         </nav>
 
         <Link to="/" className={styles.brand}>
@@ -212,7 +199,6 @@ export function Header() {
       <MobileMenu
         hotProducts={hotProducts}
         bestsellers={bestsellers}
-        categories={navCategories}
         isOpen={menuOpen}
         onClose={() => setMenuOpen(false)}
       />

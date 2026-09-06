@@ -7,6 +7,7 @@ import {
   getCategoryLabel,
   getCategoryPath,
   getOriginalPrice,
+  getPrimaryCategorySlug,
   getProductBadge,
   getSalePrice,
   isInStock,
@@ -58,15 +59,27 @@ export function ProductInfo({ product }) {
     }
   }
 
+  const primaryCategorySlug = getPrimaryCategorySlug(product)
+  const categoryItems =
+    product.categories?.length
+      ? product.categories
+      : primaryCategorySlug
+        ? [{ slug: primaryCategorySlug, name: getCategoryLabel(primaryCategorySlug, categories) }]
+        : []
+
   return (
     <div className={styles.info}>
       <nav className={styles.breadcrumb} aria-label="مسیر صفحه">
         <Link to="/">خانه</Link>
         <span className={styles.sep}>/</span>
-        <Link to={getCategoryPath(product.category)}>
-          {getCategoryLabel(product.category, categories)}
-        </Link>
-        <span className={styles.sep}>/</span>
+        {categoryItems.length > 0 ? (
+          <>
+            <Link to={getCategoryPath(categoryItems[0].slug)}>
+              {categoryItems[0].name ?? getCategoryLabel(categoryItems[0].slug, categories)}
+            </Link>
+            <span className={styles.sep}>/</span>
+          </>
+        ) : null}
         <span className={styles.current}>{product.name}</span>
       </nav>
 
@@ -96,7 +109,18 @@ export function ProductInfo({ product }) {
       <dl className={styles.specs}>
         <div className={styles.spec}>
           <dt>دسته‌بندی</dt>
-          <dd>{getCategoryLabel(product.category, categories)}</dd>
+          <dd>
+            {categoryItems.length > 0
+              ? categoryItems.map((category, index) => (
+                  <span key={category.id ?? category.slug}>
+                    {index > 0 ? '، ' : ''}
+                    <Link to={getCategoryPath(category.slug)}>
+                      {category.name ?? getCategoryLabel(category.slug, categories)}
+                    </Link>
+                  </span>
+                ))
+              : '—'}
+          </dd>
         </div>
         <div className={styles.spec}>
           <dt>موجودی</dt>

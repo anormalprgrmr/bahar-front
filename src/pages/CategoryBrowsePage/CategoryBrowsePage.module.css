@@ -1,0 +1,94 @@
+.page {
+  padding: 2rem 0 3rem;
+}
+
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.breadcrumb a {
+  color: #e91e8c;
+}
+
+.header {
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+}
+
+.subtitle {
+  color: #666;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.25rem;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  min-height: 120px;
+  background: #fff;
+  border: 1px solid #f0d9e6;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(233, 30, 140, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  border-color: #f3b8d4;
+  box-shadow: 0 12px 28px rgba(233, 30, 140, 0.12);
+}
+
+.cardTitle {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #222;
+}
+
+.cardHint {
+  color: #e91e8c;
+  font-size: 0.9rem;
+}
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.9rem 1.25rem;
+  background: #e91e8c;
+  color: #fff;
+  border-radius: 12px;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+
+.cta:hover {
+  background: #d0187d;
+}
+
+.error {
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  background: #ffebee;
+  color: #c62828;
+  border-radius: 10px;
+}
+
+.muted {
+  color: #888;
+}

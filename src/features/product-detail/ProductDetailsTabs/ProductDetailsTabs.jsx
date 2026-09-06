@@ -1,5 +1,5 @@
 import { useCategories } from '@/hooks/useCategories'
-import { getCategoryLabel } from '@/utils/productHelpers'
+import { getProductCategoryLabels } from '@/utils/productHelpers'
 import { ProductExtraSpecs } from '@/components/products/ProductExtraSpecs/ProductExtraSpecs'
 import { getProductExtraSpecs } from '@/utils/productFields'
 import styles from './ProductDetailsTabs.module.css'
@@ -10,7 +10,8 @@ import styles from './ProductDetailsTabs.module.css'
 export function ProductDetailsTabs({ product }) {
   const { categories } = useCategories()
   const extraSpecs = getProductExtraSpecs(product)
-  const showDetails = extraSpecs.length > 0 || product.category || product.onSale
+  const categoryLabel = getProductCategoryLabels(product, categories)
+  const showDetails = extraSpecs.length > 0 || categoryLabel !== '—' || product.onSale
 
   if (!showDetails) return null
 
@@ -20,9 +21,7 @@ export function ProductDetailsTabs({ product }) {
         <h2 className={styles.heading}>جزئیات بیشتر</h2>
         <ProductExtraSpecs product={product} />
         <ul className={styles.features}>
-          {product.category && (
-            <li>دسته‌بندی: {getCategoryLabel(product.category, categories)}</li>
-          )}
+          {categoryLabel !== '—' && <li>دسته‌بندی: {categoryLabel}</li>}
           {product.onSale && <li>این محصول در تخفیف است</li>}
         </ul>
       </div>
