@@ -1,12 +1,12 @@
-import { INSTAGRAM_HANDLE, INSTAGRAM_URL } from '@/constants/contact'
-import styles from './Footer.module.css'
+import { INSTAGRAM_HANDLE, INSTAGRAM_URL } from "@/constants/contact";
+import styles from "./Footer.module.css";
 
 function InstagramIcon() {
   return (
     <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
       <path d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 1.9.2 2.3.4.6.2 1 .5 1.5 1 .5.5.8.9 1 1.5.2.4.4 1.1.4 2.3.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.2 1.9-.4 2.3-.2.6-.5 1-1 1.5-.5.5-.9.8-1.5 1-.4.2-1.1.4-2.3.4-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-1.9-.2-2.3-.4-.6-.2-1-.5-1.5-1-.5-.5-.8-.9-1-1.5-.2-.4-.4-1.1-.4-2.3-.1-1.3-.1-1.7-.1-4.9s0-3.6.1-4.9c.1-1.2.2-1.9.4-2.3.2-.6.5-1 1-1.5.5-.5.9-.8 1.5-1 .4-.2 1.1-.4 2.3-.4C8.4 2.2 8.8 2.2 12 2.2zm0 1.8c-3.1 0-3.5 0-4.7.1-1 .0-1.6.2-2 .3-.5.2-.8.3-1.1.6-.3.3-.5.6-.6 1.1-.1.4-.3 1-.3 2-.1 1.2-.1 1.6-.1 4.7s0 3.5.1 4.7c.0 1 .2 1.6.3 2 .2.5.3.8.6 1.1.3.3.6.5 1.1.6.4.1 1 .3 2 .3 1.2.1 1.6.1 4.7.1s3.5 0 4.7-.1c1-.0 1.6-.2 2-.3.5-.2.8-.3 1.1-.6.3-.3.5-.6.6-1.1.1-.4.3-1 .3-2 .1-1.2.1-1.6.1-4.7s0-3.5-.1-4.7c-.0-1-.2-1.6-.3-2-.2-.5-.3-.8-.6-1.1-.3-.3-.6-.5-1.1-.6-.4-.1-1-.3-2-.3-1.2-.1-1.6-.1-4.7-.1zM12 7a5 5 0 100 10 5 5 0 000-10zm0 1.8a3.2 3.2 0 110 6.4 3.2 3.2 0 010-6.4zm5.3-3.3a1.2 1.2 0 11-2.4 0 1.2 1.2 0 012.4 0z" />
     </svg>
-  )
+  );
 }
 
 export function Footer() {
@@ -51,12 +51,27 @@ export function Footer() {
               {INSTAGRAM_HANDLE}
             </a>
           </div>
+
+          <div className={styles.enamad}>
+            <h3 className={styles.title}>نماد اعتماد</h3>
+            <a
+              referrerPolicy="origin"
+              target="_blank"
+              href="https://trustseal.enamad.ir/?id=7481375&Code=g4cYiaVcRtoC2t0ObtE3cLCyRnR22tBc"
+            >
+              <img
+                referrerPolicy="origin"
+                src="https://trustseal.enamad.ir/logo.aspx?id=7481375&Code=g4cYiaVcRtoC2t0ObtE3cLCyRnR22tBc"
+                alt="نماد اعتماد الکترونیک"
+                style={{ cursor: "pointer" }}
+                code="g4cYiaVcRtoC2t0ObtE3cLCyRnR22tBc"
+              />
+            </a>
+          </div>
         </div>
 
-        <p className={styles.copyright}>
-          © ۱۴۰۴ بهار | تمامی حقوق محفوظ است.
-        </p>
+        <p className={styles.copyright}>© ۱۴۰۴ بهار | تمامی حقوق محفوظ است.</p>
       </div>
     </footer>
-  )
+  );
 }
