@@ -52,15 +52,12 @@ export function Footer() {
             </a>
           </div>
 
-          <div className={styles.enamad}>
-            <h3 className={styles.title}>نماد اعتماد</h3>
-            <div
-              dangerouslySetInnerHTML={{
-                __html:
-                  "<a referrerpolicy='origin' target='_blank' href='https://trustseal.enamad.ir/?id=7481375&Code=g4cYiaVcRtoC2t0ObtE3cLCyRnR22tBc'><img referrerpolicy='origin' src='https://trustseal.enamad.ir/logo.aspx?id=7481375&Code=g4cYiaVcRtoC2t0ObtE3cLCyRnR22tBc' alt='' style='cursor:pointer' code='g4cYiaVcRtoC2t0ObtE3cLCyRnR22tBc'></a>",
-              }}
-            />
-          </div>
+          <div
+            dangerouslySetInnerHTML={{
+              __html:
+                "<a referrerpolicy='origin' target='_blank' href='https://trustseal.enamad.ir/?id=7481375&Code=g4cYiaVcRtoC2t0ObtE3cLCyRnR22tBc'><img referrerpolicy='origin' src='https://trustseal.enamad.ir/logo.aspx?id=7481375&Code=g4cYiaVcRtoC2t0ObtE3cLCyRnR22tBc' alt='' style='cursor:pointer' code='g4cYiaVcRtoC2t0ObtE3cLCyRnR22tBc'></a>",
+            }}
+          />
         </div>
 
         <p className={styles.copyright}>© ۱۴۰۴ بهار | تمامی حقوق محفوظ است.</p>
