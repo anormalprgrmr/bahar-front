@@ -54,19 +54,12 @@ export function Footer() {
 
           <div className={styles.enamad}>
             <h3 className={styles.title}>نماد اعتماد</h3>
-            <a
-              referrerPolicy="origin"
-              target="_blank"
-              href="https://trustseal.enamad.ir/?id=7481375&Code=g4cYiaVcRtoC2t0ObtE3cLCyRnR22tBc"
-            >
-              <img
-                referrerPolicy="origin"
-                src="https://trustseal.enamad.ir/logo.aspx?id=7481375&Code=g4cYiaVcRtoC2t0ObtE3cLCyRnR22tBc"
-                alt="نماد اعتماد الکترونیک"
-                style={{ cursor: "pointer" }}
-                code="g4cYiaVcRtoC2t0ObtE3cLCyRnR22tBc"
-              />
-            </a>
+            <div
+              dangerouslySetInnerHTML={{
+                __html:
+                  "<a referrerpolicy='origin' target='_blank' href='https://trustseal.enamad.ir/?id=7481375&Code=g4cYiaVcRtoC2t0ObtE3cLCyRnR22tBc'><img referrerpolicy='origin' src='https://trustseal.enamad.ir/logo.aspx?id=7481375&Code=g4cYiaVcRtoC2t0ObtE3cLCyRnR22tBc' alt='نماد اعتماد' style='cursor:pointer' code='g4cYiaVcRtoC2t0ObtE3cLCyRnR22tBc'></a>",
+              }}
+            />
           </div>
         </div>
 
