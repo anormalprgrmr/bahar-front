@@ -57,7 +57,7 @@ export function Footer() {
             <div
               dangerouslySetInnerHTML={{
                 __html:
-                  "<a referrerpolicy='origin' target='_blank' href='https://trustseal.enamad.ir/?id=7481375&Code=g4cYiaVcRtoC2t0ObtE3cLCyRnR22tBc'><img referrerpolicy='origin' src='https://trustseal.enamad.ir/logo.aspx?id=7481375&Code=g4cYiaVcRtoC2t0ObtE3cLCyRnR22tBc' alt='نماد اعتماد' style='cursor:pointer' code='g4cYiaVcRtoC2t0ObtE3cLCyRnR22tBc'></a>",
+                  "<a referrerpolicy='origin' target='_blank' href='https://trustseal.enamad.ir/?id=7481375&Code=g4cYiaVcRtoC2t0ObtE3cLCyRnR22tBc'><img referrerpolicy='origin' src='https://trustseal.enamad.ir/logo.aspx?id=7481375&Code=g4cYiaVcRtoC2t0ObtE3cLCyRnR22tBc' alt='' style='cursor:pointer' code='g4cYiaVcRtoC2t0ObtE3cLCyRnR22tBc'></a>",
               }}
             />
           </div>
