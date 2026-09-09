@@ -7,6 +7,7 @@ import {
 import { formatPrice } from '@/utils/formatPrice'
 import { getProductCategoryLabels, getSalePrice } from '@/utils/productHelpers'
 import { useCategories } from '@/hooks/useCategories'
+import { isTrendProduct, setTrendProduct } from '@/services/products/trendService'
 import styles from './AdminShared.module.css'
 
 export function AdminProductsPage() {
@@ -57,11 +58,19 @@ export function AdminProductsPage() {
     setSuccess('')
     try {
       await adminDeleteProduct(id)
+      setTrendProduct(id, false)
       setSuccess('محصول حذف شد.')
       await load(page, query)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'حذف محصول ناموفق بود.')
     }
+  }
+
+  function handleTrendChange(productId, selected) {
+    setTrendProduct(productId, selected)
+    setProducts((current) => [...current])
+    setError('')
+    setSuccess(selected ? 'محصول به ترندها اضافه شد.' : 'محصول از ترندها حذف شد.')
   }
 
   return (
@@ -112,6 +121,7 @@ export function AdminProductsPage() {
                 <th>دسته</th>
                 <th>قیمت</th>
                 <th>موجودی</th>
+                <th>ترند</th>
                 <th>عملیات</th>
               </tr>
             </thead>
@@ -125,6 +135,14 @@ export function AdminProductsPage() {
                   <td>{getProductCategoryLabels(product, categories)}</td>
                   <td>{formatPrice(getSalePrice(product))}</td>
                   <td>{new Intl.NumberFormat('fa-IR').format(product.stock)}</td>
+                  <td>
+                    <input
+                      type="checkbox"
+                      checked={isTrendProduct(product.id)}
+                      onChange={(event) => handleTrendChange(product.id, event.target.checked)}
+                      aria-label={`انتخاب ${product.name} به‌عنوان ترند`}
+                    />
+                  </td>
                   <td>
                     <div className={styles.actions}>
                       <Link

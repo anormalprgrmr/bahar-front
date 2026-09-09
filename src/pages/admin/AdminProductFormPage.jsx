@@ -436,7 +436,7 @@ export function AdminProductFormPage() {
             />
           </div>
           <div className={`${styles.field} ${styles.fieldFull}`}>
-            <label className={styles.label}>معروف‌ترین محصولات</label>
+            <label className={styles.label}>توضیحات تکمیلی</label>
             <textarea
               className={styles.textarea}
               value={form.famousProducts}

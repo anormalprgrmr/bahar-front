@@ -7,12 +7,12 @@ import styles from './MobileMenu.module.css'
 /**
  * @param {{
  *   hotProducts: import('@/types/product').Product[]
- *   bestsellers: import('@/types/product').Product[]
+ *   trends: import('@/types/product').Product[]
  *   isOpen: boolean
  *   onClose: () => void
  * }} props
  */
-export function MobileMenu({ hotProducts, bestsellers, isOpen, onClose }) {
+export function MobileMenu({ hotProducts, trends, isOpen, onClose }) {
   const [expandedSection, setExpandedSection] = useState(null)
   const { isAuthenticated, isAdmin, user, logout } = useAuth()
 
@@ -102,8 +102,8 @@ export function MobileMenu({ hotProducts, bestsellers, isOpen, onClose }) {
                     {product.name}
                   </Link>
                 ))}
-                <p className={styles.subTitle}>پرفروش‌ترین‌ها</p>
-                {bestsellers.map((product) => (
+                <p className={styles.subTitle}>ترند ها</p>
+                {trends.map((product) => (
                   <Link
                     key={product.id}
                     to={`/products/${product.id}`}

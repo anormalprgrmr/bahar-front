@@ -87,6 +87,8 @@
   font-size: 0.95rem;
   line-height: 1.9;
   color: var(--color-text-muted);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .specs {

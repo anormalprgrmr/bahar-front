@@ -19,7 +19,7 @@ export function getProductExtraSpecs(product) {
     specs.push({ label: 'برای چه پوستیه', value: product.skinType.trim() })
   }
   if (hasProductField(product.famousProducts)) {
-    specs.push({ label: 'معروف‌ترین محصولات', value: product.famousProducts.trim() })
+    specs.push({ label: 'توضیحات تکمیلی', value: product.famousProducts.trim() })
   }
   if (hasProductField(product.suitableFor)) {
     specs.push({ label: 'مناسب چه افرادیه', value: product.suitableFor.trim() })

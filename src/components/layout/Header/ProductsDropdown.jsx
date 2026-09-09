@@ -5,10 +5,10 @@ import styles from './ProductsDropdown.module.css'
 /**
  * @param {{
  *   hotProducts: import('@/types/product').Product[]
- *   bestsellers: import('@/types/product').Product[]
+ *   trends: import('@/types/product').Product[]
  * }} props
  */
-export function ProductsDropdown({ hotProducts, bestsellers }) {
+export function ProductsDropdown({ hotProducts, trends }) {
   return (
     <div className={styles.dropdown}>
       <div className={styles.section}>
@@ -37,9 +37,9 @@ export function ProductsDropdown({ hotProducts, bestsellers }) {
       <div className={styles.divider} />
 
       <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>پرفروش‌ترین‌ها</h3>
+        <h3 className={styles.sectionTitle}>ترند ها</h3>
         <ul className={styles.list}>
-          {bestsellers.map((product) => (
+          {trends.map((product) => (
             <li key={product.id}>
               <Link to={`/products/${product.id}`} className={styles.item}>
                 <img

@@ -1,4 +1,5 @@
 import { apiClient, resolveMediaUrl, toQueryString } from '@/services/api/client'
+import { getTrendProductIds } from '@/services/products/trendService'
 
 /**
  * @param {import('@/types/product').Product} product
@@ -77,9 +78,21 @@ export async function getHotProducts() {
   return getRecentlyAddedProducts(4)
 }
 
-/** @returns {Promise<import('@/types/product').Product[]>} */
-export async function getBestsellerProducts() {
-  return getMostSalesProducts(4)
+/**
+ * Uses the admin-curated trend selection. Until an admin configures it,
+ * the current best-selling products remain as the initial fallback.
+ *
+ * @param {number} [limit=4]
+ * @returns {Promise<import('@/types/product').Product[]>}
+ */
+export async function getTrendProducts(limit = 4) {
+  const trendProductIds = getTrendProductIds()
+  if (trendProductIds === null) return getMostSalesProducts(limit)
+
+  const products = await Promise.all(
+    trendProductIds.slice(0, limit).map((id) => getProductById(id)),
+  )
+  return products.filter((product) => product !== null)
 }
 
 /** @returns {Promise<import('@/types/product').Product[]>} */

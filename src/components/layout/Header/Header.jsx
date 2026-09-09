@@ -7,7 +7,7 @@ import { useWishlist } from '@/contexts/WishlistContext'
 import { ProductSearchForm } from '@/components/products/ProductSearchForm/ProductSearchForm'
 import {
   getHotProducts,
-  getBestsellerProducts,
+  getTrendProducts,
 } from '@/services/products/productService'
 import { ProductsDropdown } from './ProductsDropdown'
 import { MobileMenu } from './MobileMenu'
@@ -80,7 +80,7 @@ export function Header() {
   const { itemCount: wishlistCount } = useWishlist()
 
   const { data: hotProducts = [] } = useAsyncData('hot', getHotProducts)
-  const { data: bestsellers = [] } = useAsyncData('bestsellers', getBestsellerProducts)
+  const { data: trends = [] } = useAsyncData('trends', getTrendProducts)
 
   return (
     <header className={styles.header}>
@@ -171,7 +171,7 @@ export function Header() {
             {dropdownOpen && (
               <ProductsDropdown
                 hotProducts={hotProducts}
-                bestsellers={bestsellers}
+                trends={trends}
               />
             )}
           </div>
@@ -201,7 +201,7 @@ export function Header() {
 
       <MobileMenu
         hotProducts={hotProducts}
-        bestsellers={bestsellers}
+        trends={trends}
         isOpen={menuOpen}
         onClose={() => setMenuOpen(false)}
       />
