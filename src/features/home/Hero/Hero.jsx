@@ -4,7 +4,8 @@ import { listSliderImages } from '@/services/homeSlider/homeSliderService'
 import styles from './Hero.module.css'
 
 export function Hero() {
-  const { data: slides = [], loading } = useAsyncData('home-slider', listSliderImages)
+  const { data, loading } = useAsyncData('home-slider', listSliderImages)
+  const slides = data ?? []
   const [activeIndex, setActiveIndex] = useState(0)
 
   useEffect(() => {

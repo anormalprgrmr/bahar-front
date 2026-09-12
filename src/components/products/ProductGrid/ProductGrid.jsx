@@ -8,6 +8,8 @@ import styles from './ProductGrid.module.css'
  * }} props
  */
 export function ProductGrid({ products, loading = false }) {
+  const list = products ?? []
+
   if (loading) {
     return (
       <div className={styles.grid}>
@@ -24,7 +26,7 @@ export function ProductGrid({ products, loading = false }) {
 
   return (
     <div className={styles.grid}>
-      {products.map((product, index) => (
+      {list.map((product, index) => (
         <div key={product.id} className={styles.item} style={{ '--i': index }}>
           <ProductCard product={product} />
         </div>

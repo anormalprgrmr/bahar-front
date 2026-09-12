@@ -79,8 +79,10 @@ export function Header() {
   const { itemCount } = useCart()
   const { itemCount: wishlistCount } = useWishlist()
 
-  const { data: hotProducts = [] } = useAsyncData('hot', getHotProducts)
-  const { data: trends = [] } = useAsyncData('trends', getTrendProducts)
+  const { data: hotData } = useAsyncData('hot', getHotProducts)
+  const { data: trendsData } = useAsyncData('trends', getTrendProducts)
+  const hotProducts = hotData ?? []
+  const trends = trendsData ?? []
 
   return (
     <header className={styles.header}>
