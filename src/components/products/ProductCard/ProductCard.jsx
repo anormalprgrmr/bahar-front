@@ -19,6 +19,11 @@ export function ProductCard({ product }) {
 
   return (
     <article className={styles.card}>
+      <div className={styles.topActions}>
+        <WishlistButton product={product} compact />
+        <ProductAskLink productName={product.name} iconOnly />
+      </div>
+
       <Link to={`/products/${product.id}`} className={styles.link}>
         <div className={styles.imageWrapper}>
           {badgeLabel && <span className={styles.badge}>{badgeLabel}</span>}
@@ -60,11 +65,6 @@ export function ProductCard({ product }) {
           </div>
         </div>
       </Link>
-
-      <div className={styles.actions}>
-        <ProductAskLink productName={product.name} />
-        <WishlistButton product={product} compact />
-      </div>
     </article>
   )
 }

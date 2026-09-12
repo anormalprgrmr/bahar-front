@@ -1,0 +1,97 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+}
+
+.quantity {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  padding: 0.25rem;
+  background: #fff;
+}
+
+.quantity button {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  font-size: 1.2rem;
+  color: var(--color-text);
+  transition: background 0.2s ease;
+}
+
+.quantity button:hover:not(:disabled) {
+  background: var(--color-primary-soft);
+}
+
+.quantity button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.quantity span {
+  min-width: 2rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+.addToCart {
+  flex: 1;
+  min-width: 180px;
+  padding: 0.85rem 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-white);
+  background: var(--color-primary);
+  border-radius: var(--radius-full);
+  transition:
+    background var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-spring),
+    box-shadow var(--duration-fast) var(--ease-out);
+}
+
+.addToCart:hover:not(:disabled) {
+  background: var(--color-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(233, 30, 140, 0.25);
+}
+
+.addToCart:disabled {
+  background: var(--color-text-light);
+  cursor: not-allowed;
+}
+
+.goToCart {
+  align-self: flex-start;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+  border-radius: var(--radius-full);
+}
+
+.compact .addToCart {
+  min-width: 140px;
+}
+
+@media (max-width: 480px) {
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .quantity {
+    justify-content: center;
+  }
+}

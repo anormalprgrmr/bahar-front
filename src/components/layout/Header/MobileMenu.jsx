@@ -117,6 +117,11 @@ export function MobileMenu({ hotProducts, trends, isOpen, onClose }) {
             )}
           </li>
           <li>
+            <NavLink to="/collections/all" className={styles.link} onClick={onClose}>
+              همه محصولات
+            </NavLink>
+          </li>
+          <li>
             <NavLink to="/shop" className={styles.link} onClick={onClose}>
               دسته‌بندی‌ها
             </NavLink>

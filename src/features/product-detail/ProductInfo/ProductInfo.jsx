@@ -1,6 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { useCart } from '@/contexts/CartContext'
+import { Link } from 'react-router-dom'
 import { useCategories } from '@/hooks/useCategories'
 import { formatPrice } from '@/utils/formatPrice'
 import {
@@ -10,54 +9,40 @@ import {
   getPrimaryCategorySlug,
   getProductBadge,
   getSalePrice,
-  isInStock,
 } from '@/utils/productHelpers'
 import { ProductAskLink } from '@/components/products/ProductAskLink/ProductAskLink'
 import { ProductExtraSpecs } from '@/components/products/ProductExtraSpecs/ProductExtraSpecs'
 import { ProductKeywords } from '@/components/products/ProductKeywords/ProductKeywords'
 import { WishlistButton } from '@/components/products/WishlistButton/WishlistButton'
+import { ProductPurchaseActions } from '@/features/product-detail/ProductPurchaseActions/ProductPurchaseActions'
 import styles from './ProductInfo.module.css'
 
+const DESCRIPTION_PREVIEW_LENGTH = 180
+
 /**
- * @param {{ product: import('@/types/product').Product }} props
+ * @param {{
+ *   product: import('@/types/product').Product
+ *   purchaseProps: import('react').ComponentProps<typeof ProductPurchaseActions>
+ * }} props
  */
-export function ProductInfo({ product }) {
-  const { addItem } = useCart()
+export function ProductInfo({ product, purchaseProps }) {
   const { categories } = useCategories()
-  const navigate = useNavigate()
-  const [quantity, setQuantity] = useState(1)
-  const [adding, setAdding] = useState(false)
-  const [added, setAdded] = useState(false)
+  const [descExpanded, setDescExpanded] = useState(false)
 
   const badgeLabel = getProductBadge(product)
   const salePrice = getSalePrice(product)
   const originalPrice = getOriginalPrice(product)
-  const inStock = isInStock(product)
   const discountPercent =
     originalPrice != null && originalPrice > salePrice
       ? Math.round(((originalPrice - salePrice) / originalPrice) * 100)
       : null
 
-  function decreaseQuantity() {
-    setQuantity((value) => Math.max(1, value - 1))
-  }
-
-  function increaseQuantity() {
-    setQuantity((value) => Math.min(product.stock || 99, value + 1))
-  }
-
-  async function handleAddToCart() {
-    if (!inStock || adding) return
-
-    setAdding(true)
-    try {
-      await addItem(product, quantity)
-      setAdded(true)
-      setTimeout(() => setAdded(false), 2000)
-    } finally {
-      setAdding(false)
-    }
-  }
+  const description = product.description?.trim() ?? ''
+  const needsTruncation = description.length > DESCRIPTION_PREVIEW_LENGTH
+  const visibleDescription =
+    !needsTruncation || descExpanded
+      ? description
+      : `${description.slice(0, DESCRIPTION_PREVIEW_LENGTH).trim()}…`
 
   const primaryCategorySlug = getPrimaryCategorySlug(product)
   const categoryItems =
@@ -69,13 +54,19 @@ export function ProductInfo({ product }) {
 
   return (
     <div className={styles.info}>
+      <div className={styles.topBar}>
+        <WishlistButton product={product} />
+        <ProductAskLink productName={product.name} iconOnly />
+      </div>
+
       <nav className={styles.breadcrumb} aria-label="مسیر صفحه">
         <Link to="/">خانه</Link>
         <span className={styles.sep}>/</span>
         {categoryItems.length > 0 ? (
           <>
             <Link to={getCategoryPath(categoryItems[0].slug)}>
-              {categoryItems[0].name ?? getCategoryLabel(categoryItems[0].slug, categories)}
+              {categoryItems[0].name ??
+                getCategoryLabel(categoryItems[0].slug, categories)}
             </Link>
             <span className={styles.sep}>/</span>
           </>
@@ -101,7 +92,22 @@ export function ProductInfo({ product }) {
         )}
       </div>
 
-      <p className={styles.description}>{product.description}</p>
+      <div className={styles.topBuy}>
+        <ProductPurchaseActions {...purchaseProps} />
+      </div>
+
+      <div className={styles.descriptionBlock}>
+        <p className={styles.description}>{visibleDescription}</p>
+        {needsTruncation && (
+          <button
+            type="button"
+            className={styles.seeMore}
+            onClick={() => setDescExpanded((value) => !value)}
+          >
+            {descExpanded ? 'بستن' : 'مشاهده بیشتر'}
+          </button>
+        )}
+      </div>
 
       <ProductExtraSpecs product={product} />
       <ProductKeywords product={product} />
@@ -115,7 +121,8 @@ export function ProductInfo({ product }) {
                   <span key={category.id ?? category.slug}>
                     {index > 0 ? '، ' : ''}
                     <Link to={getCategoryPath(category.slug)}>
-                      {category.name ?? getCategoryLabel(category.slug, categories)}
+                      {category.name ??
+                        getCategoryLabel(category.slug, categories)}
                     </Link>
                   </span>
                 ))
@@ -124,67 +131,13 @@ export function ProductInfo({ product }) {
         </div>
         <div className={styles.spec}>
           <dt>موجودی</dt>
-          <dd className={inStock ? styles.inStock : styles.outOfStock}>
-            {inStock
+          <dd>
+            {(product.stock ?? 0) > 0
               ? `${new Intl.NumberFormat('fa-IR').format(product.stock)} عدد`
               : 'ناموجود'}
           </dd>
         </div>
       </dl>
-
-      <div className={styles.secondaryActions}>
-        <ProductAskLink productName={product.name} />
-        <WishlistButton product={product} />
-      </div>
-
-      <div className={styles.actions}>
-        <div className={styles.quantity}>
-          <button
-            type="button"
-            onClick={decreaseQuantity}
-            aria-label="کاهش تعداد"
-            disabled={quantity <= 1}
-          >
-            −
-          </button>
-          <span aria-live="polite">
-            {new Intl.NumberFormat('fa-IR').format(quantity)}
-          </span>
-          <button
-            type="button"
-            onClick={increaseQuantity}
-            aria-label="افزایش تعداد"
-            disabled={quantity >= product.stock}
-          >
-            +
-          </button>
-        </div>
-
-        <button
-          type="button"
-          className={styles.addToCart}
-          disabled={!inStock || adding}
-          onClick={handleAddToCart}
-        >
-          {!inStock
-            ? 'ناموجود'
-            : adding
-              ? 'در حال افزودن...'
-              : added
-                ? 'به سبد اضافه شد ✓'
-                : 'افزودن به سبد خرید'}
-        </button>
-      </div>
-
-      {added && (
-        <button
-          type="button"
-          className={styles.goToCart}
-          onClick={() => navigate('/cart')}
-        >
-          مشاهده سبد خرید
-        </button>
-      )}
     </div>
   )
 }

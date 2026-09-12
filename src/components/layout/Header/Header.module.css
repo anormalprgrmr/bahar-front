@@ -106,7 +106,13 @@
   position: relative;
 }
 
-.actions {
+.actionsStart {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.actionsEnd {
   display: flex;
   align-items: center;
   gap: 0.5rem;

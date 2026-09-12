@@ -9,3 +9,21 @@
   color: #e91e8c;
   text-decoration: underline;
 }
+
+.iconLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  color: #e91e8c;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: transform var(--duration-fast) ease, background var(--duration-fast) ease;
+}
+
+.iconLink:hover {
+  transform: scale(1.06);
+  background: #fff;
+}

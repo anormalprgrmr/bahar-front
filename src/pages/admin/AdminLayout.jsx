@@ -1,9 +1,9 @@
-import { NavLink, Outlet, Link } from 'react-router-dom'
-import { useAuth } from '@/contexts/AuthContext'
-import styles from './AdminLayout.module.css'
+import { NavLink, Outlet, Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import styles from "./AdminLayout.module.css";
 
 export function AdminLayout() {
-  const { user, logout } = useAuth()
+  const { user, logout } = useAuth();
 
   return (
     <div className={styles.shell}>
@@ -21,6 +21,9 @@ export function AdminLayout() {
           <NavLink to="/admin/categories" className={styles.link}>
             دسته‌بندی‌ها
           </NavLink>
+          <NavLink to="/admin/slider" className={styles.link}>
+            اسلایدر صفحه اصلی
+          </NavLink>
           <NavLink to="/admin/orders" className={styles.link}>
             سفارش‌ها
           </NavLink>
@@ -36,7 +39,11 @@ export function AdminLayout() {
           <Link to="/" className={styles.storeLink}>
             مشاهده فروشگاه
           </Link>
-          <button type="button" className={styles.logout} onClick={() => logout()}>
+          <button
+            type="button"
+            className={styles.logout}
+            onClick={() => logout()}
+          >
             خروج
           </button>
         </div>
@@ -45,5 +52,5 @@ export function AdminLayout() {
         <Outlet />
       </main>
     </div>
-  )
+  );
 }

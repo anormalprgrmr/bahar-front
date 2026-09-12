@@ -1,288 +1,314 @@
-import { useEffect, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   adminCreateProduct,
   adminUpdateProduct,
   adminUploadProductImage,
   adminUploadProductImages,
-} from '@/services/admin/adminProductService'
-import { adminListCategories } from '@/services/admin/adminCategoryService'
-import { getProductById } from '@/services/products/productService'
-import { resolveMediaUrl, toApiImagePath } from '@/services/api/client'
-import { getSubcategories, getTopLevelCategories } from '@/utils/categoryHelpers'
-import styles from './AdminShared.module.css'
+} from "@/services/admin/adminProductService";
+import { adminListCategories } from "@/services/admin/adminCategoryService";
+import { getProductById } from "@/services/products/productService";
+import { resolveMediaUrl, toApiImagePath } from "@/services/api/client";
+import {
+  getSubcategories,
+  getTopLevelCategories,
+} from "@/utils/categoryHelpers";
+import styles from "./AdminShared.module.css";
 
 const emptyForm = {
-  name: '',
-  description: '',
-  price: '',
-  newPrice: '',
-  stock: '0',
+  name: "",
+  description: "",
+  price: "",
+  newPrice: "",
+  stock: "0",
   categoryIds: [],
-  country: '',
-  skinType: '',
-  famousProducts: '',
-  suitableFor: '',
-  keywords: '',
+  country: "",
+  skinType: "",
+  famousProducts: "",
+  suitableFor: "",
+  keywords: "",
   onSale: false,
-}
+};
 
 /**
  * @param {File} file
  */
 function createPreviewUrl(file) {
-  return URL.createObjectURL(file)
+  return URL.createObjectURL(file);
 }
 
 export function AdminProductFormPage() {
-  const { id } = useParams()
-  const navigate = useNavigate()
-  const isEditing = Boolean(id)
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const isEditing = Boolean(id);
 
   const [categories, setCategories] = useState(
     /** @type {import('@/types/category').Category[]} */ ([]),
-  )
-  const [form, setForm] = useState(emptyForm)
-  const [loading, setLoading] = useState(isEditing)
-  const [error, setError] = useState('')
-  const [saving, setSaving] = useState(false)
+  );
+  const [form, setForm] = useState(emptyForm);
+  const [loading, setLoading] = useState(isEditing);
+  const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
 
-  const [mainImageUrl, setMainImageUrl] = useState('')
-  const [mainImageFile, setMainImageFile] = useState(/** @type {File | null} */ (null))
-  const [mainImagePreview, setMainImagePreview] = useState('')
+  const [mainImageUrl, setMainImageUrl] = useState("");
+  const [mainImageFile, setMainImageFile] = useState(
+    /** @type {File | null} */ (null),
+  );
+  const [mainImagePreview, setMainImagePreview] = useState("");
 
-  const [sliderImageUrls, setSliderImageUrls] = useState(/** @type {string[]} */ ([]))
-  const [sliderImageFiles, setSliderImageFiles] = useState(/** @type {File[]} */ ([]))
-  const [sliderImagePreviews, setSliderImagePreviews] = useState(/** @type {string[]} */ ([]))
+  const [sliderImageUrls, setSliderImageUrls] = useState(
+    /** @type {string[]} */ ([]),
+  );
+  const [sliderImageFiles, setSliderImageFiles] = useState(
+    /** @type {File[]} */ ([]),
+  );
+  const [sliderImagePreviews, setSliderImagePreviews] = useState(
+    /** @type {string[]} */ ([]),
+  );
 
   useEffect(() => {
     return () => {
-      if (mainImagePreview) URL.revokeObjectURL(mainImagePreview)
-      sliderImagePreviews.forEach((preview) => URL.revokeObjectURL(preview))
-    }
-  }, [mainImagePreview, sliderImagePreviews])
+      if (mainImagePreview) URL.revokeObjectURL(mainImagePreview);
+      sliderImagePreviews.forEach((preview) => URL.revokeObjectURL(preview));
+    };
+  }, [mainImagePreview, sliderImagePreviews]);
 
   useEffect(() => {
-    let cancelled = false
+    let cancelled = false;
 
     async function loadCategories() {
       try {
-        const result = await adminListCategories()
-        if (!cancelled) setCategories(result)
+        const result = await adminListCategories();
+        if (!cancelled) setCategories(result);
       } catch {
-        if (!cancelled) setCategories([])
+        if (!cancelled) setCategories([]);
       }
     }
 
-    loadCategories()
+    loadCategories();
     return () => {
-      cancelled = true
-    }
-  }, [])
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
-    if (!id) return
-    let cancelled = false
+    if (!id) return;
+    let cancelled = false;
 
     async function loadProduct() {
-      setLoading(true)
-      setError('')
+      setLoading(true);
+      setError("");
       try {
         const [product, categoryList] = await Promise.all([
           getProductById(id),
           adminListCategories(),
-        ])
-        if (cancelled) return
+        ]);
+        if (cancelled) return;
         if (!product) {
-          setError('محصول یافت نشد.')
-          return
+          setError("محصول یافت نشد.");
+          return;
         }
 
-        setCategories(categoryList)
-        const initialCategoryIds =
-          product.categoryIds?.length
-            ? product.categoryIds
-            : product.categories?.map((category) => category.id) ??
-              (product.category
-                ? categoryList
-                    .filter((category) => category.slug === product.category)
-                    .map((category) => category.id)
-                : [])
+        setCategories(categoryList);
+        const initialCategoryIds = product.categoryIds?.length
+          ? product.categoryIds
+          : (product.categories?.map((category) => category.id) ??
+            (product.category
+              ? categoryList
+                  .filter((category) => category.slug === product.category)
+                  .map((category) => category.id)
+              : []));
 
         setForm({
           name: product.name,
           description: product.description,
           price: String(product.price),
-          newPrice: product.newPrice != null ? String(product.newPrice) : '',
+          newPrice: product.newPrice != null ? String(product.newPrice) : "",
           stock: String(product.stock ?? 0),
           categoryIds: initialCategoryIds,
-          country: product.country ?? '',
-          skinType: product.skinType ?? '',
-          famousProducts: product.famousProducts ?? '',
-          suitableFor: product.suitableFor ?? '',
-          keywords: product.keywords ?? '',
+          country: product.country ?? "",
+          skinType: product.skinType ?? "",
+          famousProducts: product.famousProducts ?? "",
+          suitableFor: product.suitableFor ?? "",
+          keywords: product.keywords ?? "",
           onSale: Boolean(product.onSale),
-        })
+        });
 
-        const mainPath = toApiImagePath(product.image)
-        const allImages = (product.images ?? []).map((image) => toApiImagePath(image))
-        const sliderPaths = allImages.filter((image) => image && image !== mainPath)
+        const mainPath = toApiImagePath(product.image);
+        const allImages = (product.images ?? []).map((image) =>
+          toApiImagePath(image),
+        );
+        const sliderPaths = allImages.filter(
+          (image) => image && image !== mainPath,
+        );
 
-        setMainImageUrl(mainPath)
-        setSliderImageUrls(sliderPaths)
+        setMainImageUrl(mainPath);
+        setSliderImageUrls(sliderPaths);
       } catch (err) {
         if (!cancelled) {
-          setError(err instanceof Error ? err.message : 'بارگذاری محصول ناموفق بود.')
+          setError(
+            err instanceof Error ? err.message : "بارگذاری محصول ناموفق بود.",
+          );
         }
       } finally {
-        if (!cancelled) setLoading(false)
+        if (!cancelled) setLoading(false);
       }
     }
 
-    loadProduct()
+    loadProduct();
     return () => {
-      cancelled = true
-    }
-  }, [id])
+      cancelled = true;
+    };
+  }, [id]);
 
   function handleMainImageChange(event) {
-    const file = event.target.files?.[0] ?? null
-    if (mainImagePreview) URL.revokeObjectURL(mainImagePreview)
+    const file = event.target.files?.[0] ?? null;
+    if (mainImagePreview) URL.revokeObjectURL(mainImagePreview);
 
-    setMainImageFile(file)
-    setMainImagePreview(file ? createPreviewUrl(file) : '')
-    event.target.value = ''
+    setMainImageFile(file);
+    setMainImagePreview(file ? createPreviewUrl(file) : "");
+    event.target.value = "";
   }
 
   function handleRemoveMainImage() {
-    if (mainImagePreview) URL.revokeObjectURL(mainImagePreview)
-    setMainImageFile(null)
-    setMainImagePreview('')
-    setMainImageUrl('')
+    if (mainImagePreview) URL.revokeObjectURL(mainImagePreview);
+    setMainImageFile(null);
+    setMainImagePreview("");
+    setMainImageUrl("");
   }
 
   function handleSliderImagesChange(event) {
-    const files = Array.from(event.target.files ?? [])
-    if (files.length === 0) return
+    const files = Array.from(event.target.files ?? []);
+    if (files.length === 0) return;
 
-    const previews = files.map(createPreviewUrl)
-    setSliderImageFiles((current) => [...current, ...files])
-    setSliderImagePreviews((current) => [...current, ...previews])
-    event.target.value = ''
+    const previews = files.map(createPreviewUrl);
+    setSliderImageFiles((current) => [...current, ...files]);
+    setSliderImagePreviews((current) => [...current, ...previews]);
+    event.target.value = "";
   }
 
   function handleRemoveExistingSliderImage(index) {
-    setSliderImageUrls((current) => current.filter((_, itemIndex) => itemIndex !== index))
+    setSliderImageUrls((current) =>
+      current.filter((_, itemIndex) => itemIndex !== index),
+    );
   }
 
   function handleRemoveNewSliderImage(index) {
-    setSliderImageFiles((current) => current.filter((_, itemIndex) => itemIndex !== index))
+    setSliderImageFiles((current) =>
+      current.filter((_, itemIndex) => itemIndex !== index),
+    );
     setSliderImagePreviews((current) => {
-      const preview = current[index]
-      if (preview) URL.revokeObjectURL(preview)
-      return current.filter((_, itemIndex) => itemIndex !== index)
-    })
+      const preview = current[index];
+      if (preview) URL.revokeObjectURL(preview);
+      return current.filter((_, itemIndex) => itemIndex !== index);
+    });
   }
 
   function toggleCategory(categoryId) {
     setForm((current) => {
-      const exists = current.categoryIds.includes(categoryId)
+      const exists = current.categoryIds.includes(categoryId);
       return {
         ...current,
         categoryIds: exists
           ? current.categoryIds.filter((id) => id !== categoryId)
           : [...current.categoryIds, categoryId],
-      }
-    })
+      };
+    });
   }
 
   function buildPayload() {
-    const newPriceRaw = form.newPrice.trim()
-    const mainPath = mainImageUrl.trim()
-    const sliderPaths = sliderImageUrls.map((url) => url.trim()).filter(Boolean)
+    const newPriceRaw = form.newPrice.trim();
+    const mainPath = mainImageUrl.trim();
+    const sliderPaths = sliderImageUrls
+      .map((url) => url.trim())
+      .filter(Boolean);
     const images = mainPath
       ? [mainPath, ...sliderPaths.filter((url) => url !== mainPath)]
-      : sliderPaths
+      : sliderPaths;
 
     /** @type {import('@/types/product').ProductUpsertPayload} */
     const payload = {
       name: form.name.trim(),
       description: form.description.trim(),
       price: Number(form.price),
-      newPrice: newPriceRaw === '' ? null : Number(newPriceRaw),
+      newPrice: newPriceRaw === "" ? null : Number(newPriceRaw),
       image: mainPath,
       stock: Number(form.stock) || 0,
       images,
       categoryIds: form.categoryIds,
       onSale: form.onSale,
-    }
+    };
 
-    if (form.country.trim()) payload.country = form.country.trim()
-    if (form.skinType.trim()) payload.skinType = form.skinType.trim()
-    if (form.famousProducts.trim()) payload.famousProducts = form.famousProducts.trim()
-    if (form.suitableFor.trim()) payload.suitableFor = form.suitableFor.trim()
-    if (form.keywords.trim()) payload.keywords = form.keywords.trim()
+    if (form.country.trim()) payload.country = form.country.trim();
+    if (form.skinType.trim()) payload.skinType = form.skinType.trim();
+    if (form.famousProducts.trim())
+      payload.famousProducts = form.famousProducts.trim();
+    if (form.suitableFor.trim()) payload.suitableFor = form.suitableFor.trim();
+    if (form.keywords.trim()) payload.keywords = form.keywords.trim();
 
-    return payload
+    return payload;
   }
 
   async function handleSubmit(event) {
-    event.preventDefault()
-    setSaving(true)
-    setError('')
+    event.preventDefault();
+    setSaving(true);
+    setError("");
 
     try {
-      const hasMainImage = Boolean(mainImageUrl || mainImageFile)
+      const hasMainImage = Boolean(mainImageUrl || mainImageFile);
       if (!hasMainImage) {
-        throw new Error('تصویر اصلی محصول الزامی است.')
+        throw new Error("تصویر اصلی محصول الزامی است.");
       }
 
-      const payload = buildPayload()
+      const payload = buildPayload();
       if (!payload.name || !payload.description) {
-        throw new Error('نام و توضیحات الزامی است.')
+        throw new Error("نام و توضیحات الزامی است.");
       }
 
       if (!payload.categoryIds?.length) {
-        throw new Error('انتخاب حداقل یک دسته‌بندی الزامی است.')
+        throw new Error("انتخاب حداقل یک دسته‌بندی الزامی است.");
       }
 
-      let productId = id
+      let productId = id;
 
       if (isEditing && id) {
-        await adminUpdateProduct(id, payload)
+        await adminUpdateProduct(id, payload);
       } else {
         const created = await adminCreateProduct({
           ...payload,
-          image: '',
+          image: "",
           images: [],
-        })
-        productId = created.id
+        });
+        productId = created.id;
       }
 
       if (!productId) {
-        throw new Error('شناسه محصول نامعتبر است.')
+        throw new Error("شناسه محصول نامعتبر است.");
       }
 
       if (mainImageFile) {
-        await adminUploadProductImage(productId, mainImageFile, true)
+        await adminUploadProductImage(productId, mainImageFile, true);
       }
 
       if (sliderImageFiles.length > 0) {
-        await adminUploadProductImages(productId, sliderImageFiles, false)
+        await adminUploadProductImages(productId, sliderImageFiles, false);
       }
 
-      navigate('/admin/products', {
-        state: { success: isEditing ? 'محصول به‌روزرسانی شد.' : 'محصول ایجاد شد.' },
-      })
+      navigate("/admin/products", {
+        state: {
+          success: isEditing ? "محصول به‌روزرسانی شد." : "محصول ایجاد شد.",
+        },
+      });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'ذخیره محصول ناموفق بود.')
+      setError(err instanceof Error ? err.message : "ذخیره محصول ناموفق بود.");
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
   }
 
-  const mainPreviewSrc = mainImagePreview || (mainImageUrl ? resolveMediaUrl(mainImageUrl) : '')
-  const topLevelCategories = getTopLevelCategories(categories)
+  const mainPreviewSrc =
+    mainImagePreview || (mainImageUrl ? resolveMediaUrl(mainImageUrl) : "");
+  const topLevelCategories = getTopLevelCategories(categories);
 
   if (loading) {
     return (
@@ -292,7 +318,7 @@ export function AdminProductFormPage() {
         </Link>
         <p className={styles.muted}>در حال بارگذاری...</p>
       </div>
-    )
+    );
   }
 
   return (
@@ -301,17 +327,21 @@ export function AdminProductFormPage() {
         ← بازگشت به لیست محصولات
       </Link>
 
-      <h1 className={styles.title}>{isEditing ? 'ویرایش محصول' : 'ایجاد محصول'}</h1>
+      <h1 className={styles.title}>
+        {isEditing ? "ویرایش محصول" : "ایجاد محصول"}
+      </h1>
       <p className={styles.subtitle}>
-        {isEditing ? 'اطلاعات محصول را ویرایش کنید' : 'محصول جدید به فروشگاه اضافه کنید'}
+        {isEditing
+          ? "اطلاعات محصول را ویرایش کنید"
+          : "محصول جدید به فروشگاه اضافه کنید"}
       </p>
 
       {error && <p className={styles.error}>{error}</p>}
 
       {categories.length === 0 && (
         <p className={styles.error}>
-          ابتدا از{' '}
-          <Link to="/admin/categories/new">اینجا</Link> یک دسته‌بندی ایجاد کنید.
+          ابتدا از <Link to="/admin/categories/new">اینجا</Link> یک دسته‌بندی
+          ایجاد کنید.
         </p>
       )}
 
@@ -330,7 +360,7 @@ export function AdminProductFormPage() {
             <label className={styles.label}>دسته‌بندی‌ها</label>
             <div className={styles.checkboxGroup}>
               {topLevelCategories.map((parent) => {
-                const children = getSubcategories(categories, parent.id)
+                const children = getSubcategories(categories, parent.id);
 
                 if (children.length === 0) {
                   return (
@@ -342,7 +372,7 @@ export function AdminProductFormPage() {
                       />
                       <span>{parent.name}</span>
                     </label>
-                  )
+                  );
                 }
 
                 return (
@@ -356,7 +386,10 @@ export function AdminProductFormPage() {
                       <span>{parent.name}</span>
                     </label>
                     {children.map((child) => (
-                      <label key={child.id} className={`${styles.checkboxRow} ${styles.checkboxIndented}`}>
+                      <label
+                        key={child.id}
+                        className={`${styles.checkboxRow} ${styles.checkboxIndented}`}
+                      >
                         <input
                           type="checkbox"
                           checked={form.categoryIds.includes(child.id)}
@@ -366,7 +399,7 @@ export function AdminProductFormPage() {
                       </label>
                     ))}
                   </div>
-                )
+                );
               })}
             </div>
           </div>
@@ -375,7 +408,9 @@ export function AdminProductFormPage() {
             <textarea
               className={styles.textarea}
               value={form.description}
-              onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, description: e.target.value }))
+              }
               required
             />
           </div>
@@ -386,7 +421,9 @@ export function AdminProductFormPage() {
               type="number"
               min="0"
               value={form.price}
-              onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, price: e.target.value }))
+              }
               required
             />
           </div>
@@ -397,7 +434,9 @@ export function AdminProductFormPage() {
               type="number"
               min="0"
               value={form.newPrice}
-              onChange={(e) => setForm((f) => ({ ...f, newPrice: e.target.value }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, newPrice: e.target.value }))
+              }
             />
           </div>
           <div className={styles.field}>
@@ -407,7 +446,9 @@ export function AdminProductFormPage() {
               type="number"
               min="0"
               value={form.stock}
-              onChange={(e) => setForm((f) => ({ ...f, stock: e.target.value }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, stock: e.target.value }))
+              }
             />
           </div>
           <div className={styles.checkboxRow}>
@@ -415,7 +456,9 @@ export function AdminProductFormPage() {
               id="on-sale"
               type="checkbox"
               checked={form.onSale}
-              onChange={(e) => setForm((f) => ({ ...f, onSale: e.target.checked }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, onSale: e.target.checked }))
+              }
             />
             <label htmlFor="on-sale">در تخفیف</label>
           </div>
@@ -424,7 +467,9 @@ export function AdminProductFormPage() {
             <input
               className={styles.input}
               value={form.country}
-              onChange={(e) => setForm((f) => ({ ...f, country: e.target.value }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, country: e.target.value }))
+              }
             />
           </div>
           <div className={styles.field}>
@@ -432,7 +477,9 @@ export function AdminProductFormPage() {
             <input
               className={styles.input}
               value={form.skinType}
-              onChange={(e) => setForm((f) => ({ ...f, skinType: e.target.value }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, skinType: e.target.value }))
+              }
             />
           </div>
           <div className={`${styles.field} ${styles.fieldFull}`}>
@@ -440,7 +487,9 @@ export function AdminProductFormPage() {
             <textarea
               className={styles.textarea}
               value={form.famousProducts}
-              onChange={(e) => setForm((f) => ({ ...f, famousProducts: e.target.value }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, famousProducts: e.target.value }))
+              }
             />
           </div>
           <div className={`${styles.field} ${styles.fieldFull}`}>
@@ -448,7 +497,9 @@ export function AdminProductFormPage() {
             <textarea
               className={styles.textarea}
               value={form.suitableFor}
-              onChange={(e) => setForm((f) => ({ ...f, suitableFor: e.target.value }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, suitableFor: e.target.value }))
+              }
             />
           </div>
 
@@ -457,17 +508,25 @@ export function AdminProductFormPage() {
             <textarea
               className={styles.textarea}
               value={form.keywords}
-              onChange={(e) => setForm((f) => ({ ...f, keywords: e.target.value }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, keywords: e.target.value }))
+              }
               placeholder="هر کلمه در یک خط یا با ویرگول جدا کنید"
             />
           </div>
 
           <div className={`${styles.field} ${styles.fieldFull}`}>
             <label className={styles.label}>تصویر اصلی</label>
-            <p className={styles.hint}>فقط آپلود فایل — فرمت‌های JPG، PNG، WebP و GIF</p>
+            <p className={styles.hint}>
+              فقط آپلود فایل — فرمت‌های JPG، PNG، WebP و GIF
+            </p>
             {mainPreviewSrc ? (
               <div className={styles.imagePreviewCard}>
-                <img src={mainPreviewSrc} alt="پیش‌نمایش تصویر اصلی" className={styles.imagePreview} />
+                <img
+                  src={mainPreviewSrc}
+                  alt="پیش‌نمایش تصویر اصلی"
+                  className={styles.imagePreview}
+                />
                 <div className={styles.imagePreviewActions}>
                   <label className={styles.fileBtn}>
                     تغییر تصویر
@@ -478,7 +537,11 @@ export function AdminProductFormPage() {
                       onChange={handleMainImageChange}
                     />
                   </label>
-                  <button type="button" className={styles.removeImageBtn} onClick={handleRemoveMainImage}>
+                  <button
+                    type="button"
+                    className={styles.removeImageBtn}
+                    onClick={handleRemoveMainImage}
+                  >
                     حذف
                   </button>
                 </div>
@@ -499,12 +562,17 @@ export function AdminProductFormPage() {
 
           <div className={`${styles.field} ${styles.fieldFull}`}>
             <label className={styles.label}>تصاویر اسلایدر</label>
-            <p className={styles.hint}>می‌توانید چند تصویر برای گالری محصول آپلود کنید.</p>
+            <p className={styles.hint}>
+              می‌توانید چند تصویر برای گالری محصول آپلود کنید.
+            </p>
 
             {(sliderImageUrls.length > 0 || sliderImagePreviews.length > 0) && (
               <div className={styles.imageGrid}>
                 {sliderImageUrls.map((url, index) => (
-                  <div key={`existing-${url}-${index}`} className={styles.imagePreviewCard}>
+                  <div
+                    key={`existing-${url}-${index}`}
+                    className={styles.imagePreviewCard}
+                  >
                     <img
                       src={resolveMediaUrl(url)}
                       alt={`اسلایدر ${index + 1}`}
@@ -520,8 +588,15 @@ export function AdminProductFormPage() {
                   </div>
                 ))}
                 {sliderImagePreviews.map((preview, index) => (
-                  <div key={`new-${preview}`} className={styles.imagePreviewCard}>
-                    <img src={preview} alt={`اسلایدر جدید ${index + 1}`} className={styles.imagePreview} />
+                  <div
+                    key={`new-${preview}`}
+                    className={styles.imagePreviewCard}
+                  >
+                    <img
+                      src={preview}
+                      alt={`اسلایدر جدید ${index + 1}`}
+                      className={styles.imagePreview}
+                    />
                     <button
                       type="button"
                       className={styles.removeImageBtn}
@@ -561,5 +636,5 @@ export function AdminProductFormPage() {
         </div>
       </form>
     </div>
-  )
+  );
 }

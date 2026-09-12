@@ -1,13 +1,11 @@
-import { Link } from 'react-router-dom'
-import styles from './AdminShared.module.css'
+import { Link } from "react-router-dom";
+import styles from "./AdminShared.module.css";
 
 export function AdminDashboardPage() {
   return (
     <div>
       <h1 className={styles.title}>داشبورد مدیریت</h1>
-      <p className={styles.subtitle}>
-        مدیریت محصولات و سفارش‌های فروشگاه بهار
-      </p>
+      <p className={styles.subtitle}>مدیریت محصولات و سفارش‌های فروشگاه بهار</p>
       <div className={styles.cards}>
         <Link to="/admin/products" className={styles.card}>
           <h2>محصولات</h2>
@@ -31,5 +29,5 @@ export function AdminDashboardPage() {
         </Link>
       </div>
     </div>
-  )
+  );
 }

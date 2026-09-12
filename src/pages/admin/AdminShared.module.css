@@ -1,405 +1,405 @@
 .title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 0.35rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.35rem;
 }
 
 .subtitle {
-  color: #666;
-  margin-bottom: 1.5rem;
+    color: #666;
+    margin-bottom: 1.5rem;
 }
 
 .pageHeader {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1rem;
 }
 
 .pageHeader .subtitle {
-  margin-bottom: 0;
+    margin-bottom: 0;
 }
 
 .backLink {
-  display: inline-block;
-  margin-bottom: 1rem;
-  color: #e91e8c;
-  font-size: 0.9rem;
-  font-weight: 600;
+    display: inline-block;
+    margin-bottom: 1rem;
+    color: #e91e8c;
+    font-size: 0.9rem;
+    font-weight: 600;
 }
 
 .backLink:hover {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 
 .formActions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  justify-content: flex-end;
-  margin-top: 1.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    margin-top: 1.25rem;
 }
 
 .primaryBtn,
 .dangerBtn,
 .ghostBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.65rem 1.1rem;
-  border-radius: 999px;
-  font-weight: 600;
-  font-size: 0.85rem;
-  text-decoration: none;
-  border: none;
-  cursor: pointer;
-  font-family: inherit;
-  transition:
-    transform var(--duration-fast) var(--ease-out),
-    background var(--duration-fast) ease,
-    box-shadow var(--duration-fast) ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.65rem 1.1rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    transition:
+        transform var(--duration-fast) var(--ease-out),
+        background var(--duration-fast) ease,
+        box-shadow var(--duration-fast) ease;
 }
 
 .cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
 }
 
 .card {
-  padding: 1.25rem;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
-  transition:
-    transform var(--duration-normal) var(--ease-out),
-    box-shadow var(--duration-normal) var(--ease-out);
+    padding: 1.25rem;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+    transition:
+        transform var(--duration-normal) var(--ease-out),
+        box-shadow var(--duration-normal) var(--ease-out);
 }
 
 .card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(233, 30, 140, 0.12);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(233, 30, 140, 0.12);
 }
 
 .card h2 {
-  font-size: 1.1rem;
-  margin-bottom: 0.4rem;
-  color: #e91e8c;
+    font-size: 1.1rem;
+    margin-bottom: 0.4rem;
+    color: #e91e8c;
 }
 
 .card p {
-  color: #666;
-  font-size: 0.9rem;
+    color: #666;
+    font-size: 0.9rem;
 }
 
 .toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
 }
 
 .search {
-  min-width: 220px;
-  flex: 1;
-  padding: 0.7rem 1rem;
-  border: 1px solid #eee;
-  border-radius: 10px;
-  font-family: inherit;
+    min-width: 220px;
+    flex: 1;
+    padding: 0.7rem 1rem;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    font-family: inherit;
 }
 
 .primaryBtn:hover,
 .ghostBtn:hover {
-  transform: translateY(-1px);
+    transform: translateY(-1px);
 }
 
 .primaryBtn {
-  background: #e91e8c;
-  color: #fff;
+    background: #e91e8c;
+    color: #fff;
 }
 
 .primaryBtn:hover {
-  background: #c2185b;
+    background: #c2185b;
 }
 
 .dangerBtn {
-  background: #ffebee;
-  color: #c62828;
+    background: #ffebee;
+    color: #c62828;
 }
 
 .ghostBtn {
-  background: #f5f5f5;
-  color: #333;
+    background: #f5f5f5;
+    color: #333;
 }
 
 .tableWrap {
-  overflow-x: auto;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+    overflow-x: auto;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
 }
 
 .table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.9rem;
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
 }
 
 .table th,
 .table td {
-  padding: 0.85rem 1rem;
-  text-align: right;
-  border-bottom: 1px solid #f0f0f0;
-  vertical-align: middle;
+    padding: 0.85rem 1rem;
+    text-align: right;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
 }
 
 .table th {
-  background: #fafafa;
-  font-weight: 600;
+    background: #fafafa;
+    font-weight: 600;
 }
 
 .thumb {
-  width: 48px;
-  height: 48px;
-  object-fit: cover;
-  border-radius: 8px;
-  background: #fce7f0;
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 8px;
+    background: #fce7f0;
 }
 
 .actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
 }
 
 .error {
-  padding: 0.75rem 1rem;
-  margin-bottom: 1rem;
-  background: #ffebee;
-  color: #c62828;
-  border-radius: 10px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    background: #ffebee;
+    color: #c62828;
+    border-radius: 10px;
 }
 
 .success {
-  padding: 0.75rem 1rem;
-  margin-bottom: 1rem;
-  background: #e8f5e9;
-  color: #2e7d32;
-  border-radius: 10px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    background: #e8f5e9;
+    color: #2e7d32;
+    border-radius: 10px;
 }
 
 .muted {
-  color: #888;
+    color: #888;
 }
 
 .formGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
 }
 
 .formCard {
-  margin-bottom: 1.25rem;
-  padding: 1.25rem;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.25rem;
+    padding: 1.25rem;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
 }
 
 .field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
 }
 
 .fieldFull {
-  grid-column: 1 / -1;
+    grid-column: 1 / -1;
 }
 
 .label {
-  font-size: 0.85rem;
-  font-weight: 500;
+    font-size: 0.85rem;
+    font-weight: 500;
 }
 
 .input,
 .textarea,
 .select {
-  padding: 0.7rem 0.9rem;
-  border: 1px solid #eee;
-  border-radius: 10px;
-  font-family: inherit;
-  font-size: 0.9rem;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 0.9rem;
 }
 
 .textarea {
-  min-height: 100px;
-  resize: vertical;
+    min-height: 100px;
+    resize: vertical;
 }
 
 .checkboxRow {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 1.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.6rem;
 }
 
 .checkboxGroup {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  padding: 0.75rem;
-  border: 1px solid #eee;
-  border-radius: 12px;
-  background: #fafafa;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 0.75rem;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    background: #fafafa;
 }
 
 .checkboxGroup .checkboxRow {
-  margin-top: 0;
+    margin-top: 0;
 }
 
 .checkboxGroupSection {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
 }
 
 .checkboxIndented {
-  padding-right: 1.25rem;
+    padding-right: 1.25rem;
 }
 
 .pagination {
-  display: flex;
-  gap: 0.5rem;
-  justify-content: center;
-  margin-top: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-top: 1rem;
 }
 
 .rowActions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
 }
 
 .modalBackdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-  background: rgba(0, 0, 0, 0.45);
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.45);
 }
 
 .modal {
-  width: min(100%, 480px);
-  max-height: 90vh;
-  overflow-y: auto;
-  padding: 1.25rem;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
+    width: min(100%, 480px);
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 1.25rem;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
 }
 
 .modalTitle {
-  font-size: 1.15rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
 }
 
 .modalActions {
-  display: flex;
-  gap: 0.75rem;
-  justify-content: flex-end;
-  margin-top: 0.5rem;
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    margin-top: 0.5rem;
 }
 
 .imageGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 0.75rem;
-  margin-bottom: 0.75rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
 }
 
 .imagePreviewCard {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  padding: 0.5rem;
-  background: #fafafa;
-  border: 1px solid #eee;
-  border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background: #fafafa;
+    border: 1px solid #eee;
+    border-radius: 12px;
 }
 
 .imagePreview {
-  width: 100%;
-  aspect-ratio: 1;
-  object-fit: cover;
-  border-radius: 8px;
-  background: #fce7f0;
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 8px;
+    background: #fce7f0;
 }
 
 .imagePreviewActions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
 }
 
 .fileDrop,
 .fileBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.75rem 1rem;
-  border: 1px dashed #e91e8c;
-  border-radius: 10px;
-  color: #e91e8c;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  background: #fff5fa;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1rem;
+    border: 1px dashed #e91e8c;
+    border-radius: 10px;
+    color: #e91e8c;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    background: #fff5fa;
 }
 
 .fileBtn {
-  border-style: solid;
-  padding: 0.45rem 0.75rem;
-  font-size: 0.8rem;
+    border-style: solid;
+    padding: 0.45rem 0.75rem;
+    font-size: 0.8rem;
 }
 
 .hiddenInput {
-  display: none;
+    display: none;
 }
 
 .removeImageBtn {
-  padding: 0.45rem 0.75rem;
-  border: none;
-  border-radius: 8px;
-  background: #ffebee;
-  color: #c62828;
-  font-size: 0.8rem;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: inherit;
+    padding: 0.45rem 0.75rem;
+    border: none;
+    border-radius: 8px;
+    background: #ffebee;
+    color: #c62828;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
 }
 
 .sectionTitle {
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
 }
 
 .hint {
-  margin: 0;
-  color: #888;
-  font-size: 0.8rem;
+    margin: 0;
+    color: #888;
+    font-size: 0.8rem;
 }
 
 @media (max-width: 800px) {
-  .formGrid {
-    grid-template-columns: 1fr;
-  }
+    .formGrid {
+        grid-template-columns: 1fr;
+    }
 }

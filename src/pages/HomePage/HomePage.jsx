@@ -8,10 +8,10 @@ export function HomePage() {
     <>
       <Hero />
       <Reveal>
-        <WeeklyDeals />
+        <FeaturedProducts />
       </Reveal>
       <Reveal delay={80}>
-        <FeaturedProducts />
+        <WeeklyDeals />
       </Reveal>
     </>
   )

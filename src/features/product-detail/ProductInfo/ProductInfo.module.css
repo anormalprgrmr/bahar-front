@@ -1,138 +1,163 @@
 .info {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-  animation: fadeInUp 0.55s var(--ease-out) 0.15s backwards;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    animation: fadeInUp 0.55s var(--ease-out) 0.15s backwards;
+}
+
+.topBar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.5rem;
+}
+
+.topBuy {
+    margin-top: 0.25rem;
+}
+
+.descriptionBlock {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.seeMore {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    padding: 0.2rem 0;
 }
 
 .breadcrumb {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.85rem;
-  color: var(--color-text-muted);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
 }
 
 .breadcrumb a:hover {
-  color: var(--color-primary);
+    color: var(--color-primary);
 }
 
 .sep {
-  color: var(--color-text-light);
+    color: var(--color-text-light);
 }
 
 .current {
-  color: var(--color-text);
-  font-weight: 500;
+    color: var(--color-text);
+    font-weight: 500;
 }
 
 .meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.75rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
 }
 
 .badge {
-  padding: 0.25rem 0.75rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--color-white);
-  background: var(--color-primary);
-  border-radius: var(--radius-full);
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-white);
+    background: var(--color-primary);
+    border-radius: var(--radius-full);
 }
 
 .brand {
-  font-size: 0.85rem;
-  color: var(--color-text-muted);
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
 }
 
 .title {
-  font-size: clamp(1.4rem, 3vw, 1.85rem);
-  font-weight: 700;
-  line-height: 1.4;
-  color: var(--color-text);
+    font-size: clamp(1.4rem, 3vw, 1.85rem);
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--color-text);
 }
 
 .priceRow {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.75rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
 }
 
 .price {
-  font-size: 1.35rem;
-  font-weight: 700;
-  color: var(--color-primary);
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--color-primary);
 }
 
 .original {
-  font-size: 0.95rem;
-  color: var(--color-text-light);
-  text-decoration: line-through;
+    font-size: 0.95rem;
+    color: var(--color-text-light);
+    text-decoration: line-through;
 }
 
 .discount {
-  padding: 0.2rem 0.6rem;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--color-primary);
-  background: var(--color-primary-light);
-  border-radius: var(--radius-full);
+    padding: 0.2rem 0.6rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    background: var(--color-primary-light);
+    border-radius: var(--radius-full);
 }
 
 .description {
-  font-size: 0.95rem;
-  line-height: 1.9;
-  color: var(--color-text-muted);
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
+    font-size: 0.95rem;
+    line-height: 1.9;
+    color: var(--color-text-muted);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
 }
 
 .specs {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
-  padding: 1rem;
-  background: var(--color-primary-soft);
-  border-radius: var(--radius-md);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: var(--color-primary-soft);
+    border-radius: var(--radius-md);
 }
 
 .spec {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
 }
 
 .spec dt {
-  font-size: 0.75rem;
-  color: var(--color-text-light);
+    font-size: 0.75rem;
+    color: var(--color-text-light);
 }
 
 .spec dd {
-  font-size: 0.9rem;
-  font-weight: 500;
+    font-size: 0.9rem;
+    font-weight: 500;
 }
 
 .inStock {
-  color: #2e7d32;
+    color: #2e7d32;
 }
 
 .outOfStock {
-  color: #c62828;
+    color: #c62828;
 }
 
 .secondaryActions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--color-border);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-border);
 }
 
 .actions {

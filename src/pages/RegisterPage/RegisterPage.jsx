@@ -10,10 +10,8 @@ export function RegisterPage() {
   const location = useLocation()
   const from = location.state?.from ?? '/'
 
-  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
-  const [address, setAddress] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -28,7 +26,10 @@ export function RegisterPage() {
     setSubmitting(true)
 
     try {
-      await register({ name, email, phone, address, password })
+      if (!phone.trim()) {
+        throw new Error('شماره موبایل الزامی است.')
+      }
+      await register({ email, phone, password })
       navigate(from, { replace: true })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'ثبت‌نام ناموفق بود.')
@@ -41,24 +42,10 @@ export function RegisterPage() {
     <div className={`container ${styles.page}`}>
       <div className={styles.card}>
         <h1 className={styles.title}>ثبت‌نام</h1>
-        <p className={styles.subtitle}>حساب کاربری جدید بسازید</p>
+        <p className={styles.subtitle}>با ایمیل و شماره موبایل حساب بسازید</p>
 
         <form className={formStyles.form} onSubmit={handleSubmit}>
           {error && <p className={formStyles.error}>{error}</p>}
-
-          <div className={formStyles.field}>
-            <label className={formStyles.label} htmlFor="register-name">
-              نام و نام خانوادگی
-            </label>
-            <input
-              id="register-name"
-              type="text"
-              className={formStyles.input}
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              autoComplete="name"
-            />
-          </div>
 
           <div className={formStyles.field}>
             <label className={formStyles.label} htmlFor="register-email">
@@ -87,19 +74,7 @@ export function RegisterPage() {
               onChange={(e) => setPhone(e.target.value)}
               autoComplete="tel"
               placeholder="۰۹۱۲۱۲۳۴۵۶۷"
-            />
-          </div>
-
-          <div className={formStyles.field}>
-            <label className={formStyles.label} htmlFor="register-address">
-              آدرس
-            </label>
-            <textarea
-              id="register-address"
-              className={formStyles.textarea}
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              autoComplete="street-address"
+              required
             />
           </div>
 

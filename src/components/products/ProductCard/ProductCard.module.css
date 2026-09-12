@@ -1,4 +1,5 @@
 .card {
+  position: relative;
   display: flex;
   flex-direction: column;
   border-radius: var(--radius-md);
@@ -8,6 +9,16 @@
   transition:
     transform var(--duration-normal) var(--ease-out),
     box-shadow var(--duration-normal) var(--ease-out);
+}
+
+.topActions {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
 .link {
@@ -139,12 +150,4 @@
   font-size: 0.8rem;
   color: var(--color-text-light);
   text-decoration: line-through;
-}
-
-.actions {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  padding: 0 1rem 1rem;
 }

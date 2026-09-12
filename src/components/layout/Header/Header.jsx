@@ -85,7 +85,7 @@ export function Header() {
   return (
     <header className={styles.header}>
       <div className={`container ${styles.inner}`}>
-        <div className={styles.actions}>
+        <div className={styles.actionsStart}>
           <button
             type="button"
             className={styles.iconBtn}
@@ -101,15 +101,6 @@ export function Header() {
             {wishlistCount > 0 && (
               <span className={styles.badge}>
                 {new Intl.NumberFormat('fa-IR').format(wishlistCount)}
-              </span>
-            )}
-          </Link>
-
-          <Link to="/cart" className={styles.iconBtn} aria-label="سبد خرید">
-            <CartIcon />
-            {itemCount > 0 && (
-              <span className={styles.badge}>
-                {new Intl.NumberFormat('fa-IR').format(itemCount)}
               </span>
             )}
           </Link>
@@ -137,11 +128,23 @@ export function Header() {
           >
             <MenuIcon />
           </button>
+
+          <Link to="/" className={styles.brand}>
+            <LogoIcon />
+            <span className={styles.brandText}>
+              <span className={styles.brandName}>بهار</span>
+              <span className={styles.brandSub}>محصولات مراقبتی و آرایشی</span>
+            </span>
+          </Link>
         </div>
 
         <nav className={styles.nav}>
           <NavLink to="/" className={styles.navLink} end>
             خانه
+          </NavLink>
+
+          <NavLink to="/collections/all" className={styles.navLink}>
+            همه محصولات
           </NavLink>
 
           <div
@@ -181,13 +184,16 @@ export function Header() {
           </NavLink>
         </nav>
 
-        <Link to="/" className={styles.brand}>
-          <LogoIcon />
-          <span className={styles.brandText}>
-            <span className={styles.brandName}>بهار</span>
-            <span className={styles.brandSub}>محصولات مراقبتی و آرایشی</span>
-          </span>
-        </Link>
+        <div className={styles.actionsEnd}>
+          <Link to="/cart" className={styles.iconBtn} aria-label="سبد خرید">
+            <CartIcon />
+            {itemCount > 0 && (
+              <span className={styles.badge}>
+                {new Intl.NumberFormat('fa-IR').format(itemCount)}
+              </span>
+            )}
+          </Link>
+        </div>
       </div>
 
       {searchOpen && (

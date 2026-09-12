@@ -5,6 +5,7 @@ import { HomePage } from '@/pages/HomePage/HomePage'
 import { ProductDetailPage } from '@/pages/ProductDetailPage/ProductDetailPage'
 import { CategoryProductsPage } from '@/pages/CategoryProductsPage/CategoryProductsPage'
 import { CategoryBrowsePage } from '@/pages/CategoryBrowsePage/CategoryBrowsePage'
+import { ProductCollectionPage } from '@/pages/ProductCollectionPage/ProductCollectionPage'
 import { SearchProductsPage } from '@/pages/SearchProductsPage/SearchProductsPage'
 import { LoginPage } from '@/pages/LoginPage/LoginPage'
 import { RegisterPage } from '@/pages/RegisterPage/RegisterPage'
@@ -22,6 +23,7 @@ import { AdminOrdersPage } from '@/pages/admin/AdminOrdersPage'
 import { AdminUsersPage } from '@/pages/admin/AdminUsersPage'
 import { AdminUserEditPage } from '@/pages/admin/AdminUserEditPage'
 import { AdminBackupPage } from '@/pages/admin/AdminBackupPage'
+import { AdminSliderPage } from '@/pages/admin/AdminSliderPage'
 
 export const router = createBrowserRouter([
   {
@@ -31,6 +33,7 @@ export const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       { path: 'shop', element: <CategoryBrowsePage /> },
       { path: 'shop/:parentSlug', element: <CategoryBrowsePage /> },
+      { path: 'collections/:type', element: <ProductCollectionPage /> },
       { path: 'categories/:slug', element: <CategoryProductsPage /> },
       { path: 'search', element: <SearchProductsPage /> },
       { path: 'makeup', element: <Navigate to="/categories/makeup" replace /> },
@@ -81,6 +84,7 @@ export const router = createBrowserRouter([
       { path: 'categories', element: <AdminCategoriesPage /> },
       { path: 'categories/new', element: <AdminCategoryFormPage /> },
       { path: 'categories/:id/edit', element: <AdminCategoryFormPage /> },
+      { path: 'slider', element: <AdminSliderPage /> },
       { path: 'orders', element: <AdminOrdersPage /> },
       { path: 'users', element: <AdminUsersPage /> },
       { path: 'users/:id/edit', element: <AdminUserEditPage /> },

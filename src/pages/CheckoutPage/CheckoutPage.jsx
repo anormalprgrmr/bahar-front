@@ -14,16 +14,21 @@ import styles from './CheckoutPage.module.css'
 
 export function CheckoutPage() {
   const { orderId } = useParams()
-  const { user } = useAuth()
+  const { user, updateProfile } = useAuth()
   const { cart, total, refresh } = useCart()
   const navigate = useNavigate()
 
+  const [address, setAddress] = useState(user?.address ?? '')
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [paying, setPaying] = useState(false)
   const [mockPaid, setMockPaid] = useState(false)
   const [order, setOrder] = useState(/** @type {import('@/types/order').Order | null} */ (null))
   const [loadingOrder, setLoadingOrder] = useState(Boolean(orderId))
+
+  useEffect(() => {
+    if (user?.address) setAddress(user.address)
+  }, [user?.address])
 
   useEffect(() => {
     if (!orderId || !user) return
@@ -55,6 +60,15 @@ export function CheckoutPage() {
     setSubmitting(true)
 
     try {
+      const trimmedAddress = address.trim()
+      if (!trimmedAddress) {
+        throw new Error('آدرس تحویل الزامی است.')
+      }
+
+      if (trimmedAddress !== (user.address ?? '').trim()) {
+        await updateProfile({ address: trimmedAddress })
+      }
+
       const created = await createOrderFromCart(cart.items, user.id)
       await refresh()
       setOrder(created)
@@ -184,10 +198,22 @@ export function CheckoutPage() {
       <h1 className={styles.title}>ثبت سفارش</h1>
       <div className={styles.layout}>
         <section className={styles.card}>
-          <h2 className={styles.sectionTitle}>تأیید سبد خرید</h2>
-          <p className={styles.muted}>
-            با ثبت سفارش، اقلام سبد به سرور ارسال می‌شود.
-          </p>
+          <h2 className={styles.sectionTitle}>آدرس تحویل</h2>
+          <p className={styles.muted}>آدرس کامل خود را برای ارسال سفارش وارد کنید.</p>
+          <div className={formStyles.field}>
+            <label className={formStyles.label} htmlFor="checkout-address">
+              آدرس
+            </label>
+            <textarea
+              id="checkout-address"
+              className={formStyles.textarea}
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              rows={4}
+              required
+              placeholder="شهر، خیابان، پلاک، واحد..."
+            />
+          </div>
           {error && <p className={formStyles.error}>{error}</p>}
           <button
             type="button"

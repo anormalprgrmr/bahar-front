@@ -10,7 +10,7 @@ export function WeeklyDeals() {
   return (
     <section className={styles.section}>
       <div className="container">
-        <SectionTitle title="ترند ها" />
+        <SectionTitle title="ترند ها" moreHref="/collections/trends" />
         <ProductGrid products={products ?? []} loading={loading} />
       </div>
     </section>

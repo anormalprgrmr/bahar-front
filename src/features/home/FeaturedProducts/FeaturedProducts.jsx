@@ -10,7 +10,7 @@ export function FeaturedProducts() {
   return (
     <section className={styles.section}>
       <div className="container">
-        <SectionTitle title="جدیدترین محصولات" />
+        <SectionTitle title="جدیدترین محصولات" moreHref="/collections/latest" />
         <ProductGrid products={products ?? []} loading={loading} />
       </div>
     </section>
