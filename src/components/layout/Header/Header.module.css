@@ -210,8 +210,20 @@
     display: flex;
   }
 
+  .desktopOnly {
+    display: none;
+  }
+
   .brandSub {
     display: none;
+  }
+
+  .actionsStart {
+    gap: 0.25rem;
+  }
+
+  .inner {
+    gap: 0.5rem;
   }
 }
 

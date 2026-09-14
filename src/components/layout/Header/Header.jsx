@@ -98,7 +98,11 @@ export function Header() {
             <SearchIcon />
           </button>
 
-          <Link to="/wishlist" className={styles.iconBtn} aria-label="علاقه‌مندی‌ها">
+          <Link
+            to="/wishlist"
+            className={`${styles.iconBtn} ${styles.desktopOnly}`}
+            aria-label="علاقه‌مندی‌ها"
+          >
             <BookmarkIcon />
             {wishlistCount > 0 && (
               <span className={styles.badge}>
@@ -115,7 +119,7 @@ export function Header() {
 
           <Link
             to={isAuthenticated ? '/profile' : '/login'}
-            className={styles.iconBtn}
+            className={`${styles.iconBtn} ${styles.desktopOnly}`}
             aria-label={isAuthenticated ? 'حساب کاربری' : 'ورود'}
             title={isAuthenticated ? user?.email : 'ورود'}
           >
