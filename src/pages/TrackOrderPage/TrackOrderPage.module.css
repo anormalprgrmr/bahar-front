@@ -1,0 +1,80 @@
+.page {
+  padding: 2rem 0 4rem;
+  max-width: 640px;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.muted {
+  color: var(--color-text-muted);
+  margin-bottom: 1.5rem;
+}
+
+.form {
+  padding: 1.5rem;
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  margin-bottom: 1.5rem;
+}
+
+.submitBtn {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.85rem;
+  font-weight: 600;
+  color: var(--color-white);
+  background: var(--color-primary);
+  border-radius: var(--radius-full);
+}
+
+.submitBtn:disabled {
+  opacity: 0.7;
+}
+
+.result {
+  padding: 1.5rem;
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+}
+
+.sectionTitle {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.meta {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.meta div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.95rem;
+}
+
+.meta dt {
+  color: var(--color-text-muted);
+}
+
+.meta dd {
+  font-weight: 600;
+}
+
+.payLink {
+  display: inline-flex;
+  margin-top: 1.25rem;
+  padding: 0.7rem 1.25rem;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  background: var(--color-primary);
+  color: var(--color-white);
+}

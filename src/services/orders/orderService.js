@@ -2,14 +2,16 @@ import { apiClient, toQueryString } from '@/services/api/client'
 import { clearCart } from '@/services/cart/cartService'
 
 /**
- * @param {{ product_id: string, quantity: number }[]} items
+ * @param {import('@/types/order').CreateOrderPayload} payload
+ * @param {{ auth?: boolean }} [options]
  * @returns {Promise<import('@/types/order').Order>}
  */
-export async function createOrder(items) {
-  return apiClient('/orders', {
+export async function createOrder(payload, options = {}) {
+  const useAuth = Boolean(options.auth)
+  return apiClient(useAuth ? '/orders' : '/orders/guest', {
     method: 'POST',
-    auth: true,
-    body: JSON.stringify({ items }),
+    auth: useAuth,
+    body: JSON.stringify(payload),
   })
 }
 
@@ -17,18 +19,32 @@ export async function createOrder(items) {
  * Create order from local cart items, then clear cart.
  * @param {import('@/types/cart').CartItem[]} cartItems
  * @param {string | null} userId
+ * @param {{
+ *   name: string
+ *   phone: string
+ *   email?: string
+ *   address: string
+ *   authenticated?: boolean
+ * }} contact
  * @returns {Promise<import('@/types/order').Order>}
  */
-export async function createOrderFromCart(cartItems, userId) {
+export async function createOrderFromCart(cartItems, userId, contact) {
   if (!cartItems.length) {
     throw new Error('سبد خرید شما خالی است.')
   }
 
   const order = await createOrder(
-    cartItems.map((item) => ({
-      product_id: item.productId,
-      quantity: item.quantity,
-    })),
+    {
+      name: contact.name,
+      phone: contact.phone,
+      email: contact.email ?? '',
+      address: contact.address,
+      items: cartItems.map((item) => ({
+        product_id: item.productId,
+        quantity: item.quantity,
+      })),
+    },
+    { auth: Boolean(contact.authenticated) },
   )
 
   await clearCart(userId)
@@ -54,6 +70,18 @@ export async function getMyOrders(params = {}) {
 export async function getOrderById(orderId) {
   try {
     return await apiClient(`/orders/${orderId}`, { auth: true })
+  } catch {
+    return null
+  }
+}
+
+/**
+ * @param {string} trackingCode
+ * @returns {Promise<import('@/types/order').Order | null>}
+ */
+export async function trackOrder(trackingCode) {
+  try {
+    return await apiClient(`/orders/track/${encodeURIComponent(trackingCode)}`)
   } catch {
     return null
   }

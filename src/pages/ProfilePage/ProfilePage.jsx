@@ -208,7 +208,9 @@ export function ProfilePage() {
             {orders.map((order) => (
               <li key={order.id} className={styles.orderItem}>
                 <div>
-                  <p className={styles.orderId}>#{order.id.slice(0, 8)}</p>
+                  <p className={styles.orderId}>
+                    {order.tracking_code || `#${order.id.slice(0, 8)}`}
+                  </p>
                   <p className={styles.orderMeta}>
                     {new Date(order.created_at).toLocaleDateString('fa-IR')} ·{' '}
                     {getOrderStatusLabel(order.status)}

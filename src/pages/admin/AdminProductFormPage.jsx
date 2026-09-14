@@ -272,6 +272,24 @@ export function AdminProductFormPage() {
       let productId = id;
 
       if (isEditing && id) {
+        // Replace main image before/without wiping DB when a new file is chosen.
+        if (mainImageFile) {
+          const uploaded = await adminUploadProductImage(
+            id,
+            mainImageFile,
+            true,
+          );
+          const uploadedMain = toApiImagePath(
+            uploaded?.product?.image || uploaded?.imageUrl || "",
+          );
+          if (uploadedMain) {
+            payload.image = uploadedMain;
+            payload.images = [
+              uploadedMain,
+              ...(payload.images ?? []).filter((url) => url !== uploadedMain),
+            ];
+          }
+        }
         await adminUpdateProduct(id, payload);
       } else {
         const created = await adminCreateProduct({
@@ -280,14 +298,18 @@ export function AdminProductFormPage() {
           images: [],
         });
         productId = created.id;
+
+        if (!productId) {
+          throw new Error("شناسه محصول نامعتبر است.");
+        }
+
+        if (mainImageFile) {
+          await adminUploadProductImage(productId, mainImageFile, true);
+        }
       }
 
       if (!productId) {
         throw new Error("شناسه محصول نامعتبر است.");
-      }
-
-      if (mainImageFile) {
-        await adminUploadProductImage(productId, mainImageFile, true);
       }
 
       if (sliderImageFiles.length > 0) {
@@ -472,14 +494,15 @@ export function AdminProductFormPage() {
               }
             />
           </div>
-          <div className={styles.field}>
+          <div className={`${styles.field} ${styles.fieldFull}`}>
             <label className={styles.label}>برای چه پوستیه</label>
-            <input
-              className={styles.input}
+            <textarea
+              className={styles.textarea}
               value={form.skinType}
               onChange={(e) =>
                 setForm((f) => ({ ...f, skinType: e.target.value }))
               }
+              placeholder="هر خط یک مورد، مثلاً&#10;خشک&#10;حساس"
             />
           </div>
           <div className={`${styles.field} ${styles.fieldFull}`}>

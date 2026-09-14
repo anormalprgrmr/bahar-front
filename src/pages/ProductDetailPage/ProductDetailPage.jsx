@@ -97,7 +97,7 @@ export function ProductDetailPage() {
             <ProductPurchaseActions {...purchaseProps} compact />
           </div>
         </div>
-        <ProductInfo product={product} purchaseProps={purchaseProps} />
+        <ProductInfo product={product} />
       </div>
 
       <RelatedProducts

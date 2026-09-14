@@ -10,10 +10,6 @@ export function CartPage() {
   const navigate = useNavigate()
 
   function handleCheckout() {
-    if (!isAuthenticated) {
-      navigate('/login', { state: { from: '/checkout' } })
-      return
-    }
     navigate('/checkout')
   }
 
@@ -107,12 +103,16 @@ export function CartPage() {
           </button>
           {!isAuthenticated && (
             <p className={styles.loginHint}>
-              برای ثبت سفارش باید{' '}
+              بدون ثبت‌نام هم می‌توانید سفارش دهید. در صورت تمایل{' '}
               <Link to="/login" state={{ from: '/checkout' }}>
                 وارد شوید
               </Link>
+              .
             </p>
           )}
+          <p className={styles.loginHint}>
+            <Link to="/track">پیگیری سفارش با کد پیگیری</Link>
+          </p>
         </aside>
       </div>
     </div>

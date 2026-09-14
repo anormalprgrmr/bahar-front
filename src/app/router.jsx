@@ -13,6 +13,7 @@ import { ProfilePage } from '@/pages/ProfilePage/ProfilePage'
 import { CartPage } from '@/pages/CartPage/CartPage'
 import { WishlistPage } from '@/pages/WishlistPage/WishlistPage'
 import { CheckoutPage } from '@/pages/CheckoutPage/CheckoutPage'
+import { TrackOrderPage } from '@/pages/TrackOrderPage/TrackOrderPage'
 import { AdminLayout } from '@/pages/admin/AdminLayout'
 import { AdminDashboardPage } from '@/pages/admin/AdminDashboardPage'
 import { AdminProductsPage } from '@/pages/admin/AdminProductsPage'
@@ -51,22 +52,9 @@ export const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-      {
-        path: 'checkout',
-        element: (
-          <ProtectedRoute>
-            <CheckoutPage />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: 'checkout/:orderId',
-        element: (
-          <ProtectedRoute>
-            <CheckoutPage />
-          </ProtectedRoute>
-        ),
-      },
+      { path: 'checkout', element: <CheckoutPage /> },
+      { path: 'checkout/:orderId', element: <CheckoutPage /> },
+      { path: 'track', element: <TrackOrderPage /> },
     ],
   },
   {

@@ -21,7 +21,6 @@ export function ProductCard({ product }) {
     <article className={styles.card}>
       <div className={styles.topActions}>
         <WishlistButton product={product} compact />
-        <ProductAskLink productName={product.name} iconOnly />
       </div>
 
       <Link to={`/products/${product.id}`} className={styles.link}>
@@ -65,6 +64,10 @@ export function ProductCard({ product }) {
           </div>
         </div>
       </Link>
+
+      <div className={styles.actions}>
+        <ProductAskLink productName={product.name} withIcon />
+      </div>
     </article>
   )
 }

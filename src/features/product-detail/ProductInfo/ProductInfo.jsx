@@ -14,7 +14,6 @@ import { ProductAskLink } from '@/components/products/ProductAskLink/ProductAskL
 import { ProductExtraSpecs } from '@/components/products/ProductExtraSpecs/ProductExtraSpecs'
 import { ProductKeywords } from '@/components/products/ProductKeywords/ProductKeywords'
 import { WishlistButton } from '@/components/products/WishlistButton/WishlistButton'
-import { ProductPurchaseActions } from '@/features/product-detail/ProductPurchaseActions/ProductPurchaseActions'
 import styles from './ProductInfo.module.css'
 
 const DESCRIPTION_PREVIEW_LENGTH = 180
@@ -22,10 +21,9 @@ const DESCRIPTION_PREVIEW_LENGTH = 180
 /**
  * @param {{
  *   product: import('@/types/product').Product
- *   purchaseProps: import('react').ComponentProps<typeof ProductPurchaseActions>
  * }} props
  */
-export function ProductInfo({ product, purchaseProps }) {
+export function ProductInfo({ product }) {
   const { categories } = useCategories()
   const [descExpanded, setDescExpanded] = useState(false)
 
@@ -90,10 +88,6 @@ export function ProductInfo({ product, purchaseProps }) {
         {discountPercent && (
           <span className={styles.discount}>{discountPercent}٪ تخفیف</span>
         )}
-      </div>
-
-      <div className={styles.topBuy}>
-        <ProductPurchaseActions {...purchaseProps} />
       </div>
 
       <div className={styles.descriptionBlock}>

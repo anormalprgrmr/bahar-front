@@ -8,6 +8,7 @@ export async function adminListOrders(params = {}) {
   const query = toQueryString({
     page: params.page ?? 1,
     page_size: params.pageSize ?? 20,
+    tracking_code: params.trackingCode || undefined,
   })
   return apiClient(`/admin/orders${query}`, { auth: true })
 }

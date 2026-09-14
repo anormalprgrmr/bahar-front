@@ -184,6 +184,10 @@ export function Header() {
           <NavLink to="/shop" className={styles.navLink}>
             دسته‌بندی‌ها
           </NavLink>
+
+          <NavLink to="/track" className={styles.navLink}>
+            پیگیری سفارش
+          </NavLink>
         </nav>
 
         <div className={styles.actionsEnd}>

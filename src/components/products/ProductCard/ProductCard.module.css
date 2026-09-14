@@ -151,3 +151,12 @@
   color: var(--color-text-light);
   text-decoration: line-through;
 }
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0 0.75rem 1rem;
+  text-align: center;
+}
