@@ -1,6 +1,32 @@
+.wrapper {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.toggleBtn {
+  justify-self: start;
+  padding: 0.55rem 0.95rem;
+  border-radius: 999px;
+  border: 1px solid rgba(233, 30, 140, 0.28);
+  background: rgba(233, 30, 140, 0.06);
+  color: #e91e8c;
+  font-size: 0.88rem;
+  font-weight: 600;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.toggleBtn:hover {
+  background: rgba(233, 30, 140, 0.12);
+  border-color: rgba(233, 30, 140, 0.45);
+}
+
 .list {
   display: grid;
   gap: 0.85rem;
+  padding: 1rem;
+  border-radius: 12px;
+  background: #faf7f9;
+  border: 1px solid #f0e6ec;
 }
 
 .item {
@@ -20,12 +46,4 @@
   color: #333;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
-}
-
-.seeMore {
-  justify-self: start;
-  margin-top: 0.15rem;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #e91e8c;
 }

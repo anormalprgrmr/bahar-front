@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useCategories } from '@/hooks/useCategories'
 import { formatPrice } from '@/utils/formatPrice'
@@ -16,8 +15,6 @@ import { ProductKeywords } from '@/components/products/ProductKeywords/ProductKe
 import { WishlistButton } from '@/components/products/WishlistButton/WishlistButton'
 import styles from './ProductInfo.module.css'
 
-const DESCRIPTION_PREVIEW_LENGTH = 180
-
 /**
  * @param {{
  *   product: import('@/types/product').Product
@@ -25,7 +22,6 @@ const DESCRIPTION_PREVIEW_LENGTH = 180
  */
 export function ProductInfo({ product }) {
   const { categories } = useCategories()
-  const [descExpanded, setDescExpanded] = useState(false)
 
   const badgeLabel = getProductBadge(product)
   const salePrice = getSalePrice(product)
@@ -36,11 +32,6 @@ export function ProductInfo({ product }) {
       : null
 
   const description = product.description?.trim() ?? ''
-  const needsTruncation = description.length > DESCRIPTION_PREVIEW_LENGTH
-  const visibleDescription =
-    !needsTruncation || descExpanded
-      ? description
-      : `${description.slice(0, DESCRIPTION_PREVIEW_LENGTH).trim()}…`
 
   const primaryCategorySlug = getPrimaryCategorySlug(product)
   const categoryItems =
@@ -90,18 +81,11 @@ export function ProductInfo({ product }) {
         )}
       </div>
 
-      <div className={styles.descriptionBlock}>
-        <p className={styles.description}>{visibleDescription}</p>
-        {needsTruncation && (
-          <button
-            type="button"
-            className={styles.seeMore}
-            onClick={() => setDescExpanded((value) => !value)}
-          >
-            {descExpanded ? 'بستن' : 'مشاهده بیشتر'}
-          </button>
-        )}
-      </div>
+      {description && (
+        <div className={styles.descriptionBlock}>
+          <p className={styles.description}>{description}</p>
+        </div>
+      )}
 
       <ProductExtraSpecs product={product} />
       <ProductKeywords product={product} />

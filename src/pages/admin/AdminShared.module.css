@@ -335,12 +335,51 @@
     border-radius: 12px;
 }
 
+.mainImagePreviewCard {
+    max-width: 180px;
+}
+
 .imagePreview {
     width: 100%;
     aspect-ratio: 1;
     object-fit: cover;
     border-radius: 8px;
     background: #fce7f0;
+}
+
+.collapseHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.65rem 0.85rem;
+    margin-bottom: 0.65rem;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    background: #fafafa;
+    cursor: pointer;
+    text-align: right;
+}
+
+.collapseHeader:hover {
+    background: #fff5fa;
+}
+
+.collapseTitle {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.collapseMeta {
+    font-size: 0.8rem;
+    color: #888;
+    white-space: nowrap;
+}
+
+.collapseBody {
+    margin-top: 0.25rem;
 }
 
 .imagePreviewActions {

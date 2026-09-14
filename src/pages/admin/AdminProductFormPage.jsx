@@ -49,6 +49,7 @@ export function AdminProductFormPage() {
   const [loading, setLoading] = useState(isEditing);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+  const [categoriesOpen, setCategoriesOpen] = useState(false);
 
   const [mainImageUrl, setMainImageUrl] = useState("");
   const [mainImageFile, setMainImageFile] = useState(
@@ -379,51 +380,72 @@ export function AdminProductFormPage() {
             />
           </div>
           <div className={`${styles.field} ${styles.fieldFull}`}>
-            <label className={styles.label}>دسته‌بندی‌ها</label>
-            <div className={styles.checkboxGroup}>
-              {topLevelCategories.map((parent) => {
-                const children = getSubcategories(categories, parent.id);
+            <button
+              type="button"
+              className={styles.collapseHeader}
+              onClick={() => setCategoriesOpen((open) => !open)}
+              aria-expanded={categoriesOpen}
+            >
+              <span className={styles.collapseTitle}>دسته‌بندی‌ها</span>
+              <span className={styles.collapseMeta}>
+                {form.categoryIds.length > 0
+                  ? `${new Intl.NumberFormat("fa-IR").format(form.categoryIds.length)} انتخاب‌شده`
+                  : "هیچ موردی انتخاب نشده"}
+                {" · "}
+                {categoriesOpen ? "بستن" : "نمایش"}
+              </span>
+            </button>
+            {categoriesOpen && (
+              <div className={styles.collapseBody}>
+                <div className={styles.checkboxGroup}>
+                  {topLevelCategories.map((parent) => {
+                    const children = getSubcategories(categories, parent.id);
 
-                if (children.length === 0) {
-                  return (
-                    <label key={parent.id} className={styles.checkboxRow}>
-                      <input
-                        type="checkbox"
-                        checked={form.categoryIds.includes(parent.id)}
-                        onChange={() => toggleCategory(parent.id)}
-                      />
-                      <span>{parent.name}</span>
-                    </label>
-                  );
-                }
+                    if (children.length === 0) {
+                      return (
+                        <label key={parent.id} className={styles.checkboxRow}>
+                          <input
+                            type="checkbox"
+                            checked={form.categoryIds.includes(parent.id)}
+                            onChange={() => toggleCategory(parent.id)}
+                          />
+                          <span>{parent.name}</span>
+                        </label>
+                      );
+                    }
 
-                return (
-                  <div key={parent.id} className={styles.checkboxGroupSection}>
-                    <label className={styles.checkboxRow}>
-                      <input
-                        type="checkbox"
-                        checked={form.categoryIds.includes(parent.id)}
-                        onChange={() => toggleCategory(parent.id)}
-                      />
-                      <span>{parent.name}</span>
-                    </label>
-                    {children.map((child) => (
-                      <label
-                        key={child.id}
-                        className={`${styles.checkboxRow} ${styles.checkboxIndented}`}
+                    return (
+                      <div
+                        key={parent.id}
+                        className={styles.checkboxGroupSection}
                       >
-                        <input
-                          type="checkbox"
-                          checked={form.categoryIds.includes(child.id)}
-                          onChange={() => toggleCategory(child.id)}
-                        />
-                        <span>{child.name}</span>
-                      </label>
-                    ))}
-                  </div>
-                );
-              })}
-            </div>
+                        <label className={styles.checkboxRow}>
+                          <input
+                            type="checkbox"
+                            checked={form.categoryIds.includes(parent.id)}
+                            onChange={() => toggleCategory(parent.id)}
+                          />
+                          <span>{parent.name}</span>
+                        </label>
+                        {children.map((child) => (
+                          <label
+                            key={child.id}
+                            className={`${styles.checkboxRow} ${styles.checkboxIndented}`}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={form.categoryIds.includes(child.id)}
+                              onChange={() => toggleCategory(child.id)}
+                            />
+                            <span>{child.name}</span>
+                          </label>
+                        ))}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
           <div className={`${styles.field} ${styles.fieldFull}`}>
             <label className={styles.label}>توضیحات</label>
@@ -544,7 +566,9 @@ export function AdminProductFormPage() {
               فقط آپلود فایل — فرمت‌های JPG، PNG، WebP و GIF
             </p>
             {mainPreviewSrc ? (
-              <div className={styles.imagePreviewCard}>
+              <div
+                className={`${styles.imagePreviewCard} ${styles.mainImagePreviewCard}`}
+              >
                 <img
                   src={mainPreviewSrc}
                   alt="پیش‌نمایش تصویر اصلی"
