@@ -168,6 +168,9 @@ export function AdminProductFormPage() {
 
     setMainImageFile(file);
     setMainImagePreview(file ? createPreviewUrl(file) : "");
+    if (file) {
+      setMainImageUrl("");
+    }
     event.target.value = "";
   }
 
@@ -219,7 +222,7 @@ export function AdminProductFormPage() {
 
   function buildPayload() {
     const newPriceRaw = form.newPrice.trim();
-    const mainPath = mainImageUrl.trim();
+    const mainPath = mainImageFile ? "" : mainImageUrl.trim();
     const sliderPaths = sliderImageUrls
       .map((url) => url.trim())
       .filter(Boolean);
@@ -271,27 +274,11 @@ export function AdminProductFormPage() {
       }
 
       let productId = id;
+      let finalMainPath = payload.image?.trim() ?? "";
+      const uploadedSliderPaths = [];
 
       if (isEditing && id) {
-        // Replace main image before/without wiping DB when a new file is chosen.
-        if (mainImageFile) {
-          const uploaded = await adminUploadProductImage(
-            id,
-            mainImageFile,
-            true,
-          );
-          const uploadedMain = toApiImagePath(
-            uploaded?.product?.image || uploaded?.imageUrl || "",
-          );
-          if (uploadedMain) {
-            payload.image = uploadedMain;
-            payload.images = [
-              uploadedMain,
-              ...(payload.images ?? []).filter((url) => url !== uploadedMain),
-            ];
-          }
-        }
-        await adminUpdateProduct(id, payload);
+        productId = id;
       } else {
         const created = await adminCreateProduct({
           ...payload,
@@ -299,23 +286,54 @@ export function AdminProductFormPage() {
           images: [],
         });
         productId = created.id;
-
-        if (!productId) {
-          throw new Error("شناسه محصول نامعتبر است.");
-        }
-
-        if (mainImageFile) {
-          await adminUploadProductImage(productId, mainImageFile, true);
-        }
       }
 
       if (!productId) {
         throw new Error("شناسه محصول نامعتبر است.");
       }
 
-      if (sliderImageFiles.length > 0) {
-        await adminUploadProductImages(productId, sliderImageFiles, false);
+      if (mainImageFile) {
+        const uploaded = await adminUploadProductImage(
+          productId,
+          mainImageFile,
+          true,
+        );
+        finalMainPath = toApiImagePath(uploaded?.imageUrl || "");
+        if (!finalMainPath) {
+          throw new Error("آپلود تصویر اصلی ناموفق بود.");
+        }
       }
+
+      if (sliderImageFiles.length > 0) {
+        const uploads = await adminUploadProductImages(
+          productId,
+          sliderImageFiles,
+          false,
+        );
+        for (const upload of uploads) {
+          const path = toApiImagePath(upload?.imageUrl || "");
+          if (path) uploadedSliderPaths.push(path);
+        }
+      }
+
+      const keptSliderPaths = sliderImageUrls
+        .map((url) => toApiImagePath(url))
+        .filter(Boolean);
+      const finalImages = finalMainPath
+        ? [
+            finalMainPath,
+            ...keptSliderPaths.filter((url) => url !== finalMainPath),
+            ...uploadedSliderPaths.filter(
+              (url) => url !== finalMainPath && !keptSliderPaths.includes(url),
+            ),
+          ]
+        : [...keptSliderPaths, ...uploadedSliderPaths];
+
+      await adminUpdateProduct(productId, {
+        ...payload,
+        image: finalMainPath,
+        images: finalImages,
+      });
 
       navigate("/admin/products", {
         state: {

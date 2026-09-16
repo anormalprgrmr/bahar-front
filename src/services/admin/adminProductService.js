@@ -71,7 +71,7 @@ export async function adminUploadProductImage(productId, file, setAsMain = false
   })
 
   return {
-    imageUrl: result?.image_url,
+    imageUrl: result?.image_url ?? '',
     product: result?.product ? normalizeProduct(result.product) : null,
   }
 }
