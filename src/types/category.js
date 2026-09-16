@@ -4,6 +4,7 @@
  * @property {string} name
  * @property {string} slug
  * @property {string} [parentId]
+ * @property {number} [sortOrder]
  * @property {boolean} [showInNav]
  * @property {string} [created_at]
  */

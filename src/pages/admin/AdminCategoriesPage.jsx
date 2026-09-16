@@ -3,8 +3,14 @@ import { Link, useLocation } from 'react-router-dom'
 import {
   adminDeleteCategory,
   adminListCategories,
+  adminReorderCategories,
 } from '@/services/admin/adminCategoryService'
-import { getParentCategoryName } from '@/utils/categoryHelpers'
+import {
+  buildAdminCategoryRows,
+  getParentCategoryName,
+  getSubcategories,
+  getTopLevelCategories,
+} from '@/utils/categoryHelpers'
 import styles from './AdminShared.module.css'
 
 export function AdminCategoriesPage() {
@@ -17,6 +23,7 @@ export function AdminCategoriesPage() {
   const [success, setSuccess] = useState(
     /** @type {string} */ (location.state?.success ?? ''),
   )
+  const [reorderingId, setReorderingId] = useState('')
 
   useEffect(() => {
     if (location.state?.success) {
@@ -54,23 +61,51 @@ export function AdminCategoriesPage() {
     }
   }
 
-  const sortedCategories = [...categories].sort((left, right) => {
-    const leftParent = left.parentId ?? ''
-    const rightParent = right.parentId ?? ''
-    if (leftParent !== rightParent) {
-      if (!leftParent) return -1
-      if (!rightParent) return 1
-      return leftParent.localeCompare(rightParent)
+  /**
+   * @param {string} categoryId
+   * @param {string | null} parentId
+   * @param {-1 | 1} direction
+   */
+  async function handleMove(categoryId, parentId, direction) {
+    const siblings = parentId
+      ? getSubcategories(categories, parentId)
+      : getTopLevelCategories(categories)
+    const currentIndex = siblings.findIndex((category) => category.id === categoryId)
+    const targetIndex = currentIndex + direction
+
+    if (currentIndex < 0 || targetIndex < 0 || targetIndex >= siblings.length) {
+      return
     }
-    return left.name.localeCompare(right.name, 'fa')
-  })
+
+    const nextOrder = [...siblings]
+    const [moved] = nextOrder.splice(currentIndex, 1)
+    nextOrder.splice(targetIndex, 0, moved)
+
+    setError('')
+    setSuccess('')
+    setReorderingId(categoryId)
+
+    try {
+      await adminReorderCategories(parentId, nextOrder.map((category) => category.id))
+      setSuccess('ترتیب دسته‌بندی به‌روزرسانی شد.')
+      await load()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'تغییر ترتیب ناموفق بود.')
+    } finally {
+      setReorderingId('')
+    }
+  }
+
+  const categoryRows = buildAdminCategoryRows(categories)
 
   return (
     <div>
       <div className={styles.pageHeader}>
         <div>
           <h1 className={styles.title}>مدیریت دسته‌بندی‌ها</h1>
-          <p className={styles.subtitle}>لیست دسته‌بندی‌ها و زیردسته‌ها</p>
+          <p className={styles.subtitle}>
+            لیست دسته‌بندی‌ها، تغییر ترتیب نمایش و ویرایش
+          </p>
         </div>
         <Link to="/admin/categories/new" className={styles.primaryBtn}>
           ایجاد دسته‌بندی
@@ -96,42 +131,79 @@ export function AdminCategoriesPage() {
                 <th>نام</th>
                 <th>اسلاگ</th>
                 <th>دسته والد</th>
+                <th>ترتیب</th>
                 <th>تاریخ ایجاد</th>
                 <th>عملیات</th>
               </tr>
             </thead>
             <tbody>
-              {sortedCategories.map((category) => (
-                <tr key={category.id}>
-                  <td>
-                    {category.parentId ? `↳ ${category.name}` : category.name}
-                  </td>
-                  <td>{category.slug}</td>
-                  <td>{getParentCategoryName(categories, category.parentId) || '—'}</td>
-                  <td>
-                    {category.created_at
-                      ? new Date(category.created_at).toLocaleDateString('fa-IR')
-                      : '—'}
-                  </td>
-                  <td>
-                    <div className={styles.rowActions}>
-                      <Link
-                        to={`/admin/categories/${category.id}/edit`}
-                        className={styles.ghostBtn}
-                      >
-                        ویرایش
-                      </Link>
-                      <button
-                        type="button"
-                        className={styles.dangerBtn}
-                        onClick={() => handleDelete(category.id)}
-                      >
-                        حذف
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              {categoryRows.map(({ category, parentId, level }) => {
+                const siblings = parentId
+                  ? getSubcategories(categories, parentId)
+                  : getTopLevelCategories(categories)
+                const siblingIndex = siblings.findIndex(
+                  (item) => item.id === category.id,
+                )
+                const isFirst = siblingIndex <= 0
+                const isLast = siblingIndex >= siblings.length - 1
+                const isMoving = reorderingId === category.id
+
+                return (
+                  <tr key={category.id}>
+                    <td style={{ paddingRight: level > 0 ? '1.5rem' : undefined }}>
+                      {level > 0 ? `↳ ${category.name}` : category.name}
+                    </td>
+                    <td>{category.slug}</td>
+                    <td>
+                      {getParentCategoryName(categories, category.parentId) || '—'}
+                    </td>
+                    <td>
+                      <div className={styles.orderActions}>
+                        <button
+                          type="button"
+                          className={styles.orderBtn}
+                          disabled={isFirst || isMoving}
+                          onClick={() => handleMove(category.id, parentId, -1)}
+                          aria-label={`انتقال ${category.name} به بالا`}
+                        >
+                          ↑
+                        </button>
+                        <button
+                          type="button"
+                          className={styles.orderBtn}
+                          disabled={isLast || isMoving}
+                          onClick={() => handleMove(category.id, parentId, 1)}
+                          aria-label={`انتقال ${category.name} به پایین`}
+                        >
+                          ↓
+                        </button>
+                      </div>
+                    </td>
+                    <td>
+                      {category.created_at
+                        ? new Date(category.created_at).toLocaleDateString('fa-IR')
+                        : '—'}
+                    </td>
+                    <td>
+                      <div className={styles.rowActions}>
+                        <Link
+                          to={`/admin/categories/${category.id}/edit`}
+                          className={styles.ghostBtn}
+                        >
+                          ویرایش
+                        </Link>
+                        <button
+                          type="button"
+                          className={styles.dangerBtn}
+                          onClick={() => handleDelete(category.id)}
+                        >
+                          حذف
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
         )}

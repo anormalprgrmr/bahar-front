@@ -284,6 +284,34 @@
     gap: 0.4rem;
 }
 
+.orderActions {
+    display: inline-flex;
+    gap: 0.25rem;
+}
+
+.orderBtn {
+    min-width: 2rem;
+    padding: 0.25rem 0.45rem;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background: #fff;
+    color: #555;
+    font-size: 0.85rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.orderBtn:hover:not(:disabled) {
+    border-color: #e91e8c;
+    color: #e91e8c;
+    background: #fff5fa;
+}
+
+.orderBtn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
 .modalBackdrop {
     position: fixed;
     inset: 0;

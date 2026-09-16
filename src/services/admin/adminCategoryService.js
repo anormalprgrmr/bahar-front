@@ -44,6 +44,24 @@ export async function adminUpdateCategory(id, payload) {
 /**
  * @param {string} id
  */
+/**
+ * @param {string | null} parentId
+ * @param {string[]} orderedIds
+ */
+export async function adminReorderCategories(parentId, orderedIds) {
+  return apiClient('/categories/reorder', {
+    method: 'PUT',
+    auth: true,
+    body: JSON.stringify({
+      parentId: parentId ?? null,
+      orderedIds,
+    }),
+  })
+}
+
+/**
+ * @param {string} id
+ */
 export async function adminDeleteCategory(id) {
   return apiClient(`/categories/${id}`, {
     method: 'DELETE',
