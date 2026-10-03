@@ -273,6 +273,26 @@ export function AdminProductFormPage() {
         throw new Error("انتخاب حداقل یک دسته‌بندی الزامی است.");
       }
 
+      if (
+        payload.onSale &&
+        (payload.newPrice === null || payload.newPrice === undefined)
+      ) {
+        throw new Error(
+          "در صورت فعال بودن تخفیف، وارد کردن قیمت تخفیف‌خورده الزامی است.",
+        );
+      }
+
+      if (payload.newPrice != null) {
+        if (payload.newPrice < 0) {
+          throw new Error("قیمت تخفیف‌خورده نمی‌تواند منفی باشد.");
+        }
+        if (payload.newPrice > payload.price) {
+          throw new Error(
+            "قیمت تخفیف‌خورده باید کمتر یا مساوی قیمت اصلی باشد.",
+          );
+        }
+      }
+
       let productId = id;
       let finalMainPath = payload.image?.trim() ?? "";
       const uploadedSliderPaths = [];
@@ -696,7 +716,11 @@ export function AdminProductFormPage() {
             className={styles.primaryBtn}
             disabled={saving || categories.length === 0}
           >
-            {saving ? 'در حال ذخیره...' : isEditing ? 'ذخیره تغییرات' : 'ایجاد محصول'}
+            {saving
+              ? "در حال ذخیره..."
+              : isEditing
+                ? "ذخیره تغییرات"
+                : "ایجاد محصول"}
           </button>
         </div>
       </form>
