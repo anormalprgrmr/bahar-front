@@ -88,14 +88,16 @@ export async function trackOrder(trackingCode) {
 }
 
 /**
- * Mock payment confirmation (no payment gateway yet).
- * Order stays as created by backend (usually pending).
+ * Ask the backend to create or reuse the order's pending Zarinpal payment.
  * @param {import('@/types/order').Order} order
+ * @returns {Promise<{ payment_url: string }>}
  */
-export async function confirmMockPayment(order) {
-  await new Promise((resolve) => setTimeout(resolve, 800))
-  return {
-    ...order,
-    _mockPaid: true,
-  }
+export async function startZarinpalPayment(order) {
+  return apiClient('/payments/zarinpal/start', {
+    method: 'POST',
+    body: JSON.stringify({
+      order_id: order.id,
+      tracking_code: order.tracking_code,
+    }),
+  })
 }

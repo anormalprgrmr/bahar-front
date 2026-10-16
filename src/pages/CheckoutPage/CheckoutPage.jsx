@@ -3,9 +3,9 @@ import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { useCart } from '@/contexts/CartContext'
 import {
-  confirmMockPayment,
   createOrderFromCart,
   getOrderById,
+  startZarinpalPayment,
   trackOrder,
 } from '@/services/orders/orderService'
 import { formatPrice } from '@/utils/formatPrice'
@@ -46,7 +46,6 @@ export function CheckoutPage() {
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [paying, setPaying] = useState(false)
-  const [mockPaid, setMockPaid] = useState(false)
   const [order, setOrder] = useState(/** @type {import('@/types/order').Order | null} */ (null))
   const [loadingOrder, setLoadingOrder] = useState(Boolean(orderId))
 
@@ -152,17 +151,16 @@ export function CheckoutPage() {
     }
   }
 
-  async function handleMockPay() {
+  async function handlePay() {
     if (!order) return
     setError('')
     setPaying(true)
 
     try {
-      await confirmMockPayment(order)
-      setMockPaid(true)
+      const payment = await startZarinpalPayment(order)
+      window.location.assign(payment.payment_url)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'پرداخت ناموفق بود.')
-    } finally {
+      setError(err instanceof Error ? err.message : 'اتصال به درگاه پرداخت ناموفق بود.')
       setPaying(false)
     }
   }
@@ -175,14 +173,19 @@ export function CheckoutPage() {
     )
   }
 
-  if (order && mockPaid) {
+  if (order && order.status === 'paid') {
     return (
       <div className={`container ${styles.page}`}>
         <div className={styles.successCard}>
-          <h1 className={styles.successTitle}>پرداخت آزمایشی موفق بود</h1>
-          <p className={styles.muted}>سفارش شما ثبت شد.</p>
+          <h1 className={styles.successTitle}>پرداخت با موفقیت انجام شد</h1>
+          <p className={styles.muted}>پرداخت سفارش شما تأیید شد.</p>
+          {searchParams.get('ref_id') && (
+            <p className={styles.ref}>
+              شماره تراکنش: <strong>{searchParams.get('ref_id')}</strong>
+            </p>
+          )}
           <p className={styles.ref}>
-            کد پیگیری: <strong>{order.tracking_code}</strong>
+            کد پیگیری سفارش: <strong>{order.tracking_code}</strong>
           </p>
           <p className={styles.muted}>
             این کد را نگه دارید؛ با آن می‌توانید وضعیت سفارش را پیگیری کنید.
@@ -210,10 +213,6 @@ export function CheckoutPage() {
               بازگشت به فروشگاه
             </Link>
           </div>
-          <p className={styles.mockNote}>
-            درگاه واقعی هنوز متصل نیست؛ وضعیت سفارش در سرور تا تغییر توسط مدیر
-            همان وضعیت اولیه باقی می‌ماند.
-          </p>
         </div>
       </div>
     )
@@ -248,22 +247,22 @@ export function CheckoutPage() {
               <strong>{formatPrice(order.total_amount)}</strong>
             </div>
 
+            {searchParams.get('payment') === 'failed' && order.status === 'pending' && (
+              <p className={formStyles.error}>
+                پرداخت تأیید نشد یا توسط شما لغو شد. می‌توانید دوباره تلاش کنید.
+              </p>
+            )}
             {error && <p className={formStyles.error}>{error}</p>}
 
             {order.status === 'pending' && (
-              <>
-                <button
-                  type="button"
-                  className={styles.payBtn}
-                  onClick={handleMockPay}
-                  disabled={paying}
-                >
-                  {paying ? 'در حال اتصال به درگاه...' : 'پرداخت آزمایشی'}
-                </button>
-                <p className={styles.mockNote}>
-                  این دکمه فقط تأیید آزمایشی است و درگاه واقعی بعداً اضافه می‌شود.
-                </p>
-              </>
+              <button
+                type="button"
+                className={styles.payBtn}
+                onClick={handlePay}
+                disabled={paying}
+              >
+                {paying ? 'در حال اتصال به درگاه...' : 'پرداخت آنلاین با زرین‌پال'}
+              </button>
             )}
           </section>
         </div>

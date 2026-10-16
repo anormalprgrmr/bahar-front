@@ -105,7 +105,7 @@ Client-only (`localStorage`), keyed per user / guest. Merged on login. Not part 
 - Admin: `GET/PUT/DELETE /admin/orders...`
 - Admin users: `GET/PUT/DELETE /admin/users...`
 - Status enum: `pending | paid | processing | shipped | delivered | cancelled`
-- Checkout “mock payment” is frontend-only; real gateway TBD. Admin can set status to `paid`.
+- Checkout starts Zarinpal payments through the backend; payment confirmation and order status changes happen only after server-side verification. Admin can also set status to `paid`.
 
 ### Admin
 
@@ -134,7 +134,7 @@ Routes under `/admin`:
 | `/` | Home |
 | `/products/:id` | Product detail |
 | `/cart` | Basket |
-| `/checkout`, `/checkout/:orderId` | Order + mock pay |
+| `/checkout`, `/checkout/:orderId` | Order + Zarinpal checkout |
 | `/login`, `/register` | Auth |
 | `/profile` | User profile (`PUT /me`) + orders |
 | `/admin` | Admin shell |
