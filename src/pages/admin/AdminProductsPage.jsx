@@ -3,8 +3,8 @@ import { Link, useLocation } from 'react-router-dom'
 import {
   adminDeleteProduct,
   adminListProducts,
+  adminUpdateProductPrice,
 } from '@/services/admin/adminProductService'
-import { formatPrice } from '@/utils/formatPrice'
 import { getProductCategoryLabels, getSalePrice } from '@/utils/productHelpers'
 import { useCategories } from '@/hooks/useCategories'
 import { isTrendProduct, setTrendProduct } from '@/services/products/trendService'
@@ -19,6 +19,8 @@ export function AdminProductsPage() {
   const [query, setQuery] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [priceDrafts, setPriceDrafts] = useState(/** @type {Record<string, string>} */ ({}))
+  const [savingPriceId, setSavingPriceId] = useState('')
   const [success, setSuccess] = useState(
     /** @type {string} */ (location.state?.success ?? ''),
   )
@@ -39,6 +41,7 @@ export function AdminProductsPage() {
         q: q || undefined,
       })
       setProducts(result.data)
+      setPriceDrafts({})
       setTotalPages(result.pagination?.total_pages || 1)
       setPage(result.pagination?.page || nextPage)
     } catch (err) {
@@ -63,6 +66,43 @@ export function AdminProductsPage() {
       await load(page, query)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'حذف محصول ناموفق بود.')
+    }
+  }
+
+  async function handleQuickPriceSave(product) {
+    const rawPrice = priceDrafts[product.id] ?? String(getSalePrice(product))
+    const price = Number(rawPrice)
+    if (rawPrice.trim() === '' || !Number.isFinite(price) || price < 0 || !Number.isInteger(price)) {
+      setError('قیمت باید عدد صحیح و نامنفی بر حسب تومان باشد.')
+      return
+    }
+    if (product.newPrice != null && price > product.price) {
+      setError('قیمت نهایی نباید از قیمت اصلی بیشتر باشد.')
+      return
+    }
+
+    setError('')
+    setSuccess('')
+    setSavingPriceId(product.id)
+    try {
+      await adminUpdateProductPrice(product, price)
+      setProducts((current) => current.map((item) => item.id === product.id
+        ? {
+            ...item,
+            price: item.newPrice != null ? item.price : price,
+            newPrice: item.newPrice != null ? price : item.newPrice,
+          }
+        : item))
+      setPriceDrafts((current) => {
+        const next = { ...current }
+        delete next[product.id]
+        return next
+      })
+      setSuccess('قیمت محصول به‌روزرسانی شد.')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'به‌روزرسانی قیمت ناموفق بود.')
+    } finally {
+      setSavingPriceId('')
     }
   }
 
@@ -133,7 +173,29 @@ export function AdminProductsPage() {
                   </td>
                   <td>{product.name}</td>
                   <td>{getProductCategoryLabels(product, categories)}</td>
-                  <td>{formatPrice(getSalePrice(product))}</td>
+                  <td>
+                    <div className={styles.quickPrice}>
+                      <input
+                        className={styles.quickPriceInput}
+                        type="number"
+                        min="0"
+                        step="1"
+                        value={priceDrafts[product.id] ?? String(getSalePrice(product))}
+                        onChange={(event) =>
+                          setPriceDrafts((current) => ({ ...current, [product.id]: event.target.value }))
+                        }
+                        aria-label={`قیمت ${product.name} به تومان`}
+                      />
+                      <button
+                        type="button"
+                        className={styles.quickPriceBtn}
+                        onClick={() => handleQuickPriceSave(product)}
+                        disabled={savingPriceId === product.id || Number(priceDrafts[product.id] ?? String(getSalePrice(product))) === getSalePrice(product)}
+                      >
+                        {savingPriceId === product.id ? '...' : 'ذخیره'}
+                      </button>
+                    </div>
+                  </td>
                   <td>{new Intl.NumberFormat('fa-IR').format(product.stock)}</td>
                   <td>
                     <input

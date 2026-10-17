@@ -249,7 +249,9 @@ export function CheckoutPage() {
 
             {searchParams.get('payment') === 'failed' && order.status === 'pending' && (
               <p className={formStyles.error}>
-                پرداخت تأیید نشد یا توسط شما لغو شد. می‌توانید دوباره تلاش کنید.
+                {searchParams.get('code')
+                  ? `درگاه پرداخت، تراکنش را تأیید نکرد (کد خطا: ${searchParams.get('code')}). برای بررسی علت، این کد را به پشتیبانی اعلام کنید.`
+                  : 'پرداخت تأیید نشد یا توسط شما لغو شد. می‌توانید دوباره تلاش کنید.'}
               </p>
             )}
             {error && <p className={formStyles.error}>{error}</p>}

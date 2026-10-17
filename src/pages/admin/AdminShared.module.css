@@ -470,3 +470,36 @@
         grid-template-columns: 1fr;
     }
 }
+
+
+.quickPrice {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-width: 180px;
+}
+
+.quickPriceInput {
+    width: 105px;
+    min-width: 0;
+    padding: 0.55rem 0.65rem;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    font: inherit;
+}
+
+.quickPriceBtn {
+    padding: 0.55rem 0.7rem;
+    border: 0;
+    border-radius: 8px;
+    background: #f5f5f5;
+    color: #333;
+    font: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.quickPriceBtn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}

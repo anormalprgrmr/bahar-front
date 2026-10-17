@@ -1,4 +1,4 @@
-import { apiClient, toQueryString } from '@/services/api/client'
+import { apiClient, toApiImagePath, toQueryString } from '@/services/api/client'
 import { normalizeProduct } from '@/services/products/productService'
 
 /**
@@ -41,6 +41,31 @@ export async function adminUpdateProduct(id, payload) {
     method: 'PUT',
     auth: true,
     body: JSON.stringify(payload),
+  })
+}
+
+/**
+ * Update the currently displayed price while preserving the product's regular/sale price setup.
+ * @param {import('@/types/product').Product} product
+ * @param {number} displayedPrice
+ */
+export async function adminUpdateProductPrice(product, displayedPrice) {
+  const hasSalePrice = product.newPrice != null
+  return adminUpdateProduct(product.id, {
+    name: product.name,
+    description: product.description,
+    price: hasSalePrice ? product.price : displayedPrice,
+    newPrice: hasSalePrice ? displayedPrice : null,
+    image: toApiImagePath(product.image),
+    stock: product.stock,
+    images: (product.images ?? []).map(toApiImagePath).filter(Boolean),
+    categoryIds: product.categoryIds ?? product.categories?.map((category) => category.id) ?? [],
+    country: product.country ?? '',
+    skinType: product.skinType ?? '',
+    famousProducts: product.famousProducts ?? '',
+    suitableFor: product.suitableFor ?? '',
+    keywords: product.keywords ?? '',
+    onSale: product.onSale,
   })
 }
 
