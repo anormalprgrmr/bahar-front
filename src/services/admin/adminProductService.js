@@ -44,18 +44,12 @@ export async function adminUpdateProduct(id, payload) {
   })
 }
 
-/**
- * Update the currently displayed price while preserving the product's regular/sale price setup.
- * @param {import('@/types/product').Product} product
- * @param {number} displayedPrice
- */
-export async function adminUpdateProductPrice(product, displayedPrice) {
-  const hasSalePrice = product.newPrice != null
-  return adminUpdateProduct(product.id, {
+function buildProductUpdatePayload(product, overrides = {}) {
+  return {
     name: product.name,
     description: product.description,
-    price: hasSalePrice ? product.price : displayedPrice,
-    newPrice: hasSalePrice ? displayedPrice : null,
+    price: product.price,
+    newPrice: product.newPrice ?? null,
     image: toApiImagePath(product.image),
     stock: product.stock,
     images: (product.images ?? []).map(toApiImagePath).filter(Boolean),
@@ -66,7 +60,30 @@ export async function adminUpdateProductPrice(product, displayedPrice) {
     suitableFor: product.suitableFor ?? '',
     keywords: product.keywords ?? '',
     onSale: product.onSale,
-  })
+    ...overrides,
+  }
+}
+
+/**
+ * Update the currently displayed price while preserving the product's regular/sale price setup.
+ * @param {import('@/types/product').Product} product
+ * @param {number} displayedPrice
+ */
+export async function adminUpdateProductPrice(product, displayedPrice) {
+  const hasSalePrice = product.newPrice != null
+  return adminUpdateProduct(product.id, buildProductUpdatePayload(product, {
+    price: hasSalePrice ? product.price : displayedPrice,
+    newPrice: hasSalePrice ? displayedPrice : null,
+  }))
+}
+
+/**
+ * Update the product's available stock quantity.
+ * @param {import('@/types/product').Product} product
+ * @param {number} stock
+ */
+export async function adminUpdateProductStock(product, stock) {
+  return adminUpdateProduct(product.id, buildProductUpdatePayload(product, { stock }))
 }
 
 /**

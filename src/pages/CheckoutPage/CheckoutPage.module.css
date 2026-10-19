@@ -211,3 +211,109 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+.snapPaySection {
+  margin: 1.25rem 0;
+}
+
+.snapPayBox {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.9rem 1rem;
+  color: var(--color-text);
+  text-decoration: none;
+  border: 1px solid #e4d6ff;
+  border-radius: var(--radius-lg);
+  background: #fbf8ff;
+  transition: transform var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) ease;
+}
+
+.snapPayBox:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-soft);
+}
+
+.snapPayLogo {
+  flex: 0 0 58px;
+  width: 58px;
+  height: 58px;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+  background: var(--color-white);
+}
+
+.snapPayCopy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.25rem;
+  line-height: 1.6;
+}
+
+.snapPayCopy strong,
+.snapPayArrow {
+  color: #6336a6;
+}
+
+.snapPayCopy > span {
+  color: var(--color-text-muted);
+  font-size: 0.82rem;
+}
+
+.snapPayArrow {
+  font-size: 1.2rem;
+}
+
+.snapPayNotice {
+  margin-top: 0.5rem;
+  color: var(--color-text-muted);
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+.snapPayMessage {
+  width: 100%;
+  min-height: 150px;
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  direction: rtl;
+  resize: vertical;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font: inherit;
+  line-height: 1.7;
+}
+
+.shippingChoices {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  border: 0;
+}
+
+.shippingChoices legend {
+  margin-bottom: 0.5rem;
+}
+
+.shippingChoice {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.shippingChoice input {
+  accent-color: var(--color-primary);
+}
+
+.shippingChoiceSelected {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}

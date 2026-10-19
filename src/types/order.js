@@ -3,6 +3,10 @@
  */
 
 /**
+ * @typedef {'post' | 'tipax'} ShippingMethod
+ */
+
+/**
  * @typedef {Object} OrderItem
  * @property {string} order_id
  * @property {string} product_id
@@ -21,6 +25,7 @@
  * @property {string} [guest_phone]
  * @property {string} [guest_email]
  * @property {string} [guest_address]
+ * @property {import('@/types/order').ShippingMethod} shipping_method
  * @property {string} created_at
  * @property {import('@/types/user').AdminUser} [user]
  * @property {OrderItem[]} [items]
@@ -32,6 +37,7 @@
  * @property {string} phone
  * @property {string} [email]
  * @property {string} address
+ * @property {import('@/types/order').ShippingMethod} shipping_method
  * @property {{ product_id: string, quantity: number }[]} items
  */
 

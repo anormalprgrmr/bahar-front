@@ -8,8 +8,9 @@ import {
   startZarinpalPayment,
   trackOrder,
 } from '@/services/orders/orderService'
+import { getProductById } from '@/services/products/productService'
 import { formatPrice } from '@/utils/formatPrice'
-import { getOrderStatusLabel } from '@/utils/productHelpers'
+import { getOrderStatusLabel, getShippingMethodLabel } from '@/utils/productHelpers'
 import formStyles from '@/styles/forms.module.css'
 import styles from './CheckoutPage.module.css'
 
@@ -43,11 +44,16 @@ export function CheckoutPage() {
   const [phone, setPhone] = useState(user?.phone ?? '')
   const [email, setEmail] = useState(user?.email ?? '')
   const [address, setAddress] = useState(user?.address ?? '')
+  const [shippingMethod, setShippingMethod] = useState(/** @type {import('@/types/order').ShippingMethod | ''} */ (''))
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [paying, setPaying] = useState(false)
   const [order, setOrder] = useState(/** @type {import('@/types/order').Order | null} */ (null))
   const [loadingOrder, setLoadingOrder] = useState(Boolean(orderId))
+  const [orderProductNames, setOrderProductNames] = useState(/** @type {Record<string, string>} */ ({}))
+  const [orderProductsReady, setOrderProductsReady] = useState(false)
+  const [snapPayMessage, setSnapPayMessage] = useState('')
+  const [snapPayNotice, setSnapPayNotice] = useState('')
 
   useEffect(() => {
     if (user?.name) setName(user.name)
@@ -100,6 +106,63 @@ export function CheckoutPage() {
     }
   }, [orderId, isAuthenticated, searchParams])
 
+  useEffect(() => {
+    if (!order?.items?.length) {
+      setOrderProductNames({})
+      setOrderProductsReady(true)
+      return
+    }
+
+    let cancelled = false
+    setOrderProductsReady(false)
+    Promise.all(order.items.map(async (item) => {
+      const product = await getProductById(item.product_id)
+      return [item.product_id, product?.name ?? `محصول ${item.product_id}`]
+    })).then((entries) => {
+      if (!cancelled) {
+        setOrderProductNames(Object.fromEntries(entries))
+        setOrderProductsReady(true)
+      }
+    })
+
+    return () => {
+      cancelled = true
+    }
+  }, [order])
+
+  async function handleSnapPayRequest() {
+    if (!order) return
+
+    const itemLines = (order.items ?? []).map((item) => {
+      const name = orderProductNames[item.product_id] ?? `محصول ${item.product_id}`
+      return `- ${name} | تعداد: ${new Intl.NumberFormat('fa-IR').format(item.quantity)} | قیمت واحد: ${formatPrice(item.unit_price)} | جمع: ${formatPrice(item.unit_price * item.quantity)}`
+    })
+    const message = [
+      'درخواست خرید بدون قسط اول اسنپ پی',
+      `شناسه سفارش: ${order.id}`,
+      `کد پیگیری: ${order.tracking_code}`,
+      `وضعیت سفارش: ${getOrderStatusLabel(order.status)}`,
+      `روش ارسال: ${getShippingMethodLabel(order.shipping_method)}`,
+      `نام مشتری: ${order.guest_name ?? user?.name ?? '-'}`,
+      `شماره تماس: ${order.guest_phone ?? user?.phone ?? '-'}`,
+      `ایمیل: ${order.guest_email ?? user?.email ?? '-'}`,
+      `آدرس: ${order.guest_address ?? user?.address ?? '-'}`,
+      '',
+      'اقلام سفارش:',
+      ...itemLines,
+      '',
+      `مبلغ کل: ${formatPrice(order.total_amount)}`,
+    ].join('\n')
+
+    setSnapPayMessage(message)
+    try {
+      await navigator.clipboard.writeText(message)
+      setSnapPayNotice('متن فاکتور کپی شد؛ آن را در دایرکت اینستاگرام ارسال کنید.')
+    } catch {
+      setSnapPayNotice('متن فاکتور آماده است؛ آن را کپی کرده و در دایرکت اینستاگرام ارسال کنید.')
+    }
+  }
+
   async function handleCreateOrder() {
     setError('')
     setSubmitting(true)
@@ -113,6 +176,7 @@ export function CheckoutPage() {
       if (!trimmedName) throw new Error('نام الزامی است.')
       if (!trimmedPhone) throw new Error('شماره موبایل الزامی است.')
       if (!trimmedAddress) throw new Error('آدرس تحویل الزامی است.')
+      if (!shippingMethod) throw new Error('روش ارسال را انتخاب کنید.')
 
       if (isAuthenticated && user) {
         const profilePatch = {}
@@ -135,6 +199,7 @@ export function CheckoutPage() {
         phone: trimmedPhone,
         email: trimmedEmail,
         address: trimmedAddress,
+        shippingMethod,
         authenticated: isAuthenticated,
       })
       await refresh()
@@ -231,6 +296,9 @@ export function CheckoutPage() {
             <p className={styles.muted}>
               وضعیت: {getOrderStatusLabel(order.status)}
             </p>
+            <p className={styles.muted}>
+              روش ارسال: {getShippingMethodLabel(order.shipping_method)}
+            </p>
             <ul className={styles.orderItems}>
               {(order.items ?? []).map((item) => (
                 <li key={`${item.product_id}-${item.quantity}`}>
@@ -246,6 +314,46 @@ export function CheckoutPage() {
               <span>مبلغ قابل پرداخت</span>
               <strong>{formatPrice(order.total_amount)}</strong>
             </div>
+
+            {order.status === 'pending' && (
+              <div className={styles.snapPaySection}>
+                <a
+                  className={styles.snapPayBox}
+                  href="https://ig.me/m/bahar_arayeshi__"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(event) => {
+                    if (!orderProductsReady) {
+                      event.preventDefault()
+                      setSnapPayNotice('در حال آماده‌سازی فاکتور هستیم؛ لطفاً چند لحظه دیگر دوباره انتخاب کنید.')
+                      return
+                    }
+                    handleSnapPayRequest()
+                  }}
+                >
+                  <img
+                    src="https://pejvakshop.ir/user/assets/icons/snapppay.webp"
+                    alt=""
+                    className={styles.snapPayLogo}
+                  />
+                  <span className={styles.snapPayCopy}>
+                    <strong>خرید بدون قسط اول اسنپ پی</strong>
+                    <span>برای هماهنگی دستی، فاکتور را در دایرکت اینستاگرام ارسال کنید.</span>
+                  </span>
+                  <span className={styles.snapPayArrow} aria-hidden="true">↗</span>
+                </a>
+                {snapPayNotice && <p className={styles.snapPayNotice}>{snapPayNotice}</p>}
+                {snapPayMessage && (
+                  <textarea
+                    className={styles.snapPayMessage}
+                    value={snapPayMessage}
+                    readOnly
+                    aria-label="متن فاکتور آماده برای ارسال در دایرکت اینستاگرام"
+                    onFocus={(event) => event.target.select()}
+                  />
+                )}
+              </div>
+            )}
 
             {searchParams.get('payment') === 'failed' && order.status === 'pending' && (
               <p className={formStyles.error}>
@@ -339,6 +447,32 @@ export function CheckoutPage() {
               autoComplete="email"
             />
           </div>
+
+          <fieldset className={styles.shippingChoices}>
+            <legend className={formStyles.label}>روش ارسال سفارش</legend>
+            <label className={`${styles.shippingChoice} ${shippingMethod === 'post' ? styles.shippingChoiceSelected : ''}`}>
+              <input
+                type="radio"
+                name="shipping-method"
+                value="post"
+                checked={shippingMethod === 'post'}
+                onChange={() => setShippingMethod('post')}
+                required
+              />
+              <span>پست</span>
+            </label>
+            <label className={`${styles.shippingChoice} ${shippingMethod === 'tipax' ? styles.shippingChoiceSelected : ''}`}>
+              <input
+                type="radio"
+                name="shipping-method"
+                value="tipax"
+                checked={shippingMethod === 'tipax'}
+                onChange={() => setShippingMethod('tipax')}
+                required
+              />
+              <span>تیپاکس</span>
+            </label>
+          </fieldset>
 
           <div className={formStyles.field}>
             <label className={formStyles.label} htmlFor="checkout-address">

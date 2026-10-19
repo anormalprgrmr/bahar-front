@@ -5,7 +5,7 @@ import {
   adminUpdateOrderStatus,
 } from '@/services/admin/adminOrderService'
 import { formatPrice } from '@/utils/formatPrice'
-import { getOrderStatusLabel } from '@/utils/productHelpers'
+import { getOrderStatusLabel, getShippingMethodLabel } from '@/utils/productHelpers'
 import styles from './AdminShared.module.css'
 
 const STATUS_OPTIONS = [
@@ -133,6 +133,7 @@ export function AdminOrdersPage() {
                 <th>کد پیگیری</th>
                 <th>مشتری</th>
                 <th>تماس</th>
+                <th>روش ارسال</th>
                 <th>مبلغ</th>
                 <th>تاریخ</th>
                 <th>وضعیت</th>
@@ -170,6 +171,7 @@ export function AdminOrdersPage() {
                       )}
                     </td>
                     <td>{contact}</td>
+                    <td>{getShippingMethodLabel(order.shipping_method)}</td>
                     <td>{formatPrice(order.total_amount)}</td>
                     <td>{new Date(order.created_at).toLocaleDateString('fa-IR')}</td>
                     <td>

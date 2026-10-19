@@ -4,6 +4,7 @@ import {
   adminDeleteProduct,
   adminListProducts,
   adminUpdateProductPrice,
+  adminUpdateProductStock,
 } from '@/services/admin/adminProductService'
 import { getProductCategoryLabels, getSalePrice } from '@/utils/productHelpers'
 import { useCategories } from '@/hooks/useCategories'
@@ -21,6 +22,8 @@ export function AdminProductsPage() {
   const [error, setError] = useState('')
   const [priceDrafts, setPriceDrafts] = useState(/** @type {Record<string, string>} */ ({}))
   const [savingPriceId, setSavingPriceId] = useState('')
+  const [stockDrafts, setStockDrafts] = useState(/** @type {Record<string, string>} */ ({}))
+  const [savingStockId, setSavingStockId] = useState('')
   const [success, setSuccess] = useState(
     /** @type {string} */ (location.state?.success ?? ''),
   )
@@ -42,6 +45,7 @@ export function AdminProductsPage() {
       })
       setProducts(result.data)
       setPriceDrafts({})
+      setStockDrafts({})
       setTotalPages(result.pagination?.total_pages || 1)
       setPage(result.pagination?.page || nextPage)
     } catch (err) {
@@ -103,6 +107,33 @@ export function AdminProductsPage() {
       setError(err instanceof Error ? err.message : 'به‌روزرسانی قیمت ناموفق بود.')
     } finally {
       setSavingPriceId('')
+    }
+  }
+
+  async function handleQuickStockSave(product) {
+    const rawStock = stockDrafts[product.id] ?? String(product.stock)
+    const stock = Number(rawStock)
+    if (rawStock.trim() === '' || !Number.isFinite(stock) || stock < 0 || !Number.isInteger(stock)) {
+      setError('موجودی باید عدد صحیح و نامنفی باشد.')
+      return
+    }
+
+    setError('')
+    setSuccess('')
+    setSavingStockId(product.id)
+    try {
+      await adminUpdateProductStock(product, stock)
+      setProducts((current) => current.map((item) => item.id === product.id ? { ...item, stock } : item))
+      setStockDrafts((current) => {
+        const next = { ...current }
+        delete next[product.id]
+        return next
+      })
+      setSuccess('موجودی محصول به‌روزرسانی شد.')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'به‌روزرسانی موجودی ناموفق بود.')
+    } finally {
+      setSavingStockId('')
     }
   }
 
@@ -196,7 +227,29 @@ export function AdminProductsPage() {
                       </button>
                     </div>
                   </td>
-                  <td>{new Intl.NumberFormat('fa-IR').format(product.stock)}</td>
+                  <td>
+                    <div className={styles.quickPrice}>
+                      <input
+                        className={styles.quickPriceInput}
+                        type="number"
+                        min="0"
+                        step="1"
+                        value={stockDrafts[product.id] ?? String(product.stock)}
+                        onChange={(event) =>
+                          setStockDrafts((current) => ({ ...current, [product.id]: event.target.value }))
+                        }
+                        aria-label={`موجودی ${product.name}`}
+                      />
+                      <button
+                        type="button"
+                        className={styles.quickPriceBtn}
+                        onClick={() => handleQuickStockSave(product)}
+                        disabled={savingStockId === product.id || Number(stockDrafts[product.id] ?? String(product.stock)) === product.stock}
+                      >
+                        {savingStockId === product.id ? '...' : 'ذخیره'}
+                      </button>
+                    </div>
+                  </td>
                   <td>
                     <input
                       type="checkbox"

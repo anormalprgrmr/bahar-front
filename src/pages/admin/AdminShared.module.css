@@ -503,3 +503,138 @@
     opacity: 0.55;
     cursor: not-allowed;
 }
+
+
+.categoryManager {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.categoryGroup {
+    overflow: hidden;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+}
+
+.categoryDragging {
+    opacity: 0.55;
+}
+
+.categoryGroupHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 0.85rem;
+    background: #fafafa;
+}
+
+.categoryDragHandle,
+.subcategoryDragHandle {
+    color: #999;
+    font-size: 1.2rem;
+    cursor: grab;
+    user-select: none;
+}
+
+.categoryDragHandle {
+    min-width: 2rem;
+    padding: 0.3rem;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.categoryToggle {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+    padding: 0.5rem;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    text-align: right;
+    font: inherit;
+    cursor: pointer;
+}
+
+.categoryChevron {
+    width: 1.25rem;
+    color: #888;
+    font-size: 1.2rem;
+}
+
+.categoryName {
+    font-weight: 700;
+}
+
+.categoryCount {
+    margin-inline-start: auto;
+    color: #888;
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+.categoryGroupActions {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.subcategoryList {
+    display: grid;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem 1rem;
+}
+
+.subcategoryRow {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid #f0f0f0;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.subcategoryInfo {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+}
+
+.subcategoryInfo > span,
+.categoryDate {
+    color: #888;
+    font-size: 0.78rem;
+}
+
+.categoryEmpty {
+    padding: 0.75rem;
+    color: #888;
+    text-align: center;
+}
+
+@media (max-width: 700px) {
+    .categoryGroupHeader,
+    .subcategoryRow {
+        flex-wrap: wrap;
+    }
+
+    .categoryToggle {
+        flex-basis: calc(100% - 3rem);
+    }
+
+    .categoryGroupActions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .subcategoryInfo {
+        flex-basis: calc(100% - 2rem);
+    }
+}

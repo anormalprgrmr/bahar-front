@@ -72,6 +72,14 @@ export function getCategoryPath(slug) {
 }
 
 /**
+ * @param {import('@/types/order').ShippingMethod} shippingMethod
+ */
+export function getShippingMethodLabel(shippingMethod) {
+  const labels = { post: 'پست', tipax: 'تیپاکس' }
+  return labels[shippingMethod] ?? '—'
+}
+
+/**
  * @param {import('@/types/order').OrderStatus} status
  */
 export function getOrderStatusLabel(status) {

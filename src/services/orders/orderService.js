@@ -24,6 +24,7 @@ export async function createOrder(payload, options = {}) {
  *   phone: string
  *   email?: string
  *   address: string
+ *   shippingMethod: import('@/types/order').ShippingMethod
  *   authenticated?: boolean
  * }} contact
  * @returns {Promise<import('@/types/order').Order>}
@@ -39,6 +40,7 @@ export async function createOrderFromCart(cartItems, userId, contact) {
       phone: contact.phone,
       email: contact.email ?? '',
       address: contact.address,
+      shipping_method: contact.shippingMethod,
       items: cartItems.map((item) => ({
         product_id: item.productId,
         quantity: item.quantity,
