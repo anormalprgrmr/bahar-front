@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import {
   adminDeleteOrder,
   adminListOrders,
@@ -26,6 +26,7 @@ export function AdminOrdersPage() {
   const [success, setSuccess] = useState('')
   const [trackingInput, setTrackingInput] = useState('')
   const [trackingCode, setTrackingCode] = useState('')
+  const [expandedOrderId, setExpandedOrderId] = useState('')
 
   async function load(nextPage = page, nextTracking = trackingCode) {
     setLoading(true)
@@ -155,57 +156,117 @@ export function AdminOrdersPage() {
                   '—'
 
                 return (
-                  <tr key={order.id}>
-                    <td>
-                      <strong>{order.tracking_code || '—'}</strong>
-                      <div className={styles.muted} style={{ fontSize: '0.75rem' }}>
-                        #{order.id.slice(0, 8)}
-                      </div>
-                    </td>
-                    <td>
-                      {customer}
-                      {!order.user_id && (
+                  <Fragment key={order.id}>
+                    <tr>
+                      <td>
+                        <strong>{order.tracking_code || '—'}</strong>
                         <div className={styles.muted} style={{ fontSize: '0.75rem' }}>
-                          بدون حساب
+                          #{order.id.slice(0, 8)}
                         </div>
-                      )}
-                    </td>
-                    <td>{contact}</td>
-                    <td>{getShippingMethodLabel(order.shipping_method)}</td>
-                    <td>{formatPrice(order.total_amount)}</td>
-                    <td>{new Date(order.created_at).toLocaleDateString('fa-IR')}</td>
-                    <td>
-                      <select
-                        className={styles.select}
-                        value={order.status}
-                        onChange={(e) =>
-                          handleStatusChange(
-                            order.id,
-                            /** @type {import('@/types/order').OrderStatus} */ (
-                              e.target.value
-                            ),
-                          )
-                        }
-                      >
-                        {STATUS_OPTIONS.map((status) => (
-                          <option key={status} value={status}>
-                            {getOrderStatusLabel(
-                              /** @type {import('@/types/order').OrderStatus} */ (status),
+                      </td>
+                      <td>
+                        {customer}
+                        {!order.user_id && (
+                          <div className={styles.muted} style={{ fontSize: '0.75rem' }}>
+                            بدون حساب
+                          </div>
+                        )}
+                      </td>
+                      <td>{contact}</td>
+                      <td>{getShippingMethodLabel(order.shipping_method)}</td>
+                      <td>{formatPrice(order.total_amount)}</td>
+                      <td>{new Date(order.created_at).toLocaleDateString('fa-IR')}</td>
+                      <td>
+                        <select
+                          className={styles.select}
+                          value={order.status}
+                          onChange={(e) =>
+                            handleStatusChange(
+                              order.id,
+                              /** @type {import('@/types/order').OrderStatus} */ (
+                                e.target.value
+                              ),
+                            )
+                          }
+                        >
+                          {STATUS_OPTIONS.map((status) => (
+                            <option key={status} value={status}>
+                              {getOrderStatusLabel(
+                                /** @type {import('@/types/order').OrderStatus} */ (status),
+                              )}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
+                      <td>
+                        <div className={styles.rowActions}>
+                          <button
+                            type="button"
+                            className={styles.ghostBtn}
+                            aria-expanded={expandedOrderId === order.id}
+                            onClick={() =>
+                              setExpandedOrderId((current) =>
+                                current === order.id ? '' : order.id,
+                              )
+                            }
+                          >
+                            {expandedOrderId === order.id ? 'بستن جزئیات' : 'جزئیات'}
+                          </button>
+                          <button
+                            type="button"
+                            className={styles.dangerBtn}
+                            onClick={() => handleDelete(order.id)}
+                          >
+                            حذف
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    {expandedOrderId === order.id && (
+                      <tr>
+                        <td colSpan={8}>
+                          <section className={styles.orderDetails} aria-label="جزئیات سفارش">
+                            <div className={styles.orderDetailsGrid}>
+                              <div><strong>نام گیرنده:</strong> {order.guest_name || order.user?.name || '—'}</div>
+                              <div><strong>شماره تماس:</strong> {order.guest_phone || order.user?.phone || '—'}</div>
+                              <div><strong>ایمیل:</strong> {order.guest_email || order.user?.email || '—'}</div>
+                              <div><strong>روش ارسال:</strong> {getShippingMethodLabel(order.shipping_method)}</div>
+                              <div className={styles.orderAddress}><strong>نشانی:</strong> {order.guest_address || order.user?.address || '—'}</div>
+                            </div>
+                            <h3 className={styles.orderItemsTitle}>اقلام سفارش</h3>
+                            {!order.items?.length ? (
+                              <p className={styles.muted}>قلمی برای این سفارش ثبت نشده است.</p>
+                            ) : (
+                              <div className={styles.tableWrap}>
+                                <table className={styles.table}>
+                                  <thead>
+                                    <tr>
+                                      <th>محصول</th>
+                                      <th>شناسه</th>
+                                      <th>تعداد</th>
+                                      <th>قیمت واحد</th>
+                                      <th>جمع</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {order.items.map((item) => (
+                                      <tr key={`${order.id}-${item.product_id}`}>
+                                        <td>{item.product_name || 'محصول حذف‌شده'}</td>
+                                        <td>{item.product_id}</td>
+                                        <td>{new Intl.NumberFormat('fa-IR').format(item.quantity)}</td>
+                                        <td>{formatPrice(item.unit_price)}</td>
+                                        <td>{formatPrice(item.unit_price * item.quantity)}</td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
                             )}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td>
-                      <button
-                        type="button"
-                        className={styles.dangerBtn}
-                        onClick={() => handleDelete(order.id)}
-                      >
-                        حذف
-                      </button>
-                    </td>
-                  </tr>
+                          </section>
+                        </td>
+                      </tr>
+                    )}
+                  </Fragment>
                 )
               })}
             </tbody>

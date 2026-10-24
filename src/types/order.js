@@ -12,6 +12,8 @@
  * @property {string} product_id
  * @property {number} quantity
  * @property {number} unit_price
+ * @property {string} [product_name]
+ * @property {string} [product_image]
  */
 
 /**
@@ -25,6 +27,7 @@
  * @property {string} [guest_phone]
  * @property {string} [guest_email]
  * @property {string} [guest_address]
+ * @property {string} [user_id]
  * @property {import('@/types/order').ShippingMethod} shipping_method
  * @property {string} created_at
  * @property {import('@/types/user').AdminUser} [user]
@@ -47,4 +50,4 @@
  * @property {import('@/types/product').PaginationMeta} pagination
  */
 
-export {}
+export {};

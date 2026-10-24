@@ -27,6 +27,9 @@ export function AdminLayout() {
           <NavLink to="/admin/orders" className={styles.link}>
             سفارش‌ها
           </NavLink>
+          <NavLink to="/admin/messages" className={styles.link}>
+            پیامک همگانی
+          </NavLink>
           <NavLink to="/admin/users" className={styles.link}>
             کاربران
           </NavLink>

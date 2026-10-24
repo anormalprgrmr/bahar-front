@@ -21,6 +21,7 @@ import { AdminProductFormPage } from '@/pages/admin/AdminProductFormPage'
 import { AdminCategoriesPage } from '@/pages/admin/AdminCategoriesPage'
 import { AdminCategoryFormPage } from '@/pages/admin/AdminCategoryFormPage'
 import { AdminOrdersPage } from '@/pages/admin/AdminOrdersPage'
+import { AdminSMSPage } from '@/pages/admin/AdminSMSPage'
 import { AdminUsersPage } from '@/pages/admin/AdminUsersPage'
 import { AdminUserEditPage } from '@/pages/admin/AdminUserEditPage'
 import { AdminBackupPage } from '@/pages/admin/AdminBackupPage'
@@ -74,6 +75,7 @@ export const router = createBrowserRouter([
       { path: 'categories/:id/edit', element: <AdminCategoryFormPage /> },
       { path: 'slider', element: <AdminSliderPage /> },
       { path: 'orders', element: <AdminOrdersPage /> },
+      { path: 'messages', element: <AdminSMSPage /> },
       { path: 'users', element: <AdminUsersPage /> },
       { path: 'users/:id/edit', element: <AdminUserEditPage /> },
       { path: 'backup', element: <AdminBackupPage /> },
