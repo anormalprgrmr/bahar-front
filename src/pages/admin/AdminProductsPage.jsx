@@ -1,147 +1,191 @@
-import { useEffect, useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import {
   adminDeleteProduct,
   adminListProducts,
   adminUpdateProductPrice,
   adminUpdateProductStock,
-} from '@/services/admin/adminProductService'
-import { getProductCategoryLabels, getSalePrice } from '@/utils/productHelpers'
-import { useCategories } from '@/hooks/useCategories'
-import { isTrendProduct, setTrendProduct } from '@/services/products/trendService'
-import styles from './AdminShared.module.css'
+} from "@/services/admin/adminProductService";
+import { getProductCategoryLabels, getSalePrice } from "@/utils/productHelpers";
+import { useCategories } from "@/hooks/useCategories";
+import {
+  isTrendProduct,
+  setTrendProduct,
+} from "@/services/products/trendService";
+import styles from "./AdminShared.module.css";
 
 export function AdminProductsPage() {
-  const location = useLocation()
-  const { categories } = useCategories()
-  const [products, setProducts] = useState(/** @type {import('@/types/product').Product[]} */ ([]))
-  const [page, setPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
-  const [query, setQuery] = useState('')
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
-  const [priceDrafts, setPriceDrafts] = useState(/** @type {Record<string, string>} */ ({}))
-  const [savingPriceId, setSavingPriceId] = useState('')
-  const [stockDrafts, setStockDrafts] = useState(/** @type {Record<string, string>} */ ({}))
-  const [savingStockId, setSavingStockId] = useState('')
+  const location = useLocation();
+  const { categories } = useCategories();
+  const [products, setProducts] = useState(
+    /** @type {import('@/types/product').Product[]} */ ([]),
+  );
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [query, setQuery] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const [stockFilter, setStockFilter] = useState("");
+  const [publicationFilter, setPublicationFilter] = useState("");
+  const [saleFilter, setSaleFilter] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [priceDrafts, setPriceDrafts] = useState(
+    /** @type {Record<string, string>} */ ({}),
+  );
+  const [savingPriceId, setSavingPriceId] = useState("");
+  const [stockDrafts, setStockDrafts] = useState(
+    /** @type {Record<string, string>} */ ({}),
+  );
+  const [savingStockId, setSavingStockId] = useState("");
   const [success, setSuccess] = useState(
-    /** @type {string} */ (location.state?.success ?? ''),
-  )
+    /** @type {string} */ (location.state?.success ?? ""),
+  );
 
   useEffect(() => {
     if (location.state?.success) {
-      window.history.replaceState({}, document.title)
+      window.history.replaceState({}, document.title);
     }
-  }, [location.state])
+  }, [location.state]);
 
   async function load(nextPage = page, q = query) {
-    setLoading(true)
-    setError('')
+    setLoading(true);
+    setError("");
     try {
       const result = await adminListProducts({
         page: nextPage,
         pageSize: 10,
         q: q || undefined,
-      })
-      setProducts(result.data)
-      setPriceDrafts({})
-      setStockDrafts({})
-      setTotalPages(result.pagination?.total_pages || 1)
-      setPage(result.pagination?.page || nextPage)
+        category: categoryFilter || undefined,
+        inStock: stockFilter === "" ? undefined : stockFilter === "true",
+        isPublished:
+          publicationFilter === "" ? undefined : publicationFilter === "true",
+        onSale: saleFilter === "" ? undefined : saleFilter === "true",
+      });
+      setProducts(result.data);
+      setPriceDrafts({});
+      setStockDrafts({});
+      setTotalPages(result.pagination?.total_pages || 1);
+      setPage(result.pagination?.page || nextPage);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'بارگذاری محصولات ناموفق بود.')
+      setError(
+        err instanceof Error ? err.message : "بارگذاری محصولات ناموفق بود.",
+      );
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   useEffect(() => {
-    load(1, '')
-  }, [])
+    load(1, "");
+  }, []);
 
   async function handleDelete(id) {
-    if (!window.confirm('این محصول حذف شود؟')) return
-    setError('')
-    setSuccess('')
+    if (!window.confirm("این محصول حذف شود؟")) return;
+    setError("");
+    setSuccess("");
     try {
-      await adminDeleteProduct(id)
-      setTrendProduct(id, false)
-      setSuccess('محصول حذف شد.')
-      await load(page, query)
+      await adminDeleteProduct(id);
+      setTrendProduct(id, false);
+      setSuccess("محصول حذف شد.");
+      await load(page, query);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'حذف محصول ناموفق بود.')
+      setError(err instanceof Error ? err.message : "حذف محصول ناموفق بود.");
     }
   }
 
   async function handleQuickPriceSave(product) {
-    const rawPrice = priceDrafts[product.id] ?? String(getSalePrice(product))
-    const price = Number(rawPrice)
-    if (rawPrice.trim() === '' || !Number.isFinite(price) || price < 0 || !Number.isInteger(price)) {
-      setError('قیمت باید عدد صحیح و نامنفی بر حسب تومان باشد.')
-      return
+    const rawPrice = priceDrafts[product.id] ?? String(getSalePrice(product));
+    const price = Number(rawPrice);
+    if (
+      rawPrice.trim() === "" ||
+      !Number.isFinite(price) ||
+      price < 0 ||
+      !Number.isInteger(price)
+    ) {
+      setError("قیمت باید عدد صحیح و نامنفی بر حسب تومان باشد.");
+      return;
     }
     if (product.newPrice != null && price > product.price) {
-      setError('قیمت نهایی نباید از قیمت اصلی بیشتر باشد.')
-      return
+      setError("قیمت نهایی نباید از قیمت اصلی بیشتر باشد.");
+      return;
     }
 
-    setError('')
-    setSuccess('')
-    setSavingPriceId(product.id)
+    setError("");
+    setSuccess("");
+    setSavingPriceId(product.id);
     try {
-      await adminUpdateProductPrice(product, price)
-      setProducts((current) => current.map((item) => item.id === product.id
-        ? {
-            ...item,
-            price: item.newPrice != null ? item.price : price,
-            newPrice: item.newPrice != null ? price : item.newPrice,
-          }
-        : item))
+      await adminUpdateProductPrice(product, price);
+      setProducts((current) =>
+        current.map((item) =>
+          item.id === product.id
+            ? {
+                ...item,
+                price: item.newPrice != null ? item.price : price,
+                newPrice: item.newPrice != null ? price : item.newPrice,
+              }
+            : item,
+        ),
+      );
       setPriceDrafts((current) => {
-        const next = { ...current }
-        delete next[product.id]
-        return next
-      })
-      setSuccess('قیمت محصول به‌روزرسانی شد.')
+        const next = { ...current };
+        delete next[product.id];
+        return next;
+      });
+      setSuccess("قیمت محصول به‌روزرسانی شد.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'به‌روزرسانی قیمت ناموفق بود.')
+      setError(
+        err instanceof Error ? err.message : "به‌روزرسانی قیمت ناموفق بود.",
+      );
     } finally {
-      setSavingPriceId('')
+      setSavingPriceId("");
     }
   }
 
   async function handleQuickStockSave(product) {
-    const rawStock = stockDrafts[product.id] ?? String(product.stock)
-    const stock = Number(rawStock)
-    if (rawStock.trim() === '' || !Number.isFinite(stock) || stock < 0 || !Number.isInteger(stock)) {
-      setError('موجودی باید عدد صحیح و نامنفی باشد.')
-      return
+    const rawStock = stockDrafts[product.id] ?? String(product.stock);
+    const stock = Number(rawStock);
+    if (
+      rawStock.trim() === "" ||
+      !Number.isFinite(stock) ||
+      stock < 0 ||
+      !Number.isInteger(stock)
+    ) {
+      setError("موجودی باید عدد صحیح و نامنفی باشد.");
+      return;
     }
 
-    setError('')
-    setSuccess('')
-    setSavingStockId(product.id)
+    setError("");
+    setSuccess("");
+    setSavingStockId(product.id);
     try {
-      await adminUpdateProductStock(product, stock)
-      setProducts((current) => current.map((item) => item.id === product.id ? { ...item, stock } : item))
+      await adminUpdateProductStock(product, stock);
+      setProducts((current) =>
+        current.map((item) =>
+          item.id === product.id ? { ...item, stock } : item,
+        ),
+      );
       setStockDrafts((current) => {
-        const next = { ...current }
-        delete next[product.id]
-        return next
-      })
-      setSuccess('موجودی محصول به‌روزرسانی شد.')
+        const next = { ...current };
+        delete next[product.id];
+        return next;
+      });
+      setSuccess("موجودی محصول به‌روزرسانی شد.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'به‌روزرسانی موجودی ناموفق بود.')
+      setError(
+        err instanceof Error ? err.message : "به‌روزرسانی موجودی ناموفق بود.",
+      );
     } finally {
-      setSavingStockId('')
+      setSavingStockId("");
     }
   }
 
   function handleTrendChange(productId, selected) {
-    setTrendProduct(productId, selected)
-    setProducts((current) => [...current])
-    setError('')
-    setSuccess(selected ? 'محصول به ترندها اضافه شد.' : 'محصول از ترندها حذف شد.')
+    setTrendProduct(productId, selected);
+    setProducts((current) => [...current]);
+    setError("");
+    setSuccess(
+      selected ? "محصول به ترندها اضافه شد." : "محصول از ترندها حذف شد.",
+    );
   }
 
   return (
@@ -166,21 +210,68 @@ export function AdminProductsPage() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === 'Enter') load(1, query)
+            if (e.key === "Enter") load(1, query);
           }}
         />
-        <button type="button" className={styles.ghostBtn} onClick={() => load(1, query)}>
-          جستجو
+        <select
+          className={styles.select}
+          value={categoryFilter}
+          onChange={(event) => setCategoryFilter(event.target.value)}
+          aria-label="فیلتر دسته‌بندی"
+        >
+          <option value="">همه دسته‌ها</option>
+          {categories.map((category) => (
+            <option key={category.id} value={category.slug}>
+              {category.name}
+            </option>
+          ))}
+        </select>
+        <select
+          className={styles.select}
+          value={stockFilter}
+          onChange={(event) => setStockFilter(event.target.value)}
+          aria-label="فیلتر موجودی"
+        >
+          <option value="">همه موجودی‌ها</option>
+          <option value="true">موجود</option>
+          <option value="false">ناموجود</option>
+        </select>
+        <select
+          className={styles.select}
+          value={publicationFilter}
+          onChange={(event) => setPublicationFilter(event.target.value)}
+          aria-label="فیلتر انتشار"
+        >
+          <option value="">منتشرشده و پیش‌نویس</option>
+          <option value="true">منتشرشده</option>
+          <option value="false">پیش‌نویس</option>
+        </select>
+        <select
+          className={styles.select}
+          value={saleFilter}
+          onChange={(event) => setSaleFilter(event.target.value)}
+          aria-label="فیلتر تخفیف"
+        >
+          <option value="">با تخفیف و بدون تخفیف</option>
+          <option value="true">دارای تخفیف</option>
+          <option value="false">بدون تخفیف</option>
+        </select>
+        <button
+          type="button"
+          className={styles.ghostBtn}
+          onClick={() => load(1, query)}
+        >
+          جستجو / فیلتر
         </button>
       </div>
 
       <div className={styles.tableWrap}>
         {loading ? (
-          <p className={styles.muted} style={{ padding: '1rem' }}>
+          <p className={styles.muted} style={{ padding: "1rem" }}>
             در حال بارگذاری...
           </p>
         ) : products.length === 0 ? (
-          <p className={styles.muted} style={{ padding: '1rem' }}>
+          <p className={styles.muted} style={{ padding: "1rem" }}>
             محصولی وجود ندارد.
           </p>
         ) : (
@@ -192,6 +283,7 @@ export function AdminProductsPage() {
                 <th>دسته</th>
                 <th>قیمت</th>
                 <th>موجودی</th>
+                <th>انتشار</th>
                 <th>ترند</th>
                 <th>عملیات</th>
               </tr>
@@ -211,9 +303,15 @@ export function AdminProductsPage() {
                         type="number"
                         min="0"
                         step="1"
-                        value={priceDrafts[product.id] ?? String(getSalePrice(product))}
+                        value={
+                          priceDrafts[product.id] ??
+                          String(getSalePrice(product))
+                        }
                         onChange={(event) =>
-                          setPriceDrafts((current) => ({ ...current, [product.id]: event.target.value }))
+                          setPriceDrafts((current) => ({
+                            ...current,
+                            [product.id]: event.target.value,
+                          }))
                         }
                         aria-label={`قیمت ${product.name} به تومان`}
                       />
@@ -221,9 +319,15 @@ export function AdminProductsPage() {
                         type="button"
                         className={styles.quickPriceBtn}
                         onClick={() => handleQuickPriceSave(product)}
-                        disabled={savingPriceId === product.id || Number(priceDrafts[product.id] ?? String(getSalePrice(product))) === getSalePrice(product)}
+                        disabled={
+                          savingPriceId === product.id ||
+                          Number(
+                            priceDrafts[product.id] ??
+                              String(getSalePrice(product)),
+                          ) === getSalePrice(product)
+                        }
                       >
-                        {savingPriceId === product.id ? '...' : 'ذخیره'}
+                        {savingPriceId === product.id ? "..." : "ذخیره"}
                       </button>
                     </div>
                   </td>
@@ -236,7 +340,10 @@ export function AdminProductsPage() {
                         step="1"
                         value={stockDrafts[product.id] ?? String(product.stock)}
                         onChange={(event) =>
-                          setStockDrafts((current) => ({ ...current, [product.id]: event.target.value }))
+                          setStockDrafts((current) => ({
+                            ...current,
+                            [product.id]: event.target.value,
+                          }))
                         }
                         aria-label={`موجودی ${product.name}`}
                       />
@@ -244,17 +351,25 @@ export function AdminProductsPage() {
                         type="button"
                         className={styles.quickPriceBtn}
                         onClick={() => handleQuickStockSave(product)}
-                        disabled={savingStockId === product.id || Number(stockDrafts[product.id] ?? String(product.stock)) === product.stock}
+                        disabled={
+                          savingStockId === product.id ||
+                          Number(
+                            stockDrafts[product.id] ?? String(product.stock),
+                          ) === product.stock
+                        }
                       >
-                        {savingStockId === product.id ? '...' : 'ذخیره'}
+                        {savingStockId === product.id ? "..." : "ذخیره"}
                       </button>
                     </div>
                   </td>
+                  <td>{product.isPublished ? "منتشرشده" : "پیش‌نویس"}</td>
                   <td>
                     <input
                       type="checkbox"
                       checked={isTrendProduct(product.id)}
-                      onChange={(event) => handleTrendChange(product.id, event.target.checked)}
+                      onChange={(event) =>
+                        handleTrendChange(product.id, event.target.checked)
+                      }
                       aria-label={`انتخاب ${product.name} به‌عنوان ترند`}
                     />
                   </td>
@@ -292,8 +407,8 @@ export function AdminProductsPage() {
           قبلی
         </button>
         <span className={styles.muted}>
-          صفحه {new Intl.NumberFormat('fa-IR').format(page)} از{' '}
-          {new Intl.NumberFormat('fa-IR').format(totalPages)}
+          صفحه {new Intl.NumberFormat("fa-IR").format(page)} از{" "}
+          {new Intl.NumberFormat("fa-IR").format(totalPages)}
         </span>
         <button
           type="button"
@@ -305,5 +420,5 @@ export function AdminProductsPage() {
         </button>
       </div>
     </div>
-  )
+  );
 }

@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   adminCreateProduct,
+  adminGetProduct,
   adminUpdateProduct,
   adminUploadProductImage,
   adminUploadProductImages,
 } from "@/services/admin/adminProductService";
 import { adminListCategories } from "@/services/admin/adminCategoryService";
-import { getProductById } from "@/services/products/productService";
+
 import { resolveMediaUrl, toApiImagePath } from "@/services/api/client";
 import {
   getSubcategories,
@@ -49,6 +50,7 @@ export function AdminProductFormPage() {
   const [loading, setLoading] = useState(isEditing);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+  const [isPublished, setIsPublished] = useState(true);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
 
   const [mainImageUrl, setMainImageUrl] = useState("");
@@ -101,7 +103,7 @@ export function AdminProductFormPage() {
       setError("");
       try {
         const [product, categoryList] = await Promise.all([
-          getProductById(id),
+          adminGetProduct(id),
           adminListCategories(),
         ]);
         if (cancelled) return;
@@ -111,6 +113,7 @@ export function AdminProductFormPage() {
         }
 
         setCategories(categoryList);
+        setIsPublished(product.isPublished !== false);
         const initialCategoryIds = product.categoryIds?.length
           ? product.categoryIds
           : (product.categories?.map((category) => category.id) ??
@@ -220,7 +223,7 @@ export function AdminProductFormPage() {
     });
   }
 
-  function buildPayload() {
+  function buildPayload(publish = true) {
     const newPriceRaw = form.newPrice.trim();
     const mainPath = mainImageFile ? "" : mainImageUrl.trim();
     const sliderPaths = sliderImageUrls
@@ -241,6 +244,7 @@ export function AdminProductFormPage() {
       images,
       categoryIds: form.categoryIds,
       onSale: form.onSale,
+      isPublished: publish,
     };
 
     if (form.country.trim()) payload.country = form.country.trim();
@@ -253,38 +257,41 @@ export function AdminProductFormPage() {
     return payload;
   }
 
-  async function handleSubmit(event) {
-    event.preventDefault();
+  async function handleSave(event, publish) {
+    event?.preventDefault();
     setSaving(true);
     setError("");
 
     try {
-      const hasMainImage = Boolean(mainImageUrl || mainImageFile);
-      if (!hasMainImage) {
-        throw new Error("تصویر اصلی محصول الزامی است.");
-      }
-
-      const payload = buildPayload();
-      if (!payload.name || !payload.description) {
-        throw new Error("نام و توضیحات الزامی است.");
-      }
-
-      if (!payload.categoryIds?.length) {
-        throw new Error("انتخاب حداقل یک دسته‌بندی الزامی است.");
-      }
-
+      const payload = buildPayload(publish);
+      const rawPrice = form.price.trim();
+      const rawStock = form.stock.trim();
       if (
-        payload.onSale &&
-        (payload.newPrice === null || payload.newPrice === undefined)
+        (rawPrice && (!Number.isFinite(payload.price) || payload.price < 0)) ||
+        (rawStock && (!Number.isInteger(payload.stock) || payload.stock < 0))
       ) {
-        throw new Error(
-          "در صورت فعال بودن تخفیف، وارد کردن قیمت تخفیف‌خورده الزامی است.",
-        );
+        throw new Error("قیمت و موجودی باید عدد نامنفی باشند.");
+      }
+
+      if (publish) {
+        const hasMainImage = Boolean(mainImageUrl || mainImageFile);
+        if (!hasMainImage) throw new Error("تصویر اصلی محصول الزامی است.");
+        if (!payload.name || !payload.description) {
+          throw new Error("نام و توضیحات الزامی است.");
+        }
+        if (!payload.categoryIds?.length) {
+          throw new Error("انتخاب حداقل یک دسته‌بندی الزامی است.");
+        }
+        if (payload.onSale && payload.newPrice == null) {
+          throw new Error(
+            "در صورت فعال بودن تخفیف، وارد کردن قیمت تخفیف‌خورده الزامی است.",
+          );
+        }
       }
 
       if (payload.newPrice != null) {
-        if (payload.newPrice < 0) {
-          throw new Error("قیمت تخفیف‌خورده نمی‌تواند منفی باشد.");
+        if (!Number.isFinite(payload.newPrice) || payload.newPrice < 0) {
+          throw new Error("قیمت تخفیف‌خورده باید عددی نامنفی باشد.");
         }
         if (payload.newPrice > payload.price) {
           throw new Error(
@@ -297,20 +304,16 @@ export function AdminProductFormPage() {
       let finalMainPath = payload.image?.trim() ?? "";
       const uploadedSliderPaths = [];
 
-      if (isEditing && id) {
-        productId = id;
-      } else {
+      if (!productId) {
         const created = await adminCreateProduct({
           ...payload,
+          isPublished: false,
           image: "",
           images: [],
         });
         productId = created.id;
       }
-
-      if (!productId) {
-        throw new Error("شناسه محصول نامعتبر است.");
-      }
+      if (!productId) throw new Error("شناسه محصول نامعتبر است.");
 
       if (mainImageFile) {
         const uploaded = await adminUploadProductImage(
@@ -319,9 +322,7 @@ export function AdminProductFormPage() {
           true,
         );
         finalMainPath = toApiImagePath(uploaded?.imageUrl || "");
-        if (!finalMainPath) {
-          throw new Error("آپلود تصویر اصلی ناموفق بود.");
-        }
+        if (!finalMainPath) throw new Error("آپلود تصویر اصلی ناموفق بود.");
       }
 
       if (sliderImageFiles.length > 0) {
@@ -351,13 +352,20 @@ export function AdminProductFormPage() {
 
       await adminUpdateProduct(productId, {
         ...payload,
+        isPublished: publish,
         image: finalMainPath,
         images: finalImages,
       });
 
       navigate("/admin/products", {
         state: {
-          success: isEditing ? "محصول به‌روزرسانی شد." : "محصول ایجاد شد.",
+          success: publish
+            ? isEditing
+              ? "محصول منتشر و ذخیره شد."
+              : "محصول ایجاد و منتشر شد."
+            : isEditing
+              ? "پیش‌نویس ذخیره شد."
+              : "محصول به‌عنوان پیش‌نویس ذخیره شد.",
         },
       });
     } catch (err) {
@@ -365,6 +373,10 @@ export function AdminProductFormPage() {
     } finally {
       setSaving(false);
     }
+  }
+
+  function handleSubmit(event) {
+    return handleSave(event, true);
   }
 
   const mainPreviewSrc =
@@ -712,15 +724,19 @@ export function AdminProductFormPage() {
             انصراف
           </Link>
           <button
-            type="submit"
-            className={styles.primaryBtn}
-            disabled={saving || categories.length === 0}
+            type="button"
+            className={styles.ghostBtn}
+            disabled={saving}
+            onClick={() => handleSave(null, false)}
           >
+            {saving ? "در حال ذخیره..." : "ذخیره پیش‌نویس"}
+          </button>
+          <button type="submit" className={styles.primaryBtn} disabled={saving}>
             {saving
               ? "در حال ذخیره..."
-              : isEditing
-                ? "ذخیره تغییرات"
-                : "ایجاد محصول"}
+              : isPublished
+                ? "ذخیره و انتشار"
+                : "انتشار محصول"}
           </button>
         </div>
       </form>

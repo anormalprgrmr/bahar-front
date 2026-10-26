@@ -1,5 +1,9 @@
-import { apiClient, resolveMediaUrl, toQueryString } from '@/services/api/client'
-import { getTrendProductIds } from '@/services/products/trendService'
+import {
+  apiClient,
+  resolveMediaUrl,
+  toQueryString,
+} from "@/services/api/client";
+import { getTrendProductIds } from "@/services/products/trendService";
 
 /**
  * @param {import('@/types/product').Product} product
@@ -12,7 +16,8 @@ export function normalizeProduct(product) {
     images: (product.images ?? []).map(resolveMediaUrl),
     stock: product.stock ?? 0,
     onSale: Boolean(product.onSale),
-  }
+    isPublished: product.isPublished !== false,
+  };
 }
 
 /**
@@ -31,9 +36,9 @@ export async function listProducts(params = {}) {
     max_price: params.maxPrice,
     sort_by: params.sortBy,
     sort_order: params.sortOrder,
-  })
+  });
 
-  const result = await apiClient(`/products${query}`)
+  const result = await apiClient(`/products${query}`);
   return {
     data: (result?.data ?? []).map(normalizeProduct),
     pagination: result?.pagination ?? {
@@ -42,40 +47,40 @@ export async function listProducts(params = {}) {
       total: 0,
       total_pages: 0,
     },
-  }
+  };
 }
 
 /** @returns {Promise<import('@/types/product').Product[]>} */
 export async function getAllProducts() {
-  const result = await listProducts({ page: 1, pageSize: 100 })
-  return result.data
+  const result = await listProducts({ page: 1, pageSize: 100 });
+  return result.data;
 }
 
 /** @returns {Promise<import('@/types/product').Product[]>} */
 export async function getMostSalesProducts(limit = 4) {
   try {
-    const query = toQueryString({ limit })
-    const result = await apiClient(`/products/most-sales${query}`)
-    return (Array.isArray(result) ? result : []).map(normalizeProduct)
+    const query = toQueryString({ limit });
+    const result = await apiClient(`/products/most-sales${query}`);
+    return (Array.isArray(result) ? result : []).map(normalizeProduct);
   } catch {
-    return []
+    return [];
   }
 }
 
 /** @returns {Promise<import('@/types/product').Product[]>} */
 export async function getRecentlyAddedProducts(limit = 4) {
   try {
-    const query = toQueryString({ limit })
-    const result = await apiClient(`/products/recently-added${query}`)
-    return (Array.isArray(result) ? result : []).map(normalizeProduct)
+    const query = toQueryString({ limit });
+    const result = await apiClient(`/products/recently-added${query}`);
+    return (Array.isArray(result) ? result : []).map(normalizeProduct);
   } catch {
-    return []
+    return [];
   }
 }
 
 /** @returns {Promise<import('@/types/product').Product[]>} */
 export async function getHotProducts() {
-  return getRecentlyAddedProducts(4)
+  return getRecentlyAddedProducts(4);
 }
 
 /**
@@ -86,13 +91,13 @@ export async function getHotProducts() {
  * @returns {Promise<import('@/types/product').Product[]>}
  */
 export async function getTrendProducts(limit = 4) {
-  const trendProductIds = getTrendProductIds()
-  if (trendProductIds === null) return getMostSalesProducts(limit)
+  const trendProductIds = getTrendProductIds();
+  if (trendProductIds === null) return getMostSalesProducts(limit);
 
   const products = await Promise.all(
     trendProductIds.slice(0, limit).map((id) => getProductById(id)),
-  )
-  return products.filter((product) => product !== null)
+  );
+  return products.filter((product) => product !== null);
 }
 
 /** @returns {Promise<import('@/types/product').Product[]>} */
@@ -102,16 +107,16 @@ export async function getWeeklyDeals() {
       page: 1,
       pageSize: 4,
       onSale: true,
-    })
-    return result.data
+    });
+    return result.data;
   } catch {
-    return []
+    return [];
   }
 }
 
 /** @returns {Promise<import('@/types/product').Product[]>} */
 export async function getFeaturedProducts() {
-  return getRecentlyAddedProducts(4)
+  return getRecentlyAddedProducts(4);
 }
 
 /**
@@ -120,10 +125,10 @@ export async function getFeaturedProducts() {
  */
 export async function getProductById(id) {
   try {
-    const product = await apiClient(`/products/${id}`)
-    return normalizeProduct(product)
+    const product = await apiClient(`/products/${id}`);
+    return normalizeProduct(product);
   } catch {
-    return null
+    return null;
   }
 }
 
@@ -137,8 +142,10 @@ export async function getRelatedProducts(productId, category, limit = 4) {
     page: 1,
     pageSize: limit + 4,
     category,
-  })
-  return result.data.filter((product) => product.id !== productId).slice(0, limit)
+  });
+  return result.data
+    .filter((product) => product.id !== productId)
+    .slice(0, limit);
 }
 
 /**
@@ -149,6 +156,6 @@ export async function getProductsByCategory(category) {
     page: 1,
     pageSize: 24,
     category,
-  })
-  return result.data
+  });
+  return result.data;
 }

@@ -25,6 +25,7 @@
  * @property {string} [suitableFor]
  * @property {string} [keywords]
  * @property {boolean} onSale
+ * @property {boolean} [isPublished]
  * @property {string} [created_at]
  */
 
@@ -44,6 +45,7 @@
  * @property {string} [suitableFor]
  * @property {string} [keywords]
  * @property {boolean} [onSale]
+ * @property {boolean} [isPublished]
  */
 
 /**
@@ -60,4 +62,4 @@
  * @property {PaginationMeta} pagination
  */
 
-export {}
+export {};

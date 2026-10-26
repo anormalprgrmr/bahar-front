@@ -1,4 +1,4 @@
-import { apiClient, toQueryString } from '@/services/api/client'
+import { apiClient, toQueryString } from "@/services/api/client";
 
 /**
  * @param {object} [params]
@@ -9,8 +9,10 @@ export async function adminListOrders(params = {}) {
     page: params.page ?? 1,
     page_size: params.pageSize ?? 20,
     tracking_code: params.trackingCode || undefined,
-  })
-  return apiClient(`/admin/orders${query}`, { auth: true })
+    status: params.status || undefined,
+    shipping_method: params.shippingMethod || undefined,
+  });
+  return apiClient(`/admin/orders${query}`, { auth: true });
 }
 
 /**
@@ -19,10 +21,10 @@ export async function adminListOrders(params = {}) {
  */
 export async function adminUpdateOrderStatus(orderId, status) {
   return apiClient(`/admin/orders/${orderId}`, {
-    method: 'PUT',
+    method: "PUT",
     auth: true,
     body: JSON.stringify({ status }),
-  })
+  });
 }
 
 /**
@@ -30,7 +32,7 @@ export async function adminUpdateOrderStatus(orderId, status) {
  */
 export async function adminDeleteOrder(orderId) {
   return apiClient(`/admin/orders/${orderId}`, {
-    method: 'DELETE',
+    method: "DELETE",
     auth: true,
-  })
+  });
 }
