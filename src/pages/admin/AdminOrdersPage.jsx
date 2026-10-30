@@ -4,12 +4,36 @@ import {
   adminListOrders,
   adminUpdateOrderStatus,
 } from "@/services/admin/adminOrderService";
+import { resolveMediaUrl } from "@/services/api/client";
 import { formatPrice } from "@/utils/formatPrice";
 import {
   getOrderStatusLabel,
   getShippingMethodLabel,
 } from "@/utils/productHelpers";
 import styles from "./AdminShared.module.css";
+
+function OrderItemThumbnail({ image, name }) {
+  const [failed, setFailed] = useState(false);
+  const src = image ? resolveMediaUrl(image) : "";
+
+  if (!src || failed) {
+    return (
+      <span className={styles.orderItemThumbnailFallback} aria-hidden="true">
+        بدون تصویر
+      </span>
+    );
+  }
+
+  return (
+    <img
+      className={styles.orderItemThumbnail}
+      src={src}
+      alt={name ? `تصویر ${name}` : "تصویر محصول"}
+      loading="lazy"
+      onError={() => setFailed(true)}
+    />
+  );
+}
 
 const STATUS_OPTIONS = [
   "pending",
@@ -332,7 +356,20 @@ export function AdminOrdersPage() {
                                         key={`${order.id}-${item.product_id}`}
                                       >
                                         <td>
-                                          {item.product_name || "محصول حذف‌شده"}
+                                          <div className={styles.orderProduct}>
+                                            <OrderItemThumbnail
+                                              image={item.product_image}
+                                              name={item.product_name}
+                                            />
+                                            <span
+                                              className={
+                                                styles.orderProductName
+                                              }
+                                            >
+                                              {item.product_name ||
+                                                "محصول حذف‌شده"}
+                                            </span>
+                                          </div>
                                         </td>
                                         <td>{item.product_id}</td>
                                         <td>

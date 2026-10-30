@@ -1,196 +1,217 @@
-import { useEffect, useState } from 'react'
-import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import { useAuth } from '@/contexts/AuthContext'
-import { useCart } from '@/contexts/CartContext'
+import { useEffect, useState } from "react";
+import {
+  Link,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { useCart } from "@/contexts/CartContext";
 import {
   createOrderFromCart,
   getOrderById,
   startZarinpalPayment,
   trackOrder,
-} from '@/services/orders/orderService'
-import { getProductById } from '@/services/products/productService'
-import { formatPrice } from '@/utils/formatPrice'
-import { getOrderStatusLabel, getShippingMethodLabel } from '@/utils/productHelpers'
-import formStyles from '@/styles/forms.module.css'
-import styles from './CheckoutPage.module.css'
+} from "@/services/orders/orderService";
+import { getProductById } from "@/services/products/productService";
+import { formatPrice } from "@/utils/formatPrice";
+import {
+  getOrderStatusLabel,
+  getShippingMethodLabel,
+} from "@/utils/productHelpers";
+import formStyles from "@/styles/forms.module.css";
+import styles from "./CheckoutPage.module.css";
 
-const GUEST_ORDER_KEY = 'bahar_guest_order'
+const GUEST_ORDER_KEY = "bahar_guest_order";
 
 function saveGuestOrderAccess(order) {
-  if (!order?.id || !order?.tracking_code) return
+  if (!order?.id || !order?.tracking_code) return;
   sessionStorage.setItem(
     GUEST_ORDER_KEY,
     JSON.stringify({ id: order.id, tracking_code: order.tracking_code }),
-  )
+  );
 }
 
 function readGuestOrderAccess() {
   try {
-    const raw = sessionStorage.getItem(GUEST_ORDER_KEY)
-    return raw ? JSON.parse(raw) : null
+    const raw = sessionStorage.getItem(GUEST_ORDER_KEY);
+    return raw ? JSON.parse(raw) : null;
   } catch {
-    return null
+    return null;
   }
 }
 
 export function CheckoutPage() {
-  const { orderId } = useParams()
-  const [searchParams] = useSearchParams()
-  const { user, isAuthenticated, updateProfile } = useAuth()
-  const { cart, total, refresh } = useCart()
-  const navigate = useNavigate()
+  const { orderId } = useParams();
+  const [searchParams] = useSearchParams();
+  const { user, isAuthenticated, updateProfile } = useAuth();
+  const { cart, total, refresh } = useCart();
+  const navigate = useNavigate();
 
-  const [name, setName] = useState(user?.name ?? '')
-  const [phone, setPhone] = useState(user?.phone ?? '')
-  const [email, setEmail] = useState(user?.email ?? '')
-  const [address, setAddress] = useState(user?.address ?? '')
-  const [shippingMethod, setShippingMethod] = useState(/** @type {import('@/types/order').ShippingMethod | ''} */ (''))
-  const [error, setError] = useState('')
-  const [submitting, setSubmitting] = useState(false)
-  const [paying, setPaying] = useState(false)
-  const [order, setOrder] = useState(/** @type {import('@/types/order').Order | null} */ (null))
-  const [loadingOrder, setLoadingOrder] = useState(Boolean(orderId))
-  const [orderProductNames, setOrderProductNames] = useState(/** @type {Record<string, string>} */ ({}))
-  const [orderProductsReady, setOrderProductsReady] = useState(false)
-  const [snapPayMessage, setSnapPayMessage] = useState('')
-  const [snapPayNotice, setSnapPayNotice] = useState('')
+  const [name, setName] = useState(user?.name ?? "");
+  const [phone, setPhone] = useState(user?.phone ?? "");
+  const [email, setEmail] = useState(user?.email ?? "");
+  const [address, setAddress] = useState(user?.address ?? "");
+  const [shippingMethod, setShippingMethod] = useState(
+    /** @type {import('@/types/order').ShippingMethod | ''} */ (""),
+  );
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [paying, setPaying] = useState(false);
+  const [order, setOrder] = useState(
+    /** @type {import('@/types/order').Order | null} */ (null),
+  );
+  const [loadingOrder, setLoadingOrder] = useState(Boolean(orderId));
+  const [orderProductNames, setOrderProductNames] = useState(
+    /** @type {Record<string, string>} */ ({}),
+  );
+  const [orderProductsReady, setOrderProductsReady] = useState(false);
+  const [snapPayMessage, setSnapPayMessage] = useState("");
+  const [snapPayNotice, setSnapPayNotice] = useState("");
 
   useEffect(() => {
-    if (user?.name) setName(user.name)
-    if (user?.phone) setPhone(user.phone)
-    if (user?.email) setEmail(user.email)
-    if (user?.address) setAddress(user.address)
-  }, [user?.name, user?.phone, user?.email, user?.address])
+    if (user?.name) setName(user.name);
+    if (user?.phone) setPhone(user.phone);
+    if (user?.email) setEmail(user.email);
+    if (user?.address) setAddress(user.address);
+  }, [user?.name, user?.phone, user?.email, user?.address]);
 
   useEffect(() => {
-    if (!orderId) return
-    let cancelled = false
+    if (!orderId) return;
+    let cancelled = false;
 
     async function load() {
-      setLoadingOrder(true)
-      setError('')
+      setLoadingOrder(true);
+      setError("");
       try {
-        const trackingFromQuery = searchParams.get('tracking')
-        const guestAccess = readGuestOrderAccess()
-        let result = null
+        const trackingFromQuery = searchParams.get("tracking");
+        const guestAccess = readGuestOrderAccess();
+        let result = null;
 
         if (isAuthenticated) {
-          result = await getOrderById(orderId)
+          result = await getOrderById(orderId);
         }
 
         if (!result) {
           const code =
             trackingFromQuery ||
-            (guestAccess?.id === orderId ? guestAccess.tracking_code : null)
+            (guestAccess?.id === orderId ? guestAccess.tracking_code : null);
           if (code) {
-            result = await trackOrder(code)
-            if (result && result.id !== orderId) result = null
+            result = await trackOrder(code);
+            if (result && result.id !== orderId) result = null;
           }
         }
 
         if (!cancelled) {
-          if (!result) setError('سفارش یافت نشد.')
+          if (!result) setError("سفارش یافت نشد.");
           else {
-            setOrder(result)
-            saveGuestOrderAccess(result)
+            setOrder(result);
+            saveGuestOrderAccess(result);
           }
         }
       } finally {
-        if (!cancelled) setLoadingOrder(false)
+        if (!cancelled) setLoadingOrder(false);
       }
     }
 
-    load()
+    load();
     return () => {
-      cancelled = true
-    }
-  }, [orderId, isAuthenticated, searchParams])
+      cancelled = true;
+    };
+  }, [orderId, isAuthenticated, searchParams]);
 
   useEffect(() => {
     if (!order?.items?.length) {
-      setOrderProductNames({})
-      setOrderProductsReady(true)
-      return
+      setOrderProductNames({});
+      setOrderProductsReady(true);
+      return;
     }
 
-    let cancelled = false
-    setOrderProductsReady(false)
-    Promise.all(order.items.map(async (item) => {
-      const product = await getProductById(item.product_id)
-      return [item.product_id, product?.name ?? `محصول ${item.product_id}`]
-    })).then((entries) => {
+    let cancelled = false;
+    setOrderProductsReady(false);
+    Promise.all(
+      order.items.map(async (item) => {
+        const product = await getProductById(item.product_id);
+        return [item.product_id, product?.name ?? `محصول ${item.product_id}`];
+      }),
+    ).then((entries) => {
       if (!cancelled) {
-        setOrderProductNames(Object.fromEntries(entries))
-        setOrderProductsReady(true)
+        setOrderProductNames(Object.fromEntries(entries));
+        setOrderProductsReady(true);
       }
-    })
+    });
 
     return () => {
-      cancelled = true
-    }
-  }, [order])
+      cancelled = true;
+    };
+  }, [order]);
 
   async function handleSnapPayRequest() {
-    if (!order) return
+    if (!order) return;
 
     const itemLines = (order.items ?? []).map((item) => {
-      const name = orderProductNames[item.product_id] ?? `محصول ${item.product_id}`
-      return `- ${name} | تعداد: ${new Intl.NumberFormat('fa-IR').format(item.quantity)} | قیمت واحد: ${formatPrice(item.unit_price)} | جمع: ${formatPrice(item.unit_price * item.quantity)}`
-    })
+      const name =
+        orderProductNames[item.product_id] ?? `محصول ${item.product_id}`;
+      return `- ${name} | تعداد: ${new Intl.NumberFormat("fa-IR").format(item.quantity)} | قیمت واحد: ${formatPrice(item.unit_price)} | جمع: ${formatPrice(item.unit_price * item.quantity)}`;
+    });
     const message = [
-      'درخواست خرید بدون قسط اول اسنپ پی',
+      "درخواست خرید بدون قسط اول اسنپ پی",
       `شناسه سفارش: ${order.id}`,
       `کد پیگیری: ${order.tracking_code}`,
       `وضعیت سفارش: ${getOrderStatusLabel(order.status)}`,
       `روش ارسال: ${getShippingMethodLabel(order.shipping_method)}`,
-      `نام مشتری: ${order.guest_name ?? user?.name ?? '-'}`,
-      `شماره تماس: ${order.guest_phone ?? user?.phone ?? '-'}`,
-      `ایمیل: ${order.guest_email ?? user?.email ?? '-'}`,
-      `آدرس: ${order.guest_address ?? user?.address ?? '-'}`,
-      '',
-      'اقلام سفارش:',
+      `نام مشتری: ${order.guest_name ?? user?.name ?? "-"}`,
+      `شماره تماس: ${order.guest_phone ?? user?.phone ?? "-"}`,
+      `ایمیل: ${order.guest_email ?? user?.email ?? "-"}`,
+      `آدرس: ${order.guest_address ?? user?.address ?? "-"}`,
+      "",
+      "اقلام سفارش:",
       ...itemLines,
-      '',
+      "",
       `مبلغ کل: ${formatPrice(order.total_amount)}`,
-    ].join('\n')
+    ].join("\n");
 
-    setSnapPayMessage(message)
+    setSnapPayMessage(message);
     try {
-      await navigator.clipboard.writeText(message)
-      setSnapPayNotice('متن فاکتور کپی شد؛ آن را در دایرکت اینستاگرام ارسال کنید.')
+      await navigator.clipboard.writeText(message);
+      setSnapPayNotice(
+        "متن فاکتور کپی شد؛ آن را در دایرکت اینستاگرام ارسال کنید.",
+      );
     } catch {
-      setSnapPayNotice('متن فاکتور آماده است؛ آن را کپی کرده و در دایرکت اینستاگرام ارسال کنید.')
+      setSnapPayNotice(
+        "متن فاکتور آماده است؛ آن را کپی کرده و در دایرکت اینستاگرام ارسال کنید.",
+      );
     }
   }
 
   async function handleCreateOrder() {
-    setError('')
-    setSubmitting(true)
+    setError("");
+    setSubmitting(true);
 
     try {
-      const trimmedName = name.trim()
-      const trimmedPhone = phone.trim()
-      const trimmedEmail = email.trim()
-      const trimmedAddress = address.trim()
+      const trimmedName = name.trim();
+      const trimmedPhone = phone.trim();
+      const trimmedEmail = email.trim();
+      const trimmedAddress = address.trim();
 
-      if (!trimmedName) throw new Error('نام الزامی است.')
-      if (!trimmedPhone) throw new Error('شماره موبایل الزامی است.')
-      if (!trimmedAddress) throw new Error('آدرس تحویل الزامی است.')
-      if (!shippingMethod) throw new Error('روش ارسال را انتخاب کنید.')
+      if (!trimmedName) throw new Error("نام الزامی است.");
+      if (!trimmedPhone) throw new Error("شماره موبایل الزامی است.");
+      if (!trimmedAddress) throw new Error("آدرس تحویل الزامی است.");
+      if (!shippingMethod) throw new Error("روش ارسال را انتخاب کنید.");
 
       if (isAuthenticated && user) {
-        const profilePatch = {}
-        if (trimmedAddress !== (user.address ?? '').trim()) {
-          profilePatch.address = trimmedAddress
+        const profilePatch = {};
+        if (trimmedAddress !== (user.address ?? "").trim()) {
+          profilePatch.address = trimmedAddress;
         }
-        if (trimmedName !== (user.name ?? '').trim()) {
-          profilePatch.name = trimmedName
+        if (trimmedName !== (user.name ?? "").trim()) {
+          profilePatch.name = trimmedName;
         }
-        if (trimmedPhone !== (user.phone ?? '').trim()) {
-          profilePatch.phone = trimmedPhone
+        if (trimmedPhone !== (user.phone ?? "").trim()) {
+          profilePatch.phone = trimmedPhone;
         }
         if (Object.keys(profilePatch).length > 0) {
-          await updateProfile(profilePatch)
+          await updateProfile(profilePatch);
         }
       }
 
@@ -201,32 +222,36 @@ export function CheckoutPage() {
         address: trimmedAddress,
         shippingMethod,
         authenticated: isAuthenticated,
-      })
-      await refresh()
-      setOrder(created)
-      saveGuestOrderAccess(created)
+      });
+      await refresh();
+      setOrder(created);
+      saveGuestOrderAccess(created);
       navigate(
         `/checkout/${created.id}?tracking=${encodeURIComponent(created.tracking_code)}`,
         { replace: true },
-      )
+      );
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'ثبت سفارش ناموفق بود.')
+      setError(err instanceof Error ? err.message : "ثبت سفارش ناموفق بود.");
     } finally {
-      setSubmitting(false)
+      setSubmitting(false);
     }
   }
 
   async function handlePay() {
-    if (!order) return
-    setError('')
-    setPaying(true)
+    if (!order) return;
+    setError("");
+    setPaying(true);
 
     try {
-      const payment = await startZarinpalPayment(order)
-      window.location.assign(payment.payment_url)
+      const payment = await startZarinpalPayment(order);
+      window.location.assign(payment.payment_url);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'اتصال به درگاه پرداخت ناموفق بود.')
-      setPaying(false)
+      setError(
+        err instanceof Error
+          ? err.message
+          : "اتصال به درگاه پرداخت ناموفق بود.",
+      );
+      setPaying(false);
     }
   }
 
@@ -235,18 +260,18 @@ export function CheckoutPage() {
       <div className={`container ${styles.page}`}>
         <p className={styles.muted}>در حال بارگذاری سفارش...</p>
       </div>
-    )
+    );
   }
 
-  if (order && order.status === 'paid') {
+  if (order && order.status === "paid") {
     return (
       <div className={`container ${styles.page}`}>
         <div className={styles.successCard}>
           <h1 className={styles.successTitle}>پرداخت با موفقیت انجام شد</h1>
           <p className={styles.muted}>پرداخت سفارش شما تأیید شد.</p>
-          {searchParams.get('ref_id') && (
+          {searchParams.get("ref_id") && (
             <p className={styles.ref}>
-              شماره تراکنش: <strong>{searchParams.get('ref_id')}</strong>
+              شماره تراکنش: <strong>{searchParams.get("ref_id")}</strong>
             </p>
           )}
           <p className={styles.ref}>
@@ -255,7 +280,9 @@ export function CheckoutPage() {
           <p className={styles.muted}>
             این کد را نگه دارید؛ با آن می‌توانید وضعیت سفارش را پیگیری کنید.
           </p>
-          <p className={styles.ref}>وضعیت فعلی: {getOrderStatusLabel(order.status)}</p>
+          <p className={styles.ref}>
+            وضعیت فعلی: {getOrderStatusLabel(order.status)}
+          </p>
           <p className={styles.total}>{formatPrice(order.total_amount)}</p>
           <div className={styles.successActions}>
             <Link
@@ -280,7 +307,7 @@ export function CheckoutPage() {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   if (order) {
@@ -303,10 +330,12 @@ export function CheckoutPage() {
               {(order.items ?? []).map((item) => (
                 <li key={`${item.product_id}-${item.quantity}`}>
                   <span>
-                    محصول {item.product_id.slice(0, 8)} ×{' '}
-                    {new Intl.NumberFormat('fa-IR').format(item.quantity)}
+                    محصول {item.product_id.slice(0, 8)} ×{" "}
+                    {new Intl.NumberFormat("fa-IR").format(item.quantity)}
                   </span>
-                  <strong>{formatPrice(item.unit_price * item.quantity)}</strong>
+                  <strong>
+                    {formatPrice(item.unit_price * item.quantity)}
+                  </strong>
                 </li>
               ))}
             </ul>
@@ -315,7 +344,7 @@ export function CheckoutPage() {
               <strong>{formatPrice(order.total_amount)}</strong>
             </div>
 
-            {order.status === 'pending' && (
+            {order.status === "pending" && (
               <div className={styles.snapPaySection}>
                 <a
                   className={styles.snapPayBox}
@@ -324,11 +353,13 @@ export function CheckoutPage() {
                   rel="noopener noreferrer"
                   onClick={(event) => {
                     if (!orderProductsReady) {
-                      event.preventDefault()
-                      setSnapPayNotice('در حال آماده‌سازی فاکتور هستیم؛ لطفاً چند لحظه دیگر دوباره انتخاب کنید.')
-                      return
+                      event.preventDefault();
+                      setSnapPayNotice(
+                        "در حال آماده‌سازی فاکتور هستیم؛ لطفاً چند لحظه دیگر دوباره انتخاب کنید.",
+                      );
+                      return;
                     }
-                    handleSnapPayRequest()
+                    handleSnapPayRequest();
                   }}
                 >
                   <img
@@ -338,11 +369,18 @@ export function CheckoutPage() {
                   />
                   <span className={styles.snapPayCopy}>
                     <strong>خرید بدون قسط اول اسنپ پی</strong>
-                    <span>برای هماهنگی دستی، فاکتور را در دایرکت اینستاگرام ارسال کنید.</span>
+                    <span>
+                      برای هماهنگی دستی، فاکتور را در دایرکت اینستاگرام ارسال
+                      کنید.
+                    </span>
                   </span>
-                  <span className={styles.snapPayArrow} aria-hidden="true">↗</span>
+                  <span className={styles.snapPayArrow} aria-hidden="true">
+                    ↗
+                  </span>
                 </a>
-                {snapPayNotice && <p className={styles.snapPayNotice}>{snapPayNotice}</p>}
+                {snapPayNotice && (
+                  <p className={styles.snapPayNotice}>{snapPayNotice}</p>
+                )}
                 {snapPayMessage && (
                   <textarea
                     className={styles.snapPayMessage}
@@ -355,29 +393,32 @@ export function CheckoutPage() {
               </div>
             )}
 
-            {searchParams.get('payment') === 'failed' && order.status === 'pending' && (
-              <p className={formStyles.error}>
-                {searchParams.get('code')
-                  ? `درگاه پرداخت، تراکنش را تأیید نکرد (کد خطا: ${searchParams.get('code')}). برای بررسی علت، این کد را به پشتیبانی اعلام کنید.`
-                  : 'پرداخت تأیید نشد یا توسط شما لغو شد. می‌توانید دوباره تلاش کنید.'}
-              </p>
-            )}
+            {searchParams.get("payment") === "failed" &&
+              order.status === "pending" && (
+                <p className={formStyles.error}>
+                  {searchParams.get("code")
+                    ? `درگاه پرداخت، تراکنش را تأیید نکرد (کد خطا: ${searchParams.get("code")}). برای بررسی علت، این کد را به پشتیبانی اعلام کنید.`
+                    : "پرداخت تأیید نشد یا توسط شما لغو شد. می‌توانید دوباره تلاش کنید."}
+                </p>
+              )}
             {error && <p className={formStyles.error}>{error}</p>}
 
-            {order.status === 'pending' && (
+            {order.status === "pending" && (
               <button
                 type="button"
                 className={styles.payBtn}
                 onClick={handlePay}
                 disabled={paying}
               >
-                {paying ? 'در حال اتصال به درگاه...' : 'پرداخت آنلاین با زرین‌پال'}
+                {paying
+                  ? "در حال اتصال به درگاه..."
+                  : "پرداخت آنلاین با زرین‌پال"}
               </button>
             )}
           </section>
         </div>
       </div>
-    )
+    );
   }
 
   if (cart.items.length === 0) {
@@ -391,7 +432,7 @@ export function CheckoutPage() {
           </Link>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -401,7 +442,8 @@ export function CheckoutPage() {
         <section className={styles.card}>
           <h2 className={styles.sectionTitle}>اطلاعات تحویل</h2>
           <p className={styles.muted}>
-            بدون ثبت‌نام هم می‌توانید سفارش دهید. در صورت تمایل بعداً حساب بسازید.
+            بدون ثبت‌نام هم می‌توانید سفارش دهید. در صورت تمایل بعداً حساب
+            بسازید.
           </p>
 
           <div className={formStyles.field}>
@@ -450,24 +492,28 @@ export function CheckoutPage() {
 
           <fieldset className={styles.shippingChoices}>
             <legend className={formStyles.label}>روش ارسال سفارش</legend>
-            <label className={`${styles.shippingChoice} ${shippingMethod === 'post' ? styles.shippingChoiceSelected : ''}`}>
+            <label
+              className={`${styles.shippingChoice} ${shippingMethod === "post" ? styles.shippingChoiceSelected : ""}`}
+            >
               <input
                 type="radio"
                 name="shipping-method"
                 value="post"
-                checked={shippingMethod === 'post'}
-                onChange={() => setShippingMethod('post')}
+                checked={shippingMethod === "post"}
+                onChange={() => setShippingMethod("post")}
                 required
               />
               <span>پست</span>
             </label>
-            <label className={`${styles.shippingChoice} ${shippingMethod === 'tipax' ? styles.shippingChoiceSelected : ''}`}>
+            <label
+              className={`${styles.shippingChoice} ${shippingMethod === "tipax" ? styles.shippingChoiceSelected : ""}`}
+            >
               <input
                 type="radio"
                 name="shipping-method"
                 value="tipax"
-                checked={shippingMethod === 'tipax'}
-                onChange={() => setShippingMethod('tipax')}
+                checked={shippingMethod === "tipax"}
+                onChange={() => setShippingMethod("tipax")}
                 required
               />
               <span>تیپاکس</span>
@@ -476,7 +522,7 @@ export function CheckoutPage() {
 
           <div className={formStyles.field}>
             <label className={formStyles.label} htmlFor="checkout-address">
-              آدرس
+              آدرس تحویل (الزامی)
             </label>
             <textarea
               id="checkout-address"
@@ -485,18 +531,19 @@ export function CheckoutPage() {
               onChange={(e) => setAddress(e.target.value)}
               rows={4}
               required
+              aria-required="true"
               placeholder="شهر، خیابان، پلاک، واحد..."
             />
           </div>
 
           {!isAuthenticated && (
             <p className={styles.accountHint}>
-              حساب دارید؟{' '}
-              <Link to="/login" state={{ from: '/checkout' }}>
+              حساب دارید؟{" "}
+              <Link to="/login" state={{ from: "/checkout" }}>
                 وارد شوید
-              </Link>
-              {' '}یا{' '}
-              <Link to="/register" state={{ from: '/checkout' }}>
+              </Link>{" "}
+              یا{" "}
+              <Link to="/register" state={{ from: "/checkout" }}>
                 ثبت‌نام کنید
               </Link>
               — اختیاری است.
@@ -510,7 +557,7 @@ export function CheckoutPage() {
             onClick={handleCreateOrder}
             disabled={submitting}
           >
-            {submitting ? 'در حال ثبت...' : 'ثبت سفارش و رفتن به پرداخت'}
+            {submitting ? "در حال ثبت..." : "ثبت سفارش و رفتن به پرداخت"}
           </button>
         </section>
 
@@ -520,8 +567,8 @@ export function CheckoutPage() {
             {cart.items.map((item) => (
               <li key={item.productId}>
                 <span>
-                  {item.name} ×{' '}
-                  {new Intl.NumberFormat('fa-IR').format(item.quantity)}
+                  {item.name} ×{" "}
+                  {new Intl.NumberFormat("fa-IR").format(item.quantity)}
                 </span>
                 <strong>{formatPrice(item.price * item.quantity)}</strong>
               </li>
@@ -534,5 +581,5 @@ export function CheckoutPage() {
         </aside>
       </div>
     </div>
-  )
+  );
 }
