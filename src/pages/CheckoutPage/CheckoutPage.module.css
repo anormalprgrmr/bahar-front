@@ -104,8 +104,22 @@
     border-radius: var(--radius-full);
 }
 
+.paymentChoices {
+    display: grid;
+    gap: 0.65rem;
+    margin-top: 1rem;
+}
+
+.digiPayBtn {
+    background: #4b2b83;
+}
+
 .payBtn:hover:not(:disabled) {
     background: var(--color-primary-dark);
+}
+
+.digiPayBtn:hover:not(:disabled) {
+    background: #372060;
 }
 
 .payBtn:disabled {

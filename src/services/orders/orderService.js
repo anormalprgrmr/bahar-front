@@ -103,3 +103,18 @@ export async function startZarinpalPayment(order) {
     }),
   })
 }
+
+/**
+ * Start DigiPay UPG and return its payment-selection redirect URL.
+ * @param {import('@/types/order').Order} order
+ * @returns {Promise<{ payment_url: string }>}
+ */
+export async function startDigiPayPayment(order) {
+  return apiClient('/payments/digipay/start', {
+    method: 'POST',
+    body: JSON.stringify({
+      order_id: order.id,
+      tracking_code: order.tracking_code,
+    }),
+  })
+}

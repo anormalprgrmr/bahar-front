@@ -10,6 +10,7 @@ import { useCart } from "@/contexts/CartContext";
 import {
   createOrderFromCart,
   getOrderById,
+  startDigiPayPayment,
   startZarinpalPayment,
   trackOrder,
 } from "@/services/orders/orderService";
@@ -237,13 +238,13 @@ export function CheckoutPage() {
     }
   }
 
-  async function handlePay() {
+  async function handlePay(startPayment) {
     if (!order) return;
     setError("");
     setPaying(true);
 
     try {
-      const payment = await startZarinpalPayment(order);
+      const payment = await startPayment(order);
       window.location.assign(payment.payment_url);
     } catch (err) {
       setError(
@@ -269,9 +270,12 @@ export function CheckoutPage() {
         <div className={styles.successCard}>
           <h1 className={styles.successTitle}>پرداخت با موفقیت انجام شد</h1>
           <p className={styles.muted}>پرداخت سفارش شما تأیید شد.</p>
-          {searchParams.get("ref_id") && (
+          {(searchParams.get("ref_id") || searchParams.get("transaction")) && (
             <p className={styles.ref}>
-              شماره تراکنش: <strong>{searchParams.get("ref_id")}</strong>
+              شماره تراکنش:{" "}
+              <strong>
+                {searchParams.get("ref_id") ?? searchParams.get("transaction")}
+              </strong>
             </p>
           )}
           <p className={styles.ref}>
@@ -404,16 +408,28 @@ export function CheckoutPage() {
             {error && <p className={formStyles.error}>{error}</p>}
 
             {order.status === "pending" && (
-              <button
-                type="button"
-                className={styles.payBtn}
-                onClick={handlePay}
-                disabled={paying}
-              >
-                {paying
-                  ? "در حال اتصال به درگاه..."
-                  : "پرداخت آنلاین با زرین‌پال"}
-              </button>
+              <div className={styles.paymentChoices}>
+                <button
+                  type="button"
+                  className={`${styles.payBtn} ${styles.digiPayBtn}`}
+                  onClick={() => handlePay(startDigiPayPayment)}
+                  disabled={paying}
+                >
+                  {paying
+                    ? "در حال اتصال به درگاه..."
+                    : "پرداخت با دیجی‌پی (انتخاب روش پرداخت)"}
+                </button>
+                <button
+                  type="button"
+                  className={styles.payBtn}
+                  onClick={() => handlePay(startZarinpalPayment)}
+                  disabled={paying}
+                >
+                  {paying
+                    ? "در حال اتصال به درگاه..."
+                    : "پرداخت آنلاین با زرین‌پال"}
+                </button>
+              </div>
             )}
           </section>
         </div>
