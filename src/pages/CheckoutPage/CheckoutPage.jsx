@@ -10,6 +10,7 @@ import { useCart } from "@/contexts/CartContext";
 import {
   createOrderFromCart,
   getOrderById,
+  startDigiPayPayment,
   startZarinpalPayment,
   trackOrder,
 } from "@/services/orders/orderService";
@@ -408,6 +409,16 @@ export function CheckoutPage() {
 
             {order.status === "pending" && (
               <div className={styles.paymentChoices}>
+                <button
+                  type="button"
+                  className={`${styles.payBtn} ${styles.digiPayBtn}`}
+                  onClick={() => handlePay(startDigiPayPayment)}
+                  disabled={paying}
+                >
+                  {paying
+                    ? "در حال اتصال به درگاه..."
+                    : "پرداخت با دیجی‌پی (انتخاب روش پرداخت)"}
+                </button>
                 <button
                   type="button"
                   className={styles.payBtn}
