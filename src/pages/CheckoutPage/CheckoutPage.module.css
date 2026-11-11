@@ -322,6 +322,7 @@
     display: flex;
     align-items: center;
     gap: 0.6rem;
+    min-width: 0;
     padding: 0.85rem 1rem;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
@@ -329,7 +330,13 @@
 }
 
 .shippingChoice input {
+    flex: 0 0 auto;
     accent-color: var(--color-primary);
+}
+
+.shippingChoice span {
+    min-width: 0;
+    overflow-wrap: anywhere;
 }
 
 .shippingChoiceSelected {

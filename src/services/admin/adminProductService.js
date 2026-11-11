@@ -5,6 +5,14 @@ import {
 } from "@/services/api/client";
 import { normalizeProduct } from "@/services/products/productService";
 
+export async function adminBulkAdjustPrices(adjustment) {
+  return apiClient("/admin/products/prices/bulk", {
+    method: "POST",
+    auth: true,
+    body: JSON.stringify(adjustment),
+  });
+}
+
 /**
  * @param {object} [params]
  * @returns {Promise<import('@/types/product').PaginatedProducts>}

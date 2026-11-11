@@ -33,6 +33,15 @@ function saveGuestOrderAccess(order) {
   );
 }
 
+function isMashhadCity(value) {
+  const normalized = value
+    .trim()
+    .toLocaleLowerCase()
+    .replaceAll("ي", "ی")
+    .replaceAll("ك", "ک");
+  return normalized === "مشهد" || normalized === "mashhad";
+}
+
 function readGuestOrderAccess() {
   try {
     const raw = sessionStorage.getItem(GUEST_ORDER_KEY);
@@ -53,6 +62,7 @@ export function CheckoutPage() {
   const [phone, setPhone] = useState(user?.phone ?? "");
   const [email, setEmail] = useState(user?.email ?? "");
   const [address, setAddress] = useState(user?.address ?? "");
+  const [city, setCity] = useState("");
   const [shippingMethod, setShippingMethod] = useState(
     /** @type {import('@/types/order').ShippingMethod | ''} */ (""),
   );
@@ -194,9 +204,11 @@ export function CheckoutPage() {
       const trimmedPhone = phone.trim();
       const trimmedEmail = email.trim();
       const trimmedAddress = address.trim();
+      const trimmedCity = city.trim();
 
       if (!trimmedName) throw new Error("نام الزامی است.");
       if (!trimmedPhone) throw new Error("شماره موبایل الزامی است.");
+      if (!trimmedCity) throw new Error("شهر الزامی است.");
       if (!trimmedAddress) throw new Error("آدرس تحویل الزامی است.");
       if (!shippingMethod) throw new Error("روش ارسال را انتخاب کنید.");
 
@@ -221,6 +233,7 @@ export function CheckoutPage() {
         phone: trimmedPhone,
         email: trimmedEmail,
         address: trimmedAddress,
+        city: trimmedCity,
         shippingMethod,
         authenticated: isAuthenticated,
       });
@@ -506,6 +519,29 @@ export function CheckoutPage() {
             />
           </div>
 
+          <div className={formStyles.field}>
+            <label className={formStyles.label} htmlFor="checkout-city">
+              شهر (الزامی)
+            </label>
+            <input
+              id="checkout-city"
+              className={formStyles.input}
+              value={city}
+              onChange={(event) => {
+                const value = event.target.value;
+                setCity(value);
+                if (!isMashhadCity(value)) {
+                  setShippingMethod((current) =>
+                    current === "mashhad_courier" ? "" : current,
+                  );
+                }
+              }}
+              required
+              aria-required="true"
+              autoComplete="address-level2"
+            />
+          </div>
+
           <fieldset className={styles.shippingChoices}>
             <legend className={formStyles.label}>روش ارسال سفارش</legend>
             <label
@@ -534,6 +570,21 @@ export function CheckoutPage() {
               />
               <span>تیپاکس</span>
             </label>
+            {isMashhadCity(city) && (
+              <label
+                className={`${styles.shippingChoice} ${shippingMethod === "mashhad_courier" ? styles.shippingChoiceSelected : ""}`}
+              >
+                <input
+                  type="radio"
+                  name="shipping-method"
+                  value="mashhad_courier"
+                  checked={shippingMethod === "mashhad_courier"}
+                  onChange={() => setShippingMethod("mashhad_courier")}
+                  required
+                />
+                <span>ارسال با پیک مخصوص شهر مشهد</span>
+              </label>
+            )}
           </fieldset>
 
           <div className={formStyles.field}>

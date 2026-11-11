@@ -1,5 +1,5 @@
-import { apiClient, toQueryString } from '@/services/api/client'
-import { clearCart } from '@/services/cart/cartService'
+import { apiClient, toQueryString } from "@/services/api/client";
+import { clearCart } from "@/services/cart/cartService";
 
 /**
  * @param {import('@/types/order').CreateOrderPayload} payload
@@ -7,12 +7,12 @@ import { clearCart } from '@/services/cart/cartService'
  * @returns {Promise<import('@/types/order').Order>}
  */
 export async function createOrder(payload, options = {}) {
-  const useAuth = Boolean(options.auth)
-  return apiClient(useAuth ? '/orders' : '/orders/guest', {
-    method: 'POST',
+  const useAuth = Boolean(options.auth);
+  return apiClient(useAuth ? "/orders" : "/orders/guest", {
+    method: "POST",
     auth: useAuth,
     body: JSON.stringify(payload),
-  })
+  });
 }
 
 /**
@@ -24,6 +24,7 @@ export async function createOrder(payload, options = {}) {
  *   phone: string
  *   email?: string
  *   address: string
+ *   city: string
  *   shippingMethod: import('@/types/order').ShippingMethod
  *   authenticated?: boolean
  * }} contact
@@ -31,15 +32,16 @@ export async function createOrder(payload, options = {}) {
  */
 export async function createOrderFromCart(cartItems, userId, contact) {
   if (!cartItems.length) {
-    throw new Error('سبد خرید شما خالی است.')
+    throw new Error("سبد خرید شما خالی است.");
   }
 
   const order = await createOrder(
     {
       name: contact.name,
       phone: contact.phone,
-      email: contact.email ?? '',
+      email: contact.email ?? "",
       address: contact.address,
+      city: contact.city,
       shipping_method: contact.shippingMethod,
       items: cartItems.map((item) => ({
         product_id: item.productId,
@@ -47,10 +49,10 @@ export async function createOrderFromCart(cartItems, userId, contact) {
       })),
     },
     { auth: Boolean(contact.authenticated) },
-  )
+  );
 
-  await clearCart(userId)
-  return order
+  await clearCart(userId);
+  return order;
 }
 
 /**
@@ -61,8 +63,8 @@ export async function getMyOrders(params = {}) {
   const query = toQueryString({
     page: params.page ?? 1,
     page_size: params.pageSize ?? 20,
-  })
-  return apiClient(`/orders/my${query}`, { auth: true })
+  });
+  return apiClient(`/orders/my${query}`, { auth: true });
 }
 
 /**
@@ -71,9 +73,9 @@ export async function getMyOrders(params = {}) {
  */
 export async function getOrderById(orderId) {
   try {
-    return await apiClient(`/orders/${orderId}`, { auth: true })
+    return await apiClient(`/orders/${orderId}`, { auth: true });
   } catch {
-    return null
+    return null;
   }
 }
 
@@ -83,9 +85,9 @@ export async function getOrderById(orderId) {
  */
 export async function trackOrder(trackingCode) {
   try {
-    return await apiClient(`/orders/track/${encodeURIComponent(trackingCode)}`)
+    return await apiClient(`/orders/track/${encodeURIComponent(trackingCode)}`);
   } catch {
-    return null
+    return null;
   }
 }
 
@@ -95,13 +97,13 @@ export async function trackOrder(trackingCode) {
  * @returns {Promise<{ payment_url: string }>}
  */
 export async function startZarinpalPayment(order) {
-  return apiClient('/payments/zarinpal/start', {
-    method: 'POST',
+  return apiClient("/payments/zarinpal/start", {
+    method: "POST",
     body: JSON.stringify({
       order_id: order.id,
       tracking_code: order.tracking_code,
     }),
-  })
+  });
 }
 
 /**
@@ -110,11 +112,11 @@ export async function startZarinpalPayment(order) {
  * @returns {Promise<{ payment_url: string }>}
  */
 export async function startDigiPayPayment(order) {
-  return apiClient('/payments/digipay/start', {
-    method: 'POST',
+  return apiClient("/payments/digipay/start", {
+    method: "POST",
     body: JSON.stringify({
       order_id: order.id,
       tracking_code: order.tracking_code,
     }),
-  })
+  });
 }

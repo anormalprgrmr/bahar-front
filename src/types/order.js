@@ -3,7 +3,7 @@
  */
 
 /**
- * @typedef {'post' | 'tipax'} ShippingMethod
+ * @typedef {'post' | 'tipax' | 'mashhad_courier'} ShippingMethod
  */
 
 /**
@@ -27,6 +27,8 @@
  * @property {string} [guest_phone]
  * @property {string} [guest_email]
  * @property {string} [guest_address]
+ * @property {string} [city]
+ * @property {'zarinpal' | 'digipay' | string} [payment_provider]
  * @property {string} [user_id]
  * @property {import('@/types/order').ShippingMethod} shipping_method
  * @property {string} created_at
@@ -40,6 +42,7 @@
  * @property {string} phone
  * @property {string} [email]
  * @property {string} address
+ * @property {string} city
  * @property {import('@/types/order').ShippingMethod} shipping_method
  * @property {{ product_id: string, quantity: number }[]} items
  */

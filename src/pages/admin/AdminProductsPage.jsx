@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
+  adminBulkAdjustPrices,
   adminDeleteProduct,
   adminListProducts,
   adminUpdateProductPrice,
@@ -37,6 +38,10 @@ export function AdminProductsPage() {
     /** @type {Record<string, string>} */ ({}),
   );
   const [savingStockId, setSavingStockId] = useState("");
+  const [bulkDirection, setBulkDirection] = useState("increase");
+  const [bulkMode, setBulkMode] = useState("fixed");
+  const [bulkAmount, setBulkAmount] = useState("");
+  const [bulkSaving, setBulkSaving] = useState(false);
   const [success, setSuccess] = useState(
     /** @type {string} */ (location.state?.success ?? ""),
   );
@@ -179,6 +184,64 @@ export function AdminProductsPage() {
     }
   }
 
+  async function handleBulkPriceAdjustment(event) {
+    event.preventDefault();
+    const amount = Number(bulkAmount);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      setError("مقدار تغییر باید بزرگ‌تر از صفر باشد.");
+      return;
+    }
+    if (bulkMode === "fixed" && !Number.isInteger(amount)) {
+      setError("مقدار ثابت باید عدد صحیح و بر حسب تومان باشد.");
+      return;
+    }
+    if (
+      bulkDirection === "decrease" &&
+      bulkMode === "percent" &&
+      amount > 100
+    ) {
+      setError("درصد کاهش نمی‌تواند بیشتر از ۱۰۰ باشد.");
+      return;
+    }
+    if (bulkMode === "percent" && amount > 10000) {
+      setError("درصد نمی‌تواند بیشتر از ۱۰۰۰۰ باشد.");
+      return;
+    }
+
+    const amountLabel =
+      bulkMode === "percent" ? `${amount}٪` : `${amount} تومان`;
+    const directionLabel = bulkDirection === "increase" ? "افزایش" : "کاهش";
+    if (
+      !window.confirm(
+        `قیمت تمام محصولات (حتی خارج از صفحه یا فیلتر فعلی) ${directionLabel} ${amountLabel} داده شود؟ این تغییر روی قیمت اصلی و قیمت تخفیف‌خورده اعمال می‌شود.`,
+      )
+    ) {
+      return;
+    }
+
+    setError("");
+    setSuccess("");
+    setBulkSaving(true);
+    try {
+      const result = await adminBulkAdjustPrices({
+        direction: bulkDirection,
+        mode: bulkMode,
+        amount,
+      });
+      setSuccess(
+        `قیمت ${new Intl.NumberFormat("fa-IR").format(result.updated)} محصول به‌روزرسانی شد.`,
+      );
+      setBulkAmount("");
+      await load(page, query);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "تغییر گروهی قیمت‌ها ناموفق بود.",
+      );
+    } finally {
+      setBulkSaving(false);
+    }
+  }
+
   function handleTrendChange(productId, selected) {
     setTrendProduct(productId, selected);
     setProducts((current) => [...current]);
@@ -202,6 +265,59 @@ export function AdminProductsPage() {
 
       {error && <p className={styles.error}>{error}</p>}
       {success && <p className={styles.success}>{success}</p>}
+
+      <form
+        className={styles.bulkPricePanel}
+        onSubmit={handleBulkPriceAdjustment}
+      >
+        <div>
+          <h2>تغییر قیمت همه محصولات</h2>
+          <p>
+            این عملیات کل محصولات فروشگاه را تغییر می‌دهد، نه فقط نتایج صفحه یا
+            فیلتر فعلی. قیمت اصلی و قیمت تخفیف‌خورده با هم تنظیم می‌شوند.
+          </p>
+        </div>
+        <div className={styles.bulkPriceControls}>
+          <select
+            className={styles.select}
+            value={bulkDirection}
+            onChange={(event) => setBulkDirection(event.target.value)}
+            aria-label="نوع تغییر قیمت"
+          >
+            <option value="increase">افزایش</option>
+            <option value="decrease">کاهش</option>
+          </select>
+          <select
+            className={styles.select}
+            value={bulkMode}
+            onChange={(event) => setBulkMode(event.target.value)}
+            aria-label="واحد تغییر قیمت"
+          >
+            <option value="fixed">مبلغ ثابت (تومان)</option>
+            <option value="percent">درصد</option>
+          </select>
+          <input
+            className={styles.bulkPriceInput}
+            type="number"
+            min="0"
+            step={bulkMode === "fixed" ? "1" : "0.1"}
+            value={bulkAmount}
+            onChange={(event) => setBulkAmount(event.target.value)}
+            placeholder={bulkMode === "fixed" ? "مبلغ به تومان" : "درصد"}
+            aria-label={
+              bulkMode === "fixed" ? "مبلغ تغییر به تومان" : "درصد تغییر"
+            }
+            required
+          />
+          <button
+            type="submit"
+            className={styles.primaryBtn}
+            disabled={bulkSaving || bulkAmount.trim() === ""}
+          >
+            {bulkSaving ? "در حال اعمال..." : "اعمال روی همه محصولات"}
+          </button>
+        </div>
+      </form>
 
       <div className={styles.toolbar}>
         <input

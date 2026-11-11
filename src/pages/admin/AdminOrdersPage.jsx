@@ -35,6 +35,12 @@ function OrderItemThumbnail({ image, name }) {
   );
 }
 
+function getPaymentProviderLabel(provider) {
+  if (provider === "digipay") return "دیجی‌پی";
+  if (provider === "zarinpal") return "زرین‌پال";
+  return "—";
+}
+
 const STATUS_OPTIONS = [
   "pending",
   "paid",
@@ -162,6 +168,7 @@ export function AdminOrdersPage() {
           <option value="">همه روش‌های ارسال</option>
           <option value="post">پست</option>
           <option value="tipax">تیپاکس</option>
+          <option value="mashhad_courier">ارسال با پیک مخصوص شهر مشهد</option>
         </select>
         {(trackingCode || statusFilter || shippingFilter) && (
           <button
@@ -199,6 +206,7 @@ export function AdminOrdersPage() {
                 <th>مشتری</th>
                 <th>تماس</th>
                 <th>روش ارسال</th>
+                <th>درگاه پرداخت</th>
                 <th>مبلغ</th>
                 <th>تاریخ</th>
                 <th>وضعیت</th>
@@ -246,6 +254,7 @@ export function AdminOrdersPage() {
                       </td>
                       <td>{contact}</td>
                       <td>{getShippingMethodLabel(order.shipping_method)}</td>
+                      <td>{getPaymentProviderLabel(order.payment_provider)}</td>
                       <td>{formatPrice(order.total_amount)}</td>
                       <td>
                         {new Date(order.created_at).toLocaleDateString("fa-IR")}
@@ -302,7 +311,7 @@ export function AdminOrdersPage() {
                     </tr>
                     {expandedOrderId === order.id && (
                       <tr>
-                        <td colSpan={8}>
+                        <td colSpan={9}>
                           <section
                             className={styles.orderDetails}
                             aria-label="جزئیات سفارش"
@@ -321,8 +330,17 @@ export function AdminOrdersPage() {
                                 {order.guest_email || order.user?.email || "—"}
                               </div>
                               <div>
+                                <strong>شهر:</strong> {order.city || "—"}
+                              </div>
+                              <div>
                                 <strong>روش ارسال:</strong>{" "}
                                 {getShippingMethodLabel(order.shipping_method)}
+                              </div>
+                              <div>
+                                <strong>درگاه پرداخت:</strong>{" "}
+                                {getPaymentProviderLabel(
+                                  order.payment_provider,
+                                )}
                               </div>
                               <div className={styles.orderAddress}>
                                 <strong>نشانی:</strong>{" "}

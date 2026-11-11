@@ -2,29 +2,29 @@
  * @param {import('@/types/product').Product} product
  */
 export function getSalePrice(product) {
-  return product.newPrice != null ? product.newPrice : product.price
+  return product.newPrice != null ? product.newPrice : product.price;
 }
 
 /**
  * @param {import('@/types/product').Product} product
  */
 export function getOriginalPrice(product) {
-  return product.newPrice != null ? product.price : null
+  return product.newPrice != null ? product.price : null;
 }
 
 /**
  * @param {import('@/types/product').Product} product
  */
 export function isInStock(product) {
-  return (product.stock ?? 0) > 0
+  return (product.stock ?? 0) > 0;
 }
 
 /**
  * @param {import('@/types/product').Product} product
  */
 export function getProductBadge(product) {
-  if (product.onSale || product.newPrice != null) return 'تخفیف'
-  return null
+  if (product.onSale || product.newPrice != null) return "تخفیف";
+  return null;
 }
 
 /**
@@ -33,24 +33,26 @@ export function getProductBadge(product) {
  */
 export function getProductCategoryLabels(product, categories = []) {
   if (product.categories?.length) {
-    return product.categories.map((category) => category.name).join('، ')
+    return product.categories.map((category) => category.name).join("، ");
   }
 
   if (product.categoryIds?.length && categories.length) {
     return product.categoryIds
-      .map((id) => categories.find((category) => category.id === id)?.name ?? id)
-      .join('، ')
+      .map(
+        (id) => categories.find((category) => category.id === id)?.name ?? id,
+      )
+      .join("، ");
   }
 
-  return getCategoryLabel(product.category, categories)
+  return getCategoryLabel(product.category, categories);
 }
 
 /**
  * @param {import('@/types/product').Product} product
  */
 export function getPrimaryCategorySlug(product) {
-  if (product.categories?.length) return product.categories[0].slug
-  return product.category ?? ''
+  if (product.categories?.length) return product.categories[0].slug;
+  return product.category ?? "";
 }
 
 /**
@@ -58,25 +60,29 @@ export function getPrimaryCategorySlug(product) {
  * @param {import('@/types/category').Category[]} [categories]
  */
 export function getCategoryLabel(slug, categories = []) {
-  if (!slug) return '—'
-  const match = categories.find((category) => category.slug === slug)
-  return match?.name ?? slug
+  if (!slug) return "—";
+  const match = categories.find((category) => category.slug === slug);
+  return match?.name ?? slug;
 }
 
 /**
  * @param {string} [slug]
  */
 export function getCategoryPath(slug) {
-  if (!slug) return '/'
-  return `/categories/${slug}`
+  if (!slug) return "/";
+  return `/categories/${slug}`;
 }
 
 /**
  * @param {import('@/types/order').ShippingMethod} shippingMethod
  */
 export function getShippingMethodLabel(shippingMethod) {
-  const labels = { post: 'پست', tipax: 'تیپاکس' }
-  return labels[shippingMethod] ?? '—'
+  const labels = {
+    post: "پست",
+    tipax: "تیپاکس",
+    mashhad_courier: "ارسال با پیک مخصوص شهر مشهد",
+  };
+  return labels[shippingMethod] ?? "—";
 }
 
 /**
@@ -84,12 +90,12 @@ export function getShippingMethodLabel(shippingMethod) {
  */
 export function getOrderStatusLabel(status) {
   const labels = {
-    pending: 'در انتظار پرداخت',
-    paid: 'پرداخت‌شده',
-    processing: 'در حال آماده‌سازی',
-    shipped: 'ارسال‌شده',
-    delivered: 'تحویل‌شده',
-    cancelled: 'لغو شده',
-  }
-  return labels[status] ?? status
+    pending: "در انتظار پرداخت",
+    paid: "پرداخت‌شده",
+    processing: "در حال آماده‌سازی",
+    shipped: "ارسال‌شده",
+    delivered: "تحویل‌شده",
+    cancelled: "لغو شده",
+  };
+  return labels[status] ?? status;
 }
