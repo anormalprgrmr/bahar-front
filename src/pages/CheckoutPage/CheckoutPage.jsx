@@ -269,6 +269,20 @@ export function CheckoutPage() {
     }
   }
 
+  const zarinpalPaymentAmount = order
+    ? Math.round((order.total_amount * 92) / 100)
+    : 0;
+  const zarinpalDiscountAmount = order
+    ? Math.max(0, order.total_amount - zarinpalPaymentAmount)
+    : 0;
+  const paidDiscountAmount = Number(searchParams.get("discount_amount"));
+  const hasPaidZarinpalDiscount =
+    order?.status === "paid" &&
+    searchParams.get("provider") === "zarinpal" &&
+    Number.isSafeInteger(paidDiscountAmount) &&
+    paidDiscountAmount > 0 &&
+    paidDiscountAmount === zarinpalDiscountAmount;
+
   if (loadingOrder) {
     return (
       <div className={`container ${styles.page}`}>
@@ -300,7 +314,22 @@ export function CheckoutPage() {
           <p className={styles.ref}>
             وضعیت فعلی: {getOrderStatusLabel(order.status)}
           </p>
-          <p className={styles.total}>{formatPrice(order.total_amount)}</p>
+          {hasPaidZarinpalDiscount ? (
+            <>
+              <p className={styles.ref}>
+                مبلغ سفارش: {formatPrice(order.total_amount)}
+              </p>
+              <p className={styles.ref}>
+                تخفیف زرین‌پال (۸٪): −{formatPrice(paidDiscountAmount)}
+              </p>
+              <p className={styles.total}>
+                مبلغ پرداخت‌شده:{" "}
+                {formatPrice(order.total_amount - paidDiscountAmount)}
+              </p>
+            </>
+          ) : (
+            <p className={styles.total}>{formatPrice(order.total_amount)}</p>
+          )}
           <div className={styles.successActions}>
             <Link
               to={`/track?code=${encodeURIComponent(order.tracking_code)}`}
@@ -357,9 +386,25 @@ export function CheckoutPage() {
               ))}
             </ul>
             <div className={styles.totalRow}>
-              <span>مبلغ قابل پرداخت</span>
+              <span>جمع سفارش (قبل از تخفیف)</span>
               <strong>{formatPrice(order.total_amount)}</strong>
             </div>
+            {order.status === "pending" && (
+              <>
+                <div className={styles.totalRow}>
+                  <span>تخفیف پرداخت با زرین‌پال (۸٪)</span>
+                  <strong>−{formatPrice(zarinpalDiscountAmount)}</strong>
+                </div>
+                <div className={styles.totalRow}>
+                  <span>پرداخت نهایی با زرین‌پال</span>
+                  <strong>{formatPrice(zarinpalPaymentAmount)}</strong>
+                </div>
+                <p className={styles.muted}>
+                  این تخفیف فقط برای زرین‌پال است؛ پرداخت با دیجی‌پی شامل تخفیف
+                  نمی‌شود.
+                </p>
+              </>
+            )}
 
             {order.status === "pending" && (
               <div className={styles.snapPaySection}>
@@ -440,7 +485,7 @@ export function CheckoutPage() {
                 >
                   {paying
                     ? "در حال اتصال به درگاه..."
-                    : "پرداخت آنلاین با زرین‌پال"}
+                    : "پرداخت آنلاین با زرین‌پال (۸٪ تخفیف)"}
                 </button>
               </div>
             )}

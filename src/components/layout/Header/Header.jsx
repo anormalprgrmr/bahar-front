@@ -1,88 +1,110 @@
-import { useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
-import { useAsyncData } from '@/hooks/useAsyncData'
-import { useAuth } from '@/contexts/AuthContext'
-import { useCart } from '@/contexts/CartContext'
-import { useWishlist } from '@/contexts/WishlistContext'
-import { ProductSearchForm } from '@/components/products/ProductSearchForm/ProductSearchForm'
+import { useState } from "react";
+import { Link, NavLink } from "react-router-dom";
+import { useAsyncData } from "@/hooks/useAsyncData";
+import { useAuth } from "@/contexts/AuthContext";
+import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
+import { ProductSearchForm } from "@/components/products/ProductSearchForm/ProductSearchForm";
 import {
   getHotProducts,
   getTrendProducts,
-} from '@/services/products/productService'
-import { ProductsDropdown } from './ProductsDropdown'
-import { MobileMenu } from './MobileMenu'
-import styles from './Header.module.css'
+} from "@/services/products/productService";
+import { ProductsDropdown } from "./ProductsDropdown";
+import { MobileMenu } from "./MobileMenu";
+import styles from "./Header.module.css";
 
 function SearchIcon() {
   return (
-    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8">
+    <svg
+      viewBox="0 0 24 24"
+      width="22"
+      height="22"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+    >
       <circle cx="11" cy="11" r="7" />
       <path d="M20 20l-3-3" />
     </svg>
-  )
+  );
 }
 
 function BookmarkIcon() {
   return (
-    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8">
+    <svg
+      viewBox="0 0 24 24"
+      width="22"
+      height="22"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+    >
       <path d="M7 4h10a1 1 0 0 1 1 1v15l-6-4-6 4V5a1 1 0 0 1 1-1z" />
     </svg>
-  )
+  );
 }
 
 function CartIcon() {
   return (
-    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8">
+    <svg
+      viewBox="0 0 24 24"
+      width="22"
+      height="22"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+    >
       <path d="M6 6h15l-1.5 9h-12L6 6z" />
       <path d="M6 6l-1-2H2" />
       <circle cx="9" cy="20" r="1" />
       <circle cx="18" cy="20" r="1" />
     </svg>
-  )
+  );
 }
 
 function UserIcon() {
   return (
-    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8">
+    <svg
+      viewBox="0 0 24 24"
+      width="22"
+      height="22"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+    >
       <circle cx="12" cy="8" r="4" />
       <path d="M4 20c1.5-3.5 4.5-5 8-5s6.5 1.5 8 5" />
     </svg>
-  )
+  );
 }
 
 function MenuIcon() {
   return (
-    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
+    <svg
+      viewBox="0 0 24 24"
+      width="24"
+      height="24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+    >
       <path d="M4 7h16M4 12h16M4 17h16" />
     </svg>
-  )
-}
-
-function LogoIcon() {
-  return (
-    <svg className={styles.logoIcon} viewBox="0 0 40 40" fill="none" aria-hidden="true">
-      <circle cx="20" cy="20" r="18" fill="#fce7f0" />
-      <path
-        d="M20 8c-1.5 6-6 9-10 11 4.5 1.5 9 4.5 10 11 1-6.5 5.5-9.5 10-11-4-2-8.5-5-10-11z"
-        fill="#e91e8c"
-      />
-      <circle cx="20" cy="20" r="4" fill="#f48fb1" />
-    </svg>
-  )
+  );
 }
 
 export function Header() {
-  const [menuOpen, setMenuOpen] = useState(false)
-  const [dropdownOpen, setDropdownOpen] = useState(false)
-  const [searchOpen, setSearchOpen] = useState(false)
-  const { isAuthenticated, isAdmin, user } = useAuth()
-  const { itemCount } = useCart()
-  const { itemCount: wishlistCount } = useWishlist()
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const { isAuthenticated, isAdmin, user } = useAuth();
+  const { itemCount } = useCart();
+  const { itemCount: wishlistCount } = useWishlist();
 
-  const { data: hotData } = useAsyncData('hot', getHotProducts)
-  const { data: trendsData } = useAsyncData('trends', getTrendProducts)
-  const hotProducts = hotData ?? []
-  const trends = trendsData ?? []
+  const { data: hotData } = useAsyncData("hot", getHotProducts);
+  const { data: trendsData } = useAsyncData("trends", getTrendProducts);
+  const hotProducts = hotData ?? [];
+  const trends = trendsData ?? [];
 
   return (
     <header className={styles.header}>
@@ -106,7 +128,7 @@ export function Header() {
             <BookmarkIcon />
             {wishlistCount > 0 && (
               <span className={styles.badge}>
-                {new Intl.NumberFormat('fa-IR').format(wishlistCount)}
+                {new Intl.NumberFormat("fa-IR").format(wishlistCount)}
               </span>
             )}
           </Link>
@@ -118,10 +140,10 @@ export function Header() {
           )}
 
           <Link
-            to={isAuthenticated ? '/profile' : '/login'}
+            to={isAuthenticated ? "/profile" : "/login"}
             className={`${styles.iconBtn} ${styles.desktopOnly}`}
-            aria-label={isAuthenticated ? 'حساب کاربری' : 'ورود'}
-            title={isAuthenticated ? user?.email : 'ورود'}
+            aria-label={isAuthenticated ? "حساب کاربری" : "ورود"}
+            title={isAuthenticated ? user?.email : "ورود"}
           >
             <UserIcon />
           </Link>
@@ -136,7 +158,9 @@ export function Header() {
           </button>
 
           <Link to="/" className={styles.brand}>
-            <LogoIcon />
+            <span className={styles.logoCrop} aria-hidden="true">
+              <img className={styles.logoIcon} src="/001-05.png" alt="" />
+            </span>
             <span className={styles.brandText}>
               <span className={styles.brandName}>بهار</span>
               <span className={styles.brandSub}>محصولات مراقبتی و آرایشی</span>
@@ -166,7 +190,7 @@ export function Header() {
             >
               محصولات
               <svg
-                className={`${styles.chevron} ${dropdownOpen ? styles.chevronOpen : ''}`}
+                className={`${styles.chevron} ${dropdownOpen ? styles.chevronOpen : ""}`}
                 viewBox="0 0 24 24"
                 width="14"
                 height="14"
@@ -178,10 +202,7 @@ export function Header() {
               </svg>
             </button>
             {dropdownOpen && (
-              <ProductsDropdown
-                hotProducts={hotProducts}
-                trends={trends}
-              />
+              <ProductsDropdown hotProducts={hotProducts} trends={trends} />
             )}
           </div>
 
@@ -199,7 +220,7 @@ export function Header() {
             <CartIcon />
             {itemCount > 0 && (
               <span className={styles.badge}>
-                {new Intl.NumberFormat('fa-IR').format(itemCount)}
+                {new Intl.NumberFormat("fa-IR").format(itemCount)}
               </span>
             )}
           </Link>
@@ -208,10 +229,7 @@ export function Header() {
 
       {searchOpen && (
         <div className={`container ${styles.searchPanel}`}>
-          <ProductSearchForm
-            autoFocus
-            onSubmit={() => setSearchOpen(false)}
-          />
+          <ProductSearchForm autoFocus onSubmit={() => setSearchOpen(false)} />
         </div>
       )}
 
@@ -222,5 +240,5 @@ export function Header() {
         onClose={() => setMenuOpen(false)}
       />
     </header>
-  )
+  );
 }
