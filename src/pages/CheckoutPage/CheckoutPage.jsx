@@ -270,7 +270,7 @@ export function CheckoutPage() {
   }
 
   const zarinpalPaymentAmount = order
-    ? Math.round((order.total_amount * 92) / 100)
+    ? Math.round((order.total_amount * 90) / 100)
     : 0;
   const zarinpalDiscountAmount = order
     ? Math.max(0, order.total_amount - zarinpalPaymentAmount)
@@ -320,7 +320,7 @@ export function CheckoutPage() {
                 مبلغ سفارش: {formatPrice(order.total_amount)}
               </p>
               <p className={styles.ref}>
-                تخفیف زرین‌پال (۸٪): −{formatPrice(paidDiscountAmount)}
+                تخفیف زرین‌پال (۱۰٪): −{formatPrice(paidDiscountAmount)}
               </p>
               <p className={styles.total}>
                 مبلغ پرداخت‌شده:{" "}
@@ -392,7 +392,7 @@ export function CheckoutPage() {
             {order.status === "pending" && (
               <>
                 <div className={styles.totalRow}>
-                  <span>تخفیف پرداخت با زرین‌پال (۸٪)</span>
+                  <span>تخفیف پرداخت با زرین‌پال (۱۰٪)</span>
                   <strong>−{formatPrice(zarinpalDiscountAmount)}</strong>
                 </div>
                 <div className={styles.totalRow}>
@@ -485,7 +485,7 @@ export function CheckoutPage() {
                 >
                   {paying
                     ? "در حال اتصال به درگاه..."
-                    : "پرداخت آنلاین با زرین‌پال (۸٪ تخفیف)"}
+                    : "پرداخت آنلاین با زرین‌پال (۱۰٪ تخفیف)"}
                 </button>
               </div>
             )}

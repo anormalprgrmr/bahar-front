@@ -1,18 +1,22 @@
-import { formatPrice } from '@/utils/formatPrice'
-import styles from './ProductPrices.module.css'
+import { formatPrice } from "@/utils/formatPrice";
+import styles from "./ProductPrices.module.css";
 
 /**
  * @param {{ installmentPrice: number, compact?: boolean, large?: boolean }} props
  */
-export function ProductPrices({ installmentPrice, compact = false, large = false }) {
-  const cashPrice = Math.round(installmentPrice * 0.9)
+export function ProductPrices({
+  installmentPrice,
+  compact = false,
+  large = false,
+}) {
+  const cashPrice = Math.round(installmentPrice * 0.9);
   const className = [
     styles.prices,
     compact && styles.compact,
     large && styles.large,
   ]
     .filter(Boolean)
-    .join(' ')
+    .join(" ");
 
   return (
     <div className={className}>
@@ -21,9 +25,9 @@ export function ProductPrices({ installmentPrice, compact = false, large = false
         <span className={styles.amount}>{formatPrice(cashPrice)}</span>
       </div>
       <div className={`${styles.option} ${styles.installment}`}>
-        <span className={styles.label}>قسطی</span>
+        <span className={styles.label}>اقساط</span>
         <span className={styles.amount}>{formatPrice(installmentPrice)}</span>
       </div>
     </div>
-  )
+  );
 }
