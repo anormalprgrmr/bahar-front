@@ -1,21 +1,22 @@
-import { Link } from 'react-router-dom'
-import { formatPrice } from '@/utils/formatPrice'
+import { Link } from "react-router-dom";
+
 import {
   getOriginalPrice,
   getProductBadge,
   getSalePrice,
-} from '@/utils/productHelpers'
-import { ProductAskLink } from '@/components/products/ProductAskLink/ProductAskLink'
-import { WishlistButton } from '@/components/products/WishlistButton/WishlistButton'
-import styles from './ProductCard.module.css'
+} from "@/utils/productHelpers";
+import { ProductAskLink } from "@/components/products/ProductAskLink/ProductAskLink";
+import { ProductPrices } from "@/components/products/ProductPrices/ProductPrices";
+import { WishlistButton } from "@/components/products/WishlistButton/WishlistButton";
+import styles from "./ProductCard.module.css";
 
 /**
  * @param {{ product: import('@/types/product').Product }} props
  */
 export function ProductCard({ product }) {
-  const badgeLabel = getProductBadge(product)
-  const salePrice = getSalePrice(product)
-  const originalPrice = getOriginalPrice(product)
+  const badgeLabel = getProductBadge(product);
+  const salePrice = getSalePrice(product);
+  const originalPrice = getOriginalPrice(product);
 
   return (
     <article className={styles.card}>
@@ -57,10 +58,10 @@ export function ProductCard({ product }) {
           <div className={styles.prices}>
             {originalPrice != null && (
               <span className={styles.originalPrice}>
-                {new Intl.NumberFormat('fa-IR').format(originalPrice)}
+                {new Intl.NumberFormat("fa-IR").format(originalPrice)}
               </span>
             )}
-            <span className={styles.price}>{formatPrice(salePrice)}</span>
+            <ProductPrices installmentPrice={salePrice} />
           </div>
         </div>
       </Link>
@@ -69,5 +70,5 @@ export function ProductCard({ product }) {
         <ProductAskLink productName={product.name} withIcon />
       </div>
     </article>
-  )
+  );
 }

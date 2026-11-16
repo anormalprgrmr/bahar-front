@@ -1,6 +1,6 @@
-import { Link } from 'react-router-dom'
-import { useCategories } from '@/hooks/useCategories'
-import { formatPrice } from '@/utils/formatPrice'
+import { Link } from "react-router-dom";
+import { useCategories } from "@/hooks/useCategories";
+
 import {
   getCategoryLabel,
   getCategoryPath,
@@ -8,12 +8,13 @@ import {
   getPrimaryCategorySlug,
   getProductBadge,
   getSalePrice,
-} from '@/utils/productHelpers'
-import { ProductAskLink } from '@/components/products/ProductAskLink/ProductAskLink'
-import { ProductExtraSpecs } from '@/components/products/ProductExtraSpecs/ProductExtraSpecs'
-import { ProductKeywords } from '@/components/products/ProductKeywords/ProductKeywords'
-import { WishlistButton } from '@/components/products/WishlistButton/WishlistButton'
-import styles from './ProductInfo.module.css'
+} from "@/utils/productHelpers";
+import { ProductAskLink } from "@/components/products/ProductAskLink/ProductAskLink";
+import { ProductPrices } from "@/components/products/ProductPrices/ProductPrices";
+import { ProductExtraSpecs } from "@/components/products/ProductExtraSpecs/ProductExtraSpecs";
+import { ProductKeywords } from "@/components/products/ProductKeywords/ProductKeywords";
+import { WishlistButton } from "@/components/products/WishlistButton/WishlistButton";
+import styles from "./ProductInfo.module.css";
 
 /**
  * @param {{
@@ -21,25 +22,29 @@ import styles from './ProductInfo.module.css'
  * }} props
  */
 export function ProductInfo({ product }) {
-  const { categories } = useCategories()
+  const { categories } = useCategories();
 
-  const badgeLabel = getProductBadge(product)
-  const salePrice = getSalePrice(product)
-  const originalPrice = getOriginalPrice(product)
+  const badgeLabel = getProductBadge(product);
+  const salePrice = getSalePrice(product);
+  const originalPrice = getOriginalPrice(product);
   const discountPercent =
     originalPrice != null && originalPrice > salePrice
       ? Math.round(((originalPrice - salePrice) / originalPrice) * 100)
-      : null
+      : null;
 
-  const description = product.description?.trim() ?? ''
+  const description = product.description?.trim() ?? "";
 
-  const primaryCategorySlug = getPrimaryCategorySlug(product)
-  const categoryItems =
-    product.categories?.length
-      ? product.categories
-      : primaryCategorySlug
-        ? [{ slug: primaryCategorySlug, name: getCategoryLabel(primaryCategorySlug, categories) }]
-        : []
+  const primaryCategorySlug = getPrimaryCategorySlug(product);
+  const categoryItems = product.categories?.length
+    ? product.categories
+    : primaryCategorySlug
+      ? [
+          {
+            slug: primaryCategorySlug,
+            name: getCategoryLabel(primaryCategorySlug, categories),
+          },
+        ]
+      : [];
 
   return (
     <div className={styles.info}>
@@ -70,14 +75,18 @@ export function ProductInfo({ product }) {
       <h1 className={styles.title}>{product.name}</h1>
 
       <div className={styles.priceRow}>
-        <span className={styles.price}>{formatPrice(salePrice)}</span>
-        {originalPrice != null && (
-          <span className={styles.original}>
-            {new Intl.NumberFormat('fa-IR').format(originalPrice)} تومان
-          </span>
-        )}
-        {discountPercent && (
-          <span className={styles.discount}>{discountPercent}٪ تخفیف</span>
+        <ProductPrices installmentPrice={salePrice} large />
+        {(originalPrice != null || discountPercent) && (
+          <div className={styles.discountRow}>
+            {originalPrice != null && (
+              <span className={styles.original}>
+                {new Intl.NumberFormat("fa-IR").format(originalPrice)} تومان
+              </span>
+            )}
+            {discountPercent && (
+              <span className={styles.discount}>{discountPercent}٪ تخفیف</span>
+            )}
+          </div>
         )}
       </div>
 
@@ -97,25 +106,25 @@ export function ProductInfo({ product }) {
             {categoryItems.length > 0
               ? categoryItems.map((category, index) => (
                   <span key={category.id ?? category.slug}>
-                    {index > 0 ? '، ' : ''}
+                    {index > 0 ? "، " : ""}
                     <Link to={getCategoryPath(category.slug)}>
                       {category.name ??
                         getCategoryLabel(category.slug, categories)}
                     </Link>
                   </span>
                 ))
-              : '—'}
+              : "—"}
           </dd>
         </div>
         <div className={styles.spec}>
           <dt>موجودی</dt>
           <dd>
             {(product.stock ?? 0) > 0
-              ? `${new Intl.NumberFormat('fa-IR').format(product.stock)} عدد`
-              : 'ناموجود'}
+              ? `${new Intl.NumberFormat("fa-IR").format(product.stock)} عدد`
+              : "ناموجود"}
           </dd>
         </div>
       </dl>
     </div>
-  )
+  );
 }

@@ -1,6 +1,7 @@
-import { Link } from 'react-router-dom'
-import { formatPrice } from '@/utils/formatPrice'
-import styles from './ProductsDropdown.module.css'
+import { Link } from "react-router-dom";
+import { getSalePrice } from "@/utils/productHelpers";
+import { ProductPrices } from "@/components/products/ProductPrices/ProductPrices";
+import styles from "./ProductsDropdown.module.css";
 
 /**
  * @param {{
@@ -24,9 +25,10 @@ export function ProductsDropdown({ hotProducts, trends }) {
                 />
                 <div className={styles.itemInfo}>
                   <span className={styles.itemName}>{product.name}</span>
-                  <span className={styles.itemPrice}>
-                    {formatPrice(product.price)}
-                  </span>
+                  <ProductPrices
+                    installmentPrice={getSalePrice(product)}
+                    compact
+                  />
                 </div>
               </Link>
             </li>
@@ -49,9 +51,10 @@ export function ProductsDropdown({ hotProducts, trends }) {
                 />
                 <div className={styles.itemInfo}>
                   <span className={styles.itemName}>{product.name}</span>
-                  <span className={styles.itemPrice}>
-                    {formatPrice(product.price)}
-                  </span>
+                  <ProductPrices
+                    installmentPrice={getSalePrice(product)}
+                    compact
+                  />
                 </div>
               </Link>
             </li>
@@ -59,5 +62,5 @@ export function ProductsDropdown({ hotProducts, trends }) {
         </ul>
       </div>
     </div>
-  )
+  );
 }
