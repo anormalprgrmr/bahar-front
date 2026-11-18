@@ -260,6 +260,11 @@
         align-items: stretch;
     }
 
+    .addToCart {
+        min-width: 0;
+        width: 100%;
+    }
+
     .quantity {
         justify-content: center;
     }

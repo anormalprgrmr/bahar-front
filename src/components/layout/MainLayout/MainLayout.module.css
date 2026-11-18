@@ -1,10 +1,11 @@
 .layout {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 .main {
-  flex: 1;
-  animation: fadeInUp 0.45s var(--ease-out);
+    flex: 1;
+    min-width: 0;
+    animation: fadeInUp 0.45s var(--ease-out);
 }

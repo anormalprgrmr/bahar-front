@@ -1,76 +1,76 @@
 .prices {
-  display: flex;
-  align-items: stretch;
-  justify-content: center;
-  gap: 0.5rem;
-  width: 100%;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
 }
 
 .option {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.1rem;
-  min-width: 0;
-  flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.1rem;
+    min-width: 0;
+    flex: 1;
 }
 
 .label {
-  font-size: 0.72rem;
-  color: var(--color-text-muted);
+    font-size: 0.72rem;
+    color: var(--color-text-muted);
 }
 
 .amount {
-  font-size: 0.82rem;
-  font-weight: 600;
-  white-space: nowrap;
+    font-size: 0.82rem;
+    font-weight: 600;
+    overflow-wrap: anywhere;
 }
 
 .cash .amount {
-  color: var(--color-primary);
+    color: var(--color-primary);
 }
 
 .installment .amount {
-  color: var(--color-text);
+    color: var(--color-text);
 }
 
 .compact {
-  align-items: flex-start;
-  justify-content: flex-start;
-  gap: 0.15rem;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 0.15rem;
 }
 
 .compact .option {
-  flex-direction: row;
-  align-items: baseline;
-  justify-content: flex-start;
-  gap: 0.3rem;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: flex-start;
+    gap: 0.3rem;
 }
 
 .compact .label {
-  font-size: 0.68rem;
+    font-size: 0.68rem;
 }
 
 .compact .amount {
-  font-size: 0.7rem;
+    font-size: 0.7rem;
 }
 
 .large .label {
-  font-size: 0.85rem;
+    font-size: 0.85rem;
 }
 
 .large .amount {
-  font-size: 1.1rem;
+    font-size: 1.1rem;
 }
 
-@media (max-width: 360px) {
-  .prices:not(.compact) {
-    flex-direction: column;
-    gap: 0.25rem;
-  }
+@media (max-width: 480px) {
+    .prices:not(.compact) {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
 
-  .prices:not(.compact) .option {
-    flex-direction: row;
-    justify-content: space-between;
-  }
+    .prices:not(.compact) .option {
+        flex-direction: row;
+        justify-content: space-between;
+    }
 }
