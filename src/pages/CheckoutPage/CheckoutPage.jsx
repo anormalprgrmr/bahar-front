@@ -15,6 +15,7 @@ import {
   trackOrder,
 } from "@/services/orders/orderService";
 import { getProductById } from "@/services/products/productService";
+import { resolveMediaUrl } from "@/services/api/client";
 import { formatPrice } from "@/utils/formatPrice";
 import {
   getOrderStatusLabel,
@@ -138,10 +139,17 @@ export function CheckoutPage() {
       return;
     }
 
+    const itemsWithoutNames = order.items.filter((item) => !item.product_name);
+    if (itemsWithoutNames.length === 0) {
+      setOrderProductNames({});
+      setOrderProductsReady(true);
+      return;
+    }
+
     let cancelled = false;
     setOrderProductsReady(false);
     Promise.all(
-      order.items.map(async (item) => {
+      itemsWithoutNames.map(async (item) => {
         const product = await getProductById(item.product_id);
         return [item.product_id, product?.name ?? `محصول ${item.product_id}`];
       }),
@@ -162,7 +170,9 @@ export function CheckoutPage() {
 
     const itemLines = (order.items ?? []).map((item) => {
       const name =
-        orderProductNames[item.product_id] ?? `محصول ${item.product_id}`;
+        item.product_name ||
+        orderProductNames[item.product_id] ||
+        `محصول ${item.product_id}`;
       return `- ${name} | تعداد: ${new Intl.NumberFormat("fa-IR").format(item.quantity)} | قیمت واحد: ${formatPrice(item.unit_price)} | جمع: ${formatPrice(item.unit_price * item.quantity)}`;
     });
     const message = [
@@ -373,17 +383,52 @@ export function CheckoutPage() {
               روش ارسال: {getShippingMethodLabel(order.shipping_method)}
             </p>
             <ul className={styles.orderItems}>
-              {(order.items ?? []).map((item) => (
-                <li key={`${item.product_id}-${item.quantity}`}>
-                  <span>
-                    محصول {item.product_id.slice(0, 8)} ×{" "}
-                    {new Intl.NumberFormat("fa-IR").format(item.quantity)}
-                  </span>
-                  <strong>
-                    {formatPrice(item.unit_price * item.quantity)}
-                  </strong>
-                </li>
-              ))}
+              {(order.items ?? []).map((item) => {
+                const productName =
+                  item.product_name ||
+                  orderProductNames[item.product_id] ||
+                  `محصول ${item.product_id.slice(0, 8)}`;
+                const productImage = resolveMediaUrl(item.product_image);
+
+                return (
+                  <li
+                    key={`${item.product_id}-${item.quantity}`}
+                    className={styles.orderItem}
+                  >
+                    <div className={styles.orderItemProduct}>
+                      {productImage ? (
+                        <img
+                          src={productImage}
+                          alt={productName}
+                          className={styles.orderItemImage}
+                          loading="lazy"
+                        />
+                      ) : (
+                        <span
+                          className={styles.orderItemFallback}
+                          aria-hidden="true"
+                        >
+                          بدون تصویر
+                        </span>
+                      )}
+                      <div className={styles.orderItemInfo}>
+                        <strong className={styles.orderItemName}>
+                          {productName}
+                        </strong>
+                        <span className={styles.orderItemMeta}>
+                          تعداد:{" "}
+                          {new Intl.NumberFormat("fa-IR").format(item.quantity)}
+                          <span aria-hidden="true"> · </span>
+                          قیمت واحد: {formatPrice(item.unit_price)}
+                        </span>
+                      </div>
+                    </div>
+                    <strong className={styles.orderItemTotal}>
+                      {formatPrice(item.unit_price * item.quantity)}
+                    </strong>
+                  </li>
+                );
+              })}
             </ul>
             <div className={styles.totalRow}>
               <span>جمع سفارش (قبل از تخفیف)</span>
